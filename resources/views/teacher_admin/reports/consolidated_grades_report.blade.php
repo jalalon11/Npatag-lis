@@ -90,13 +90,13 @@ if (!function_exists('getTransmutedGrade')) {
         <table class="info-table">
             <tr>
                 <td class="info-label table-header">REGION</td>
-                <td class="info-value">{{ isset($section) && $section->school && $section->school->schoolDivision ? $section->school->schoolDivision->region : 'Region' }}</td>
+                <td class="info-value">{{ isset($section) && $section->school ? $section->school->region ?? 'Region XI' : 'Region XI' }}</td>
                 <td class="info-label table-header">QUARTER</td>
                 <td class="info-value">{{ $quarterName }}</td>
             </tr>
             <tr>
                 <td class="info-label table-header">DIVISION</td>
-                <td class="info-value">{{ isset($section) && $section->school && $section->school->schoolDivision ? $section->school->schoolDivision->name : 'Division' }}</td>
+                <td class="info-value">{{ isset($section) && $section->school ? $section->school->division_name ?? 'Division of Davao del Sur' : 'Division of Davao del Sur' }}</td>
                 <td class="info-label table-header">SCHOOL YEAR</td>
                 <td class="info-value">{{ $schoolYear }}</td>
             </tr>

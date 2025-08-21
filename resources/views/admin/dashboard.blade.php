@@ -36,38 +36,6 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4 mt-4 mt-lg-0">
-                <div class="row g-3">
-                    <div class="col-6">
-                        <div class="quick-stat-card bg-white rounded-3 p-3 border border-light shadow-sm h-100 transition-all hover-lift">
-                            <div class="d-flex align-items-center">
-                                <div class="stat-icon bg-primary bg-opacity-10 p-2 rounded-circle">
-                                    <i class="fas fa-money-bill-wave text-primary"></i>
-                                </div>
-                                <div class="ms-3">
-                                    <h6 class="mb-0 text-muted small">Monthly Sales</h6>
-                                    <h3 class="mb-0 fw-bold">₱{{ number_format($currentMonthSales, 0) }}</h3>
-                                    <p class="small text-success mb-0">{{ date('F Y') }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="quick-stat-card bg-white rounded-3 p-3 border border-light shadow-sm h-100 transition-all hover-lift">
-                            <div class="d-flex align-items-center">
-                                <div class="stat-icon bg-success bg-opacity-10 p-2 rounded-circle">
-                                    <i class="fas fa-chart-line text-success"></i>
-                                </div>
-                                <div class="ms-3">
-                                    <h6 class="mb-0 text-muted small">Yearly Sales</h6>
-                                    <h3 class="mb-0 fw-bold">₱{{ number_format($currentYearSales, 0) }}</h3>
-                                    <p class="small text-success mb-0">{{ date('Y') }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -102,35 +70,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="stat-card bg-white rounded-4 shadow-sm h-100 position-relative overflow-hidden transition-all hover-lift">
-                <div class="position-absolute top-0 start-0 h-100 w-1 bg-info"></div>
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <div class="d-flex align-items-center mb-2">
-                                <div class="stat-icon-sm bg-info bg-opacity-10 rounded-circle p-2 me-2">
-                                    <i class="fas fa-building text-info"></i>
-                                </div>
-                                <h6 class="text-uppercase fw-semibold mb-0 small">School Divisions</h6>
-                            </div>
-                            <h3 class="fw-bold mb-0 display-6">{{ $stats['schoolDivisionsCount'] }}</h3>
-                            <!-- <div class="progress mt-3" style="height: 6px;">
-                                <div class="progress-bar bg-info" role="progressbar" style="width: 60%"></div>
-                            </div> -->
-                            <p class="small text-muted mb-0 mt-2">
-                                <i class="fas fa-building me-1"></i> Educational Divisions
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer bg-white border-0 py-3">
-                    <a href="{{ route('admin.school-divisions.index') }}" class="btn btn-sm btn-info text-white w-100 d-flex align-items-center justify-content-center">
-                        <i class="fas fa-eye me-2"></i> View All Divisions
-                    </a>
-                </div>
-            </div>
-        </div>
+        <!-- School Divisions card removed - moved to single school system -->
         <div class="col-xl-3 col-md-6">
             <div class="stat-card bg-white rounded-4 shadow-sm h-100 position-relative overflow-hidden transition-all hover-lift">
                 <div class="position-absolute top-0 start-0 h-100 w-1 bg-warning"></div>
@@ -208,20 +148,7 @@
                 </div>
                 <div class="card-body p-0">
                     <div class="row g-0">
-                        <div class="col-md-6 border-end border-bottom">
-                            <a href="{{ route('admin.school-divisions.create') }}" class="quick-action-item d-flex align-items-center p-4 text-decoration-none transition-all hover-bg">
-                                <div class="d-flex align-items-center justify-content-center me-3 bg-primary bg-opacity-10 rounded-circle" style="width: 60px; height: 60px;">
-                                    <i class="fas fa-building text-primary fa-lg"></i>
-                                </div>
-                                <div>
-                                    <h6 class="mb-1 fw-semibold text-dark">Add School Division</h6>
-                                    <p class="text-muted small mb-0">Create a new division with schools</p>
-                                </div>
-                                <span class="badge bg-primary bg-opacity-10 text-primary ms-auto px-3 py-2 rounded-pill">
-                                    <i class="fas fa-arrow-right"></i>
-                                </span>
-                            </a>
-                        </div>
+                        <!-- School Divisions quick action removed - moved to single school system -->
                         <div class="col-md-6 border-bottom">
                             <a href="{{ route('admin.schools.create') }}" class="quick-action-item d-flex align-items-center p-4 text-decoration-none transition-all hover-bg">
                                 <div class="d-flex align-items-center justify-content-center me-3 bg-success bg-opacity-10 rounded-circle" style="width: 60px; height: 60px;">
@@ -268,19 +195,20 @@
                 </div>
                 <div class="card-body p-0 border-top">
                     <div class="row g-0">
+                        <!-- Sales reports functionality has been disabled -->
                         <div class="col-md-6 border-end border-bottom">
-                            <a href="{{ route('admin.reports.sales') }}" class="quick-action-item d-flex align-items-center p-4 text-decoration-none transition-all hover-bg">
-                                <div class="d-flex align-items-center justify-content-center me-3 bg-primary bg-opacity-10 rounded-circle" style="width: 60px; height: 60px;">
-                                    <i class="fas fa-chart-line text-primary fa-lg"></i>
+                            <div class="quick-action-item d-flex align-items-center p-4 text-muted">
+                                <div class="d-flex align-items-center justify-content-center me-3 bg-secondary bg-opacity-10 rounded-circle" style="width: 60px; height: 60px;">
+                                    <i class="fas fa-chart-line text-secondary fa-lg"></i>
                                 </div>
                                 <div>
-                                    <h6 class="mb-1 fw-semibold text-dark">Sales Reports</h6>
-                                    <p class="text-muted small mb-0">View monthly and yearly sales</p>
+                                    <h6 class="mb-1 fw-semibold text-muted">Sales Reports</h6>
+                                    <p class="text-muted small mb-0">Feature disabled</p>
                                 </div>
-                                <span class="badge bg-primary bg-opacity-10 text-primary ms-auto px-3 py-2 rounded-pill">
-                                    <i class="fas fa-arrow-right"></i>
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary ms-auto px-3 py-2 rounded-pill">
+                                    <i class="fas fa-times"></i>
                                 </span>
-                            </a>
+                            </div>
                         </div>
                         <div class="col-md-6 border-bottom">
                             <a href="{{ route('admin.resources.index') }}" class="quick-action-item d-flex align-items-center p-4 text-decoration-none transition-all hover-bg">

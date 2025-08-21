@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Models\Payment;
 use App\Models\SupportMessage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
@@ -25,16 +24,12 @@ class ViewComposerServiceProvider extends ServiceProvider
     {
         // Share counts with the app layout
         View::composer('layouts.app', function ($view) {
-            $pendingPaymentsCount = 0;
             $pendingSupportCount = 0;
             $teacherAdminSupportCount = 0;
 
             if (Auth::check()) {
                 // For admin users
                 if (Auth::user()->role === 'admin') {
-                    // Count pending payments
-                    $pendingPaymentsCount = Payment::where('status', 'pending')->count();
-
                     // Count unread support messages for admin
                     $pendingSupportCount = SupportMessage::whereHas('ticket', function($query) {
                         $query->where('status', '!=', 'closed');
@@ -58,7 +53,6 @@ class ViewComposerServiceProvider extends ServiceProvider
             }
 
             $view->with([
-                'pendingPaymentsCount' => $pendingPaymentsCount,
                 'pendingSupportCount' => $pendingSupportCount,
                 'teacherAdminSupportCount' => $teacherAdminSupportCount
             ]);

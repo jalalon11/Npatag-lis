@@ -28,9 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
         initYearlySalesChart();
     }
     
-    if (document.getElementById('billingCycleChart')) {
-        initBillingCycleChart();
-    }
+    // Billing cycle chart removed - payment functionality disabled
 });
 
 /**
@@ -214,86 +212,7 @@ function initYearlySalesChart() {
 /**
  * Initialize Billing Cycle Chart
  */
-function initBillingCycleChart() {
-    const billingCycleCtx = document.getElementById('billingCycleChart').getContext('2d');
-    const billingCycleData = JSON.parse(document.getElementById('billing-cycle-data').dataset.cycles);
-    
-    const cycleLabels = billingCycleData.map(item => {
-        return item.billing_cycle === 'monthly' ? 'Monthly' : 'Yearly';
-    });
-    
-    const cycleCounts = billingCycleData.map(item => item.count);
-    const cycleAmounts = billingCycleData.map(item => item.total);
-    
-    const billingCycleChart = new Chart(billingCycleCtx, {
-        type: 'bar',
-        data: {
-            labels: cycleLabels,
-            datasets: [{
-                label: 'Number of Payments',
-                data: cycleCounts,
-                backgroundColor: 'rgba(246, 194, 62, 0.7)',
-                borderColor: 'rgba(246, 194, 62, 1)',
-                borderWidth: 1,
-                borderRadius: 4,
-                order: 2
-            }, {
-                label: 'Total Amount (₱)',
-                data: cycleAmounts,
-                backgroundColor: 'rgba(78, 115, 223, 0.1)',
-                borderColor: 'rgba(78, 115, 223, 1)',
-                borderWidth: 2,
-                type: 'line',
-                order: 1,
-                yAxisID: 'y1'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'top'
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            if (context.dataset.label === 'Total Amount (₱)') {
-                                return '₱' + new Intl.NumberFormat().format(context.raw);
-                            }
-                            return context.dataset.label + ': ' + context.raw;
-                        }
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Number of Payments'
-                    }
-                },
-                y1: {
-                    beginAtZero: true,
-                    position: 'right',
-                    grid: {
-                        drawOnChartArea: false
-                    },
-                    title: {
-                        display: true,
-                        text: 'Total Amount (₱)'
-                    },
-                    ticks: {
-                        callback: function(value) {
-                            return '₱' + new Intl.NumberFormat().format(value);
-                        }
-                    }
-                }
-            }
-        }
-    });
-}
+// Billing cycle chart function removed - payment functionality disabled
 
 /**
  * Download chart as image

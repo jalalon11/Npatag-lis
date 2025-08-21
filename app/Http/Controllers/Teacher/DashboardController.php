@@ -50,7 +50,9 @@ class DashboardController extends Controller
             })->get();
 
             // Get students in the advised sections
-            $studentsInSections = Student::whereIn('section_id', $allSectionIds)->get();
+            $studentsInSections = Student::whereIn('section_id', $allSectionIds)
+                ->enrolled() // Only students created from enrollments
+                ->get();
             $studentIds = $studentsInSections->pluck('id')->toArray();
 
             $stats = [
@@ -605,6 +607,7 @@ class DashboardController extends Controller
 
             // Get students in this section with their final grades
             $students = Student::where('section_id', $section->id)
+                ->enrolled() // Only students created from enrollments
                 ->with(['grades' => function($query) use ($sectionSubjects) {
                     $query->whereIn('subject_id', $sectionSubjects->pluck('id')->toArray())
                           ->where(function($q) {

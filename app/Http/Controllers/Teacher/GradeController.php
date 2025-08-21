@@ -244,6 +244,7 @@ class GradeController extends Controller
 
                     $sectionStudents = Student::where('section_id', $selectedSectionId)
                         ->where('is_active', true)
+                        ->enrolled() // Only students created from enrollments
                         ->with(['grades' => function ($query) use ($sectionSubjectIds, $selectedTerm) {
                             $query->whereIn('subject_id', $sectionSubjectIds)
                                   ->where('term', $selectedTerm)
@@ -275,6 +276,7 @@ class GradeController extends Controller
                     // Original code for viewing a single subject
                     $sectionStudents = Student::where('section_id', $selectedSectionId)
                         ->where('is_active', true) // Only include active students
+                        ->enrolled() // Only students created from enrollments
                         ->with(['grades' => function ($query) use ($selectedSubject, $selectedTerm) {
                             $query->where('subject_id', $selectedSubject->id)
                                   ->where('term', $selectedTerm);
@@ -476,11 +478,12 @@ class GradeController extends Controller
                 ]);
             }
 
-            // Get only active students for the selected section
+            // Get only active enrolled students for the selected section
             $students = [];
             if ($sectionId) {
                 $students = Student::where('section_id', $sectionId)
                     ->where('is_active', true)
+                    ->enrolled() // Only students created from enrollments
                     ->get();
 
                 Log::info('Students retrieved for section', [
@@ -834,9 +837,10 @@ class GradeController extends Controller
             // Load the section
             $section = Section::findOrFail($request->section_id);
 
-            // Get only active students for the section
+            // Get only active enrolled students for the section
             $students = Student::where('section_id', $request->section_id)
                 ->where('is_active', true)
+                ->enrolled() // Only students created from enrollments
                 ->get();
 
             Log::info('Students retrieved for section', [
@@ -1831,6 +1835,7 @@ class GradeController extends Controller
             if ($selectedSubject && $selectedSectionId) {
                 $sectionStudents = Student::where('section_id', $selectedSectionId)
                     ->where('is_active', true) // Only include active students
+                    ->enrolled() // Only students created from enrollments
                     ->with(['grades' => function($query) use ($selectedSubject, $selectedTerm) {
                         $query->where('subject_id', $selectedSubject->id)
                               ->where('term', $selectedTerm);

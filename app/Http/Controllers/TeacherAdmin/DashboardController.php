@@ -9,6 +9,8 @@ use App\Models\User;
 use App\Models\Student;
 use App\Models\Attendance;
 use App\Models\Grade;
+use App\Models\Enrollment;
+use App\Services\EnrollmentNotificationService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -91,6 +93,22 @@ class DashboardController extends Controller
         ->where('is_read', false)
         ->count();
 
+        // Get enrollment statistics
+        $enrollmentService = new EnrollmentNotificationService();
+        $enrollmentStats = $enrollmentService->getEnrollmentStats($user->school_id);
+        
+        // Get recent enrollment applications
+        $recentEnrollments = Enrollment::where('school_id', $user->school_id)
+            ->with(['preferredSection', 'processedBy'])
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+            
+        // Get pending enrollments count for notifications
+        $pendingEnrollmentsCount = Enrollment::where('school_id', $user->school_id)
+            ->where('status', 'pending')
+            ->count();
+
         return view('teacher_admin.dashboard', compact(
             'user',
             'school',
@@ -106,7 +124,10 @@ class DashboardController extends Controller
             'recentActivity',
             'teacherPerformance',
             'stats',
-            'teacherAdminSupportCount'
+            'teacherAdminSupportCount',
+            'enrollmentStats',
+            'recentEnrollments',
+            'pendingEnrollmentsCount'
         ));
     }
 

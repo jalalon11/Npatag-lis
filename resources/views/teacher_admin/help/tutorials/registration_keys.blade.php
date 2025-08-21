@@ -44,44 +44,18 @@
 
                     <div class="tutorial-section mb-5">
                         <h5 class="tutorial-heading">
-                            <i class="fas fa-plus-circle text-success me-2"></i>
-                            Generating Teacher Registration Keys
-                        </h5>
-                        <div class="tutorial-content">
-                            <p>To generate registration keys for new teachers:</p>
-                            <ol>
-                                <li>Go to the "School" page in the Teacher Admin panel</li>
-                                <li>Click the "Generate Registration Key" button</li>
-                                <li>In the modal that appears:
-                                    <ul>
-                                        <li>Select "Teacher" as the key type</li>
-                                        <li>Choose how many keys to generate (1-10)</li>
-                                    </ul>
-                                </li>
-                                <li>Click "Generate Keys" to create the registration keys</li>
-                            </ol>
-                            <p>The newly generated keys will appear in the Registration Keys table, where you can copy them to share with new teachers.</p>
-                            <div class="tutorial-tip">
-                                <i class="fas fa-lightbulb text-warning"></i>
-                                <span>Generate keys only when you're ready to distribute them to new teachers. This helps you keep track of which keys have been assigned to which teachers.</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="tutorial-section mb-5">
-                        <h5 class="tutorial-heading">
                             <i class="fas fa-user-shield text-info me-2"></i>
-                            Requesting Teacher Admin Keys
+                            Requesting Teacher & Teacher Admin Keys
                         </h5>
                         <div class="tutorial-content">
-                            <p>Teacher Admin registration keys must be requested from system administrators:</p>
+                            <p>Teacher & Teacher Admin registration keys must be requested from system administrators:</p>
                             <ol>
                                 <li>Go to the Support page</li>
                                 <li>Create a new support ticket</li>
                                 <li>Select "Registration Key Request" as the category</li>
                                 <li>In your message, include:
                                     <ul>
-                                        <li>The reason for needing an additional Teacher Admin</li>
+                                        <li>The reason for needing an additional Teacher & Teacher Admin</li>
                                         <li>The name and email of the person who will use the key</li>
                                         <li>Your school name and ID</li>
                                     </ul>
@@ -91,7 +65,7 @@
                             <p>System administrators will review your request and, if approved, will provide you with a Teacher Admin registration key through the support ticket conversation.</p>
                             <div class="tutorial-tip">
                                 <i class="fas fa-lightbulb text-warning"></i>
-                                <span>The number of Teacher Admin accounts allowed depends on your subscription plan. Contact support if you need to increase this limit.</span>
+                                <span>Only 2 Teacher Admin accounts are allowed per school.</span>
                             </div>
                         </div>
                     </div>
@@ -136,8 +110,8 @@
                                 <li>Instruct the teacher to:
                                     <ul>
                                         <li>Go to the registration page</li>
-                                        <li>Fill in their personal information</li>
                                         <li>Enter the registration key when prompted</li>
+                                        <li>Fill in their personal information</li>
                                         <li>Complete the registration process</li>
                                     </ul>
                                 </li>
@@ -168,8 +142,8 @@
 
                     <!-- Tutorial Navigation -->
                     <div class="tutorial-nav">
-                        <a href="{{ route('teacher-admin.help.tutorial', 'payments') }}" class="tutorial-nav-btn prev">
-                            <i class="fas fa-arrow-left"></i> Previous: Payments
+                        <a href="{{ route('teacher-admin.help.tutorial', 'reports') }}" class="tutorial-nav-btn prev">
+                            <i class="fas fa-arrow-left"></i> Previous: Reports
                         </a>
                         <a href="{{ route('teacher-admin.help.index') }}" class="tutorial-nav-btn next">
                             Back to Help Center <i class="fas fa-arrow-right"></i>

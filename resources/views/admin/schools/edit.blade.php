@@ -95,17 +95,41 @@
                                     @enderror
                                     <div class="form-text">Upload a new school logo (JPEG, PNG, GIF - max 2MB)</div>
                                 </div>
-                                <div class="col-md-12">
-                                    <label for="school_division_id" class="form-label fw-bold">School Division <span class="text-danger">*</span></label>
-                                    <select class="form-select @error('school_division_id') is-invalid @enderror" id="school_division_id" name="school_division_id" required>
-                                        <option value="">Select School Division</option>
-                                        @foreach($divisions as $division)
-                                            <option value="{{ $division->id }}" {{ old('school_division_id', $school->school_division_id) == $division->id ? 'selected' : '' }}>
-                                                {{ $division->name }} ({{ $division->code }})
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('school_division_id')
+                                <!-- Division Information Section -->
+                                <div class="col-md-12 mt-3">
+                                    <h6 class="text-muted mb-3">Division Information</h6>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="division_name" class="form-label fw-bold">Division Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control @error('division_name') is-invalid @enderror" id="division_name" name="division_name" value="{{ old('division_name', $school->division_name ?? 'Division of Davao del Sur') }}" required>
+                                    @error('division_name')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="division_code" class="form-label fw-bold">Division Code <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control @error('division_code') is-invalid @enderror" id="division_code" name="division_code" value="{{ old('division_code', $school->division_code ?? 'DDS') }}" required>
+                                    @error('division_code')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="region" class="form-label fw-bold">Region <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control @error('region') is-invalid @enderror" id="region" name="region" value="{{ old('region', $school->region ?? 'Region XI') }}" required>
+                                    @error('region')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="division_address" class="form-label fw-bold">Division Address</label>
+                                    <input type="text" class="form-control @error('division_address') is-invalid @enderror" id="division_address" name="division_address" value="{{ old('division_address', $school->division_address) }}">
+                                    @error('division_address')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>

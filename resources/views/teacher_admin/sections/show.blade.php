@@ -55,6 +55,16 @@
                                         <label class="text-muted small mb-1">School Year</label>
                                         <h6 class="mb-0">{{ $section->school_year }}</h6>
                                     </div>
+                                    <div class="mb-3">
+                                        <label class="text-muted small mb-1">Student Limit</label>
+                                        <h6 class="mb-0">
+                                            @if($section->student_limit)
+                                                <span class="badge bg-secondary">{{ $section->student_limit }} students</span>
+                                            @else
+                                                <span class="text-muted">No limit set</span>
+                                            @endif
+                                        </h6>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -80,8 +90,15 @@
                                             <div>
                                                 <label class="text-muted small mb-1">Students</label>
                                                 <h6 class="mb-0">
-                                                    <span class="badge bg-info">
-                                                        {{ $section->students_count }} {{ Str::plural('student', $section->students_count) }}
+                                                    <span class="badge {{ $section->student_limit && $section->students_count >= $section->student_limit ? 'bg-warning text-dark' : 'bg-info' }}">
+                                                        {{ $section->students_count }}
+                                                        @if($section->student_limit)
+                                                            / {{ $section->student_limit }}
+                                                        @endif
+                                                        {{ Str::plural('student', $section->students_count) }}
+                                                        @if($section->student_limit && $section->students_count >= $section->student_limit)
+                                                            <i class="fas fa-exclamation-triangle ms-1" title="At capacity"></i>
+                                                        @endif
                                                     </span>
                                                 </h6>
                                             </div>

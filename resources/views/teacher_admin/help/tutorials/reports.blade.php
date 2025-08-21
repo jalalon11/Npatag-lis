@@ -153,8 +153,8 @@
                         <a href="{{ route('teacher-admin.help.tutorial', 'subjects') }}" class="tutorial-nav-btn prev">
                             <i class="fas fa-arrow-left"></i> Previous: Subjects Management
                         </a>
-                        <a href="{{ route('teacher-admin.help.tutorial', 'payments') }}" class="tutorial-nav-btn next">
-                            Next: Payments <i class="fas fa-arrow-right"></i>
+                        <a href="{{ route('teacher-admin.help.tutorial', 'registration_keys') }}" class="tutorial-nav-btn next">
+                            Next: Registration Keys <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
                 </div>

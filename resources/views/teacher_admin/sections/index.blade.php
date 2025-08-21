@@ -165,6 +165,7 @@
                             <th class="py-3">Grade</th>
                             <th class="py-3">Adviser</th>
                             <th class="py-3 text-center">Students</th>
+                            <th class="py-3 text-center">Student Limit</th>
                             <th class="py-3 text-center">Status</th>
                             <th class="py-3 text-end">Actions</th>
                         </tr>
@@ -192,7 +193,19 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    {{ $section->students_count }}
+                                    <span class="badge {{ $section->student_limit && $section->students_count >= $section->student_limit ? 'bg-warning text-dark' : 'bg-info' }}">
+                                        {{ $section->students_count }}
+                                        @if($section->student_limit && $section->students_count >= $section->student_limit)
+                                            <i class="fas fa-exclamation-triangle ms-1" title="At capacity"></i>
+                                        @endif
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    @if($section->student_limit)
+                                        <span class="badge bg-secondary">{{ $section->student_limit }}</span>
+                                    @else
+                                        <span class="text-muted">No limit</span>
+                                    @endif
                                 </td>
                                 <td class="text-center">
                                     @if($section->is_active)
@@ -244,7 +257,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center py-4">
+                                <td colspan="7" class="text-center py-4">
                                     <i class="fas fa-folder-open text-muted mb-2" style="font-size: 1.5rem;"></i>
                                     <p class="mb-0">No sections found</p>
                                     <a href="{{ route('teacher-admin.sections.create') }}" class="btn btn-primary btn-sm mt-2">

@@ -21,6 +21,7 @@ class Section extends Model
         'adviser_id',
         'school_id',
         'school_year',
+        'student_limit',
         'is_active',
     ];
 
@@ -73,5 +74,65 @@ class Section extends Model
         return $this->belongsToMany(User::class, 'section_subject', 'section_id', 'teacher_id')
             ->withPivot('subject_id')
             ->withTimestamps();
+    }
+
+    /**
+     * Get the current student count in this section
+     */
+    public function getCurrentStudentCount(): int
+    {
+        return $this->students()->count();
+    }
+
+    /**
+     * Check if the section has reached its student limit
+     */
+    public function isFull(): bool
+    {
+        if (!$this->student_limit) {
+            return false; // No limit set
+        }
+        
+        return $this->getCurrentStudentCount() >= $this->student_limit;
+    }
+
+    /**
+     * Get the remaining capacity of the section
+     */
+    public function getRemainingCapacity(): int
+    {
+        if (!$this->student_limit) {
+            return PHP_INT_MAX; // No limit set
+        }
+        
+        return max(0, $this->student_limit - $this->getCurrentStudentCount());
+    }
+
+    /**
+     * Check if the section can accommodate additional students
+     */
+    public function canAccommodate(int $additionalStudents = 1): bool
+    {
+        if (!$this->student_limit) {
+            return true; // No limit set
+        }
+        
+        return ($this->getCurrentStudentCount() + $additionalStudents) <= $this->student_limit;
+    }
+
+    /**
+     * Get capacity information as an array
+     */
+    public function getCapacityInfo(): array
+    {
+        $currentCount = $this->getCurrentStudentCount();
+        
+        return [
+            'current_count' => $currentCount,
+            'student_limit' => $this->student_limit,
+            'remaining_capacity' => $this->getRemainingCapacity(),
+            'is_full' => $this->isFull(),
+            'capacity_percentage' => $this->student_limit ? round(($currentCount / $this->student_limit) * 100, 1) : 0
+        ];
     }
 }

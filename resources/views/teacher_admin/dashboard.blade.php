@@ -192,6 +192,126 @@
         </div>
     </div>
 
+    <!-- Enrollment Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3 mb-md-0">
+            <div class="card border-0 shadow-sm h-100 overflow-hidden">
+                <div class="card-body position-relative p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div>
+                            <p class="text-muted mb-1 small text-uppercase">Pending Applications</p>
+                            <h2 class="display-5 fw-bold mb-0">{{ $enrollmentStats['pending'] ?? 0 }}</h2>
+                        </div>
+                        <div class="rounded-circle bg-danger bg-opacity-10 p-3">
+                            <i class="fas fa-clock fa-2x text-danger"></i>
+                        </div>
+                    </div>
+                    <div class="progress" style="height: 4px;">
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: {{ $enrollmentStats['pending'] > 0 ? '100' : '0' }}%"></div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-{{ $enrollmentStats['pending'] > 0 ? 'warning' : 'success' }} small">
+                            <i class="fas fa-{{ $enrollmentStats['pending'] > 0 ? 'exclamation-triangle' : 'check-circle' }} me-1"></i> 
+                            {{ $enrollmentStats['pending'] > 0 ? 'Needs Review' : 'All Reviewed' }}
+                        </span>
+                        <a href="{{ route('teacher-admin.enrollments.index') }}?status=pending" class="btn btn-sm btn-outline-danger rounded-pill">
+                            <i class="fas fa-external-link-alt me-1"></i> Review
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3 mb-md-0">
+            <div class="card border-0 shadow-sm h-100 overflow-hidden">
+                <div class="card-body position-relative p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div>
+                            <p class="text-muted mb-1 small text-uppercase">Approved Applications</p>
+                            <h2 class="display-5 fw-bold mb-0">{{ $enrollmentStats['approved'] ?? 0 }}</h2>
+                        </div>
+                        <div class="rounded-circle bg-success bg-opacity-10 p-3">
+                            <i class="fas fa-check-circle fa-2x text-success"></i>
+                        </div>
+                    </div>
+                    <div class="progress" style="height: 4px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ $enrollmentStats['approved'] > 0 ? '100' : '0' }}%"></div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-success small">
+                            <i class="fas fa-thumbs-up me-1"></i> Ready for Enrollment
+                        </span>
+                        <a href="{{ route('teacher-admin.enrollments.index') }}?status=approved" class="btn btn-sm btn-outline-success rounded-pill">
+                            <i class="fas fa-external-link-alt me-1"></i> View
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3 mb-md-0">
+            <div class="card border-0 shadow-sm h-100 overflow-hidden">
+                <div class="card-body position-relative p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div>
+                            <p class="text-muted mb-1 small text-uppercase">Enrolled Students</p>
+                            <h2 class="display-5 fw-bold mb-0">{{ $enrollmentStats['enrolled'] ?? 0 }}</h2>
+                        </div>
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-3">
+                            <i class="fas fa-user-check fa-2x text-primary"></i>
+                        </div>
+                    </div>
+                    <div class="progress" style="height: 4px;">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: {{ $enrollmentStats['enrolled'] > 0 ? '100' : '0' }}%"></div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-success small">
+                            <i class="fas fa-graduation-cap me-1"></i> Active Students
+                        </span>
+                        <a href="{{ route('teacher-admin.enrollments.index') }}?status=enrolled" class="btn btn-sm btn-outline-primary rounded-pill">
+                            <i class="fas fa-external-link-alt me-1"></i> View
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3 mb-md-0">
+            <div class="card border-0 shadow-sm h-100 overflow-hidden">
+                <div class="card-body position-relative p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div>
+                            <p class="text-muted mb-1 small text-uppercase">Total Applications</p>
+                            <h2 class="display-5 fw-bold mb-0">{{ $enrollmentStats['total'] ?? 0 }}</h2>
+                        </div>
+                        <div class="rounded-circle bg-info bg-opacity-10 p-3">
+                            <i class="fas fa-file-alt fa-2x text-info"></i>
+                        </div>
+                    </div>
+                    <div class="progress" style="height: 4px;">
+                        <div class="progress-bar bg-info" role="progressbar" style="width: {{ $enrollmentStats['total'] > 0 ? '100' : '0' }}%"></div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-info small">
+                            <i class="fas fa-chart-line me-1"></i> All Time
+                        </span>
+                        <a href="{{ route('teacher-admin.enrollments.index') }}" class="btn btn-sm btn-outline-info rounded-pill">
+                            <i class="fas fa-external-link-alt me-1"></i> Manage
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Analytics Section -->
     <div class="row mb-4">
         <!-- Attendance Trends -->
@@ -334,7 +454,7 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white py-3">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0"><i class="fas fa-users-class text-primary me-2"></i> Recent Sections</h5>
+                        <h5 class="mb-0"><i class="fas fa-door-open-class text-primary me-2"></i> Recent Sections</h5>
                         <a href="{{ route('teacher-admin.sections.create') }}" class="btn btn-sm btn-primary">
                             <i class="fas fa-plus-circle me-1"></i> New Section
                         </a>
@@ -412,6 +532,103 @@
                             <p class="text-muted mb-0">No subjects have been created yet.</p>
                             <a href="{{ route('teacher-admin.subjects.create') }}" class="btn btn-sm btn-success mt-3">
                                 <i class="fas fa-plus-circle me-1"></i> Create Subject
+                            </a>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Enrollments -->
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-user-plus text-info me-2"></i> Recent Enrollment Applications</h5>
+                        <div>
+                            @if($pendingEnrollmentsCount > 0)
+                                <span class="badge bg-danger me-2">{{ $pendingEnrollmentsCount }} Pending</span>
+                            @endif
+                            <a href="{{ route('teacher-admin.enrollments.index') }}" class="btn btn-sm btn-info">
+                                <i class="fas fa-list me-1"></i> View All
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    @if($recentEnrollments->count() > 0)
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="sticky-header">
+                                    <tr>
+                                        <th>Student Name</th>
+                                        <th>Grade Level</th>
+                                        <th>Preferred Section</th>
+                                        <th>Status</th>
+                                        <th>Applied</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($recentEnrollments as $enrollment)
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar bg-{{ $enrollment->status == 'pending' ? 'warning' : ($enrollment->status == 'approved' ? 'success' : ($enrollment->status == 'enrolled' ? 'primary' : 'danger')) }} bg-opacity-10 text-{{ $enrollment->status == 'pending' ? 'warning' : ($enrollment->status == 'approved' ? 'success' : ($enrollment->status == 'enrolled' ? 'primary' : 'danger')) }} rounded-circle p-2 me-3">
+                                                        <i class="fas fa-user"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="mb-0">{{ $enrollment->getFullNameAttribute() }}</h6>
+                                                        <small class="text-muted">{{ $enrollment->guardian_name }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-secondary">Grade {{ $enrollment->preferred_grade_level }}</span>
+                                            </td>
+                                            <td>
+                                                {{ $enrollment->preferredSection ? $enrollment->preferredSection->name : 'Any Section' }}
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-{{ $enrollment->status == 'pending' ? 'warning' : ($enrollment->status == 'approved' ? 'success' : ($enrollment->status == 'enrolled' ? 'primary' : 'danger')) }}">
+                                                    {{ ucfirst($enrollment->status) }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">{{ $enrollment->created_at->diffForHumans() }}</small>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a href="{{ route('teacher-admin.enrollments.show', $enrollment) }}" class="btn btn-sm btn-outline-primary" title="View Details">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    @if($enrollment->status == 'pending')
+                                                        <form method="POST" action="{{ route('teacher-admin.enrollments.approve', $enrollment) }}" class="d-inline">
+                                                            @csrf
+                                                            @method('PATCH')
+                                                            <button type="submit" class="btn btn-sm btn-outline-success" title="Approve" onclick="return confirm('Are you sure you want to approve this enrollment?')">
+                                                                <i class="fas fa-check"></i>
+                                                            </button>
+                                                        </form>
+                                                    @endif
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="text-center py-5">
+                            <div class="mb-3">
+                                <i class="fas fa-user-plus text-muted" style="font-size: 3rem;"></i>
+                            </div>
+                            <h5 class="text-muted mb-2">No Enrollment Applications Yet</h5>
+                            <p class="text-muted mb-3">When students submit enrollment applications, they will appear here.</p>
+                            <a href="{{ route('enrollment.create') }}" class="btn btn-info" target="_blank">
+                                <i class="fas fa-external-link-alt me-1"></i> View Application Form
                             </a>
                         </div>
                     @endif
@@ -575,4 +792,4 @@
 <!-- Hidden data elements for JS -->
 <div id="weekly-attendance-data" data-attendance="{{ json_encode($attendanceStats['weeklyAttendance']) }}" style="display: none;"></div>
 <div id="grade-distribution-data" data-grades="{{ json_encode($gradeDistribution) }}" style="display: none;"></div>
-@endsection     
+@endsection

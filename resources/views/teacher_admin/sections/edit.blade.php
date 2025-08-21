@@ -62,6 +62,15 @@
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="student_limit" class="form-label">Student Limit</label>
+                                            <input type="number" class="form-control @error('student_limit') is-invalid @enderror" id="student_limit" name="student_limit" value="{{ old('student_limit', $section->student_limit) }}" min="1" max="100" placeholder="Leave empty for no limit">
+                                            @error('student_limit')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                            <div class="form-text">Maximum number of students allowed in this section. Leave empty for unlimited enrollment.</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -149,4 +158,4 @@
     });
 </script>
 @endpush
-@endsection 
+@endsection

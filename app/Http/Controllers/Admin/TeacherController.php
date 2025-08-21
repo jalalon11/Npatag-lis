@@ -21,7 +21,7 @@ class TeacherController extends Controller
      */
     public function index()
     {
-        $query = User::with(['school.schoolDivision'])
+        $query = User::with(['school'])
             ->where('role', 'teacher');
 
         // Handle search

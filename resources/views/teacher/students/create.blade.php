@@ -221,7 +221,8 @@
                                         <label for="lrn" class="form-label">Learner Reference Number (LRN) <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control @error('lrn') is-invalid @enderror"
                                             id="lrn" name="lrn" value="{{ old('lrn') }}" required
-                                            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                            maxlength="12" placeholder="12-digit number">
                                         @error('lrn')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -311,8 +312,19 @@
                                             id="section_id" name="section_id" required>
                                             <option value="">Select Section</option>
                                             @foreach($sections as $section)
-                                                <option value="{{ $section->id }}" {{ old('section_id') == $section->id ? 'selected' : '' }}>
+                                                @php
+                                                    $capacityInfo = $section->getCapacityInfo();
+                                                    $isDisabled = $section->isFull();
+                                                @endphp
+                                                <option value="{{ $section->id }}" 
+                                                    {{ old('section_id') == $section->id ? 'selected' : '' }}
+                                                    {{ $isDisabled ? 'disabled' : '' }}>
                                                     {{ $section->name }} - {{ $section->grade_level }}
+                                                    @if($section->student_limit)
+                                                        ({{ $capacityInfo['current_count'] }}/{{ $section->student_limit }} students{{ $isDisabled ? ' - FULL' : '' }})
+                                                    @else
+                                                        ({{ $capacityInfo['current_count'] }} students - No limit)
+                                                    @endif
                                                 </option>
                                             @endforeach
                                         </select>

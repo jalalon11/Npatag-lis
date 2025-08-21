@@ -1524,8 +1524,8 @@
     <div class="container">
         @php
             $schoolName = isset($section) && $section->school ? $section->school->name : 'St. Anthony Parish School';
-            $region = isset($section) && $section->school && $section->school->schoolDivision ? $section->school->schoolDivision->region : 'Region XI';
-            $division = isset($section) && $section->school && $section->school->schoolDivision ? $section->school->schoolDivision->name : 'Division of Davao del Sur';
+            $region = isset($section) && $section->school ? $section->school->region ?? 'Region XI' : 'Region XI';
+            $division = isset($section) && $section->school ? $section->school->division_name ?? 'Division of Davao del Sur' : 'Division of Davao del Sur';
             $principal = isset($section) && $section->school && $section->school->principal ? $section->school->principal : 'Principal Name';
 
             $quarterNames = [

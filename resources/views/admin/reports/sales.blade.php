@@ -81,10 +81,7 @@
             @include('admin.reports.components.yearly_sales')
         </div>
 
-        <!-- Billing Cycle Distribution -->
-        <div class="col-lg-6">
-            @include('admin.reports.components.billing_cycles')
-        </div>
+
     </div>
 
     <!-- Top Schools and Recent Payments -->
@@ -144,51 +141,7 @@
             </div>
         </div>
 
-        <!-- Recent Payments -->
-        <div class="col-lg-6">
-            <div class="card border-0 shadow-sm mb-4 animate__animated animate__fadeIn" style="animation-delay: 1s;">
-                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="fas fa-receipt text-primary me-2"></i> Recent Payments</h5>
-                    <a href="{{ route('admin.payments.index') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
-                        <i class="fas fa-list me-1"></i> View All
-                    </a>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead>
-                                <tr class="bg-light">
-                                    <th class="ps-4 py-3">Reference #</th>
-                                    <th class="py-3">School</th>
-                                    <th class="py-3">Amount</th>
-                                    <th class="py-3">Date</th>
-                                    <th class="text-end pe-4 py-3">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($recentPayments as $payment)
-                                    <tr>
-                                        <td class="ps-4 fw-medium">{{ $payment->reference_number }}</td>
-                                        <td>{{ $payment->school->name }}</td>
-                                        <td class="fw-bold">₱{{ number_format($payment->amount, 2) }}</td>
-                                        <td>{{ $payment->payment_date->setTimezone('Asia/Manila')->format('M d, Y') }}</td>
-                                        <td class="text-end pe-4">
-                                            <a href="{{ route('admin.payments.show', $payment) }}" class="btn btn-sm btn-primary rounded-pill px-3">
-                                                <i class="fas fa-eye me-1"></i> View
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5" class="text-center py-4 text-muted">No recent payments</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+
     </div>
 </div>
 @endsection
@@ -212,15 +165,7 @@
             return new bootstrap.Dropdown(dropdownToggleEl);
         });
 
-        // Debug data
-        try {
-            const paymentMethodsData = JSON.parse(document.getElementById('payment-methods-data').dataset.methods);
-            const billingCycleData = JSON.parse(document.getElementById('billing-cycle-data').dataset.cycles);
-            console.log('Payment Methods Data:', paymentMethodsData);
-            console.log('Billing Cycle Data:', billingCycleData);
-        } catch (e) {
-            console.error('Error parsing chart data:', e);
-        }
+        // Payment and billing data removed - functionality disabled
 
         // Initialize charts
         initializeCharts();
@@ -408,93 +353,7 @@
             }
         });
 
-        // Billing Cycle Chart
-        const billingCycleCtx = document.getElementById('billingCycleChart').getContext('2d');
-        const billingCycleData = JSON.parse(document.getElementById('billing-cycle-data').dataset.cycles);
-
-        // Make sure we have data
-        console.log('Billing Cycle Data:', billingCycleData);
-
-        const cycleLabels = billingCycleData.map(item => {
-            // Properly format the billing cycle labels
-            const cycles = {
-                'monthly': 'Monthly',
-                'yearly': 'Yearly'
-            };
-            return cycles[item.billing_cycle] || item.billing_cycle;
-        });
-
-        const cycleCounts = billingCycleData.map(item => parseInt(item.count) || 0);
-        const cycleAmounts = billingCycleData.map(item => parseFloat(item.total) || 0);
-
-        const billingCycleChart = new Chart(billingCycleCtx, {
-            type: 'bar',
-            data: {
-                labels: cycleLabels,
-                datasets: [{
-                    label: 'Number of Payments',
-                    data: cycleCounts,
-                    backgroundColor: 'rgba(246, 194, 62, 0.7)',
-                    borderColor: 'rgba(246, 194, 62, 1)',
-                    borderWidth: 1,
-                    borderRadius: 4,
-                    order: 2
-                }, {
-                    label: 'Total Amount (₱)',
-                    data: cycleAmounts,
-                    backgroundColor: 'rgba(78, 115, 223, 0.1)',
-                    borderColor: 'rgba(78, 115, 223, 1)',
-                    borderWidth: 2,
-                    type: 'line',
-                    order: 1,
-                    yAxisID: 'y1'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'top'
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                if (context.dataset.label === 'Total Amount (₱)') {
-                                    return '₱' + new Intl.NumberFormat().format(context.raw);
-                                }
-                                return context.dataset.label + ': ' + context.raw;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Number of Payments'
-                        }
-                    },
-                    y1: {
-                        beginAtZero: true,
-                        position: 'right',
-                        grid: {
-                            drawOnChartArea: false
-                        },
-                        title: {
-                            display: true,
-                            text: 'Total Amount (₱)'
-                        },
-                        ticks: {
-                            callback: function(value) {
-                                return '₱' + new Intl.NumberFormat().format(value);
-                            }
-                        }
-                    }
-                }
-            }
-        });
+        // Billing cycle chart removed - payment functionality disabled
     }
 
     // Function to download chart as image

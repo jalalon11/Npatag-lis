@@ -73,8 +73,8 @@
                             </div>
                         </div>
                         <div class="flex-grow-1 ms-3">
-                            <h6 class="text-muted mb-1">Total Divisions</h6>
-                            <h3 class="mb-0">{{ $teachers->pluck('school.schoolDivision')->unique()->count() }}</h3>
+                            <h6 class="text-muted mb-1">Active Teachers</h6>
+                            <h3 class="mb-0">{{ $teachers->where('is_active', true)->count() }}</h3>
                         </div>
                     </div>
                 </div>
@@ -166,7 +166,7 @@
                                 </td>
                                 <td>
                                     <span class="badge bg-primary">
-                                        {{ $teacher->school->schoolDivision->name }}
+                                        {{ $teacher->school->division_name ?? 'Division of Davao del Sur' }}
                                     </span>
                                 </td>
                                 <td>
@@ -242,4 +242,4 @@
     </div>
 </div>
 @endforeach
-@endsection 
+@endsection

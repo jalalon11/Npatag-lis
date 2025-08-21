@@ -12,14 +12,16 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // Check subscription status daily at midnight
-        $schedule->command('subscription:check')->daily();
+        // Subscription check removed - payment functionality disabled
 
         // Cache school logos daily at 1 AM
         $schedule->command('app:cache-school-logos')->dailyAt('01:00');
 
         // Clean up old cached images monthly
         $schedule->command('app:clean-image-cache --days=30')->monthly();
+
+        // Send enrollment reminders daily at 9 AM
+        $schedule->command('enrollment:send-reminders')->dailyAt('09:00');
     }
 
     /**

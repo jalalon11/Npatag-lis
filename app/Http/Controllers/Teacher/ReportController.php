@@ -104,6 +104,7 @@ class ReportController extends Controller
         // Get only active students from the database to ensure they're loaded
         $students = Student::where('section_id', $section->id)
             ->where('is_active', true)
+            ->enrolled() // Only students created from enrollments
             ->orderBy('last_name')
             ->orderBy('first_name')
             ->get();
@@ -236,6 +237,7 @@ class ReportController extends Controller
         // Get only active students
         $students = Student::where('section_id', $section->id)
             ->where('is_active', true)
+            ->enrolled() // Only students created from enrollments
             ->orderBy('last_name')
             ->orderBy('first_name')
             ->get();
@@ -1175,8 +1177,8 @@ class ReportController extends Controller
             'componentGrades' => [],
             'componentRemarks' => [],
             // Add region, division, district, address
-            'region' => isset($section) && $section->school && $section->school->schoolDivision ? $section->school->schoolDivision->region : 'Region XI',
-            'division' => isset($section) && $section->school && $section->school->schoolDivision ? $section->school->schoolDivision->name : 'Division of Davao del Sur',
+            'region' => isset($section) && $section->school ? $section->school->region ?? 'Region XI' : 'Region XI',
+            'division' => isset($section) && $section->school ? $section->school->division_name ?? 'Division of Davao del Sur' : 'Division of Davao del Sur',
             'district' => isset($section) && $section->school ? $section->school->district : '',
             'address' => isset($section) && $section->school ? $section->school->address : '',
             'schoolName' => isset($section) && $section->school ? $section->school->name : 'St. Anthony Parish School',
@@ -1493,8 +1495,8 @@ class ReportController extends Controller
                 4 => 'SHS Academic Track'
             ],
             // Add region, division, district, address
-            'region' => isset($section) && $section->school && $section->school->schoolDivision ? $section->school->schoolDivision->region : 'Region XI',
-            'division' => isset($section) && $section->school && $section->school->schoolDivision ? $section->school->schoolDivision->name : 'Division of Davao del Sur',
+            'region' => isset($section) && $section->school ? $section->school->region ?? 'Region XI' : 'Region XI',
+            'division' => isset($section) && $section->school ? $section->school->division_name ?? 'Division of Davao del Sur' : 'Division of Davao del Sur',
             'district' => isset($section) && $section->school ? $section->school->district : '',
             'address' => isset($section) && $section->school ? $section->school->address : '',
             'schoolName' => isset($section) && $section->school ? $section->school->name : 'St. Anthony Parish School',

@@ -462,6 +462,9 @@
                         <a href="#pricing" class="text-gray-700 hover:text-gray-900">Pricing</a>
                         <a href="#benefits" class="text-gray-700 hover:text-gray-900">Benefits</a>
                         <a href="#developer" class="text-gray-700 hover:text-gray-900">Developer</a>
+                        <a href="{{ route('enrollment.create') }}" class="text-green-600 hover:text-green-700 font-medium">
+                            <i class="fas fa-user-plus mr-1"></i>Enroll Now
+                        </a>
                         @auth
                             <a href="{{ url('login') }}" class="btn-primary text-white ml-4">
                                 Log in
@@ -485,6 +488,9 @@
                 <a href="#pricing" class="block py-2 text-gray-700">Pricing</a>
                 <a href="#benefits" class="block py-2 text-gray-700">Benefits</a>
                 <a href="#developer" class="block py-2 text-gray-700">Developer</a>
+                <a href="{{ route('enrollment.create') }}" class="block py-2 text-green-600 font-medium">
+                    <i class="fas fa-user-plus mr-1"></i>Enroll Now
+                </a>
                 @auth
                     <a href="{{ url('/dashboard') }}" class="block py-2 text-indigo-600 font-medium">
                         Log in
@@ -519,6 +525,9 @@
                 <div class="flex flex-col sm:flex-row justify-center gap-4">
                     <a href="{{ route('login') }}" class="btn-primary text-white">
                         Get Started
+                    </a>
+                    <a href="{{ route('enrollment.create') }}" class="btn-primary text-white bg-green-600 hover:bg-green-700">
+                        <i class="fas fa-user-plus mr-2"></i>Apply for Enrollment
                     </a>
                     <a href="#features" class="btn-secondary">
                         Learn More

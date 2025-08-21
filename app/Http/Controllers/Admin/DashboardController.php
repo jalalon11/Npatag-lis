@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\School;
-use App\Models\SchoolDivision;
+// Removed SchoolDivision dependency for single school system
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -18,7 +18,6 @@ class DashboardController extends Controller
         $stats = [
             'teachersCount' => User::where('role', 'teacher')->count(),
             'teacherAdminsCount' => User::where('role', 'teacher_admin')->count(),
-            'schoolDivisionsCount' => SchoolDivision::count(),
             'schoolsCount' => School::count(),
             'studentsCount' => Student::count()
         ];
@@ -26,41 +25,11 @@ class DashboardController extends Controller
         // Get pending support tickets count
         $pendingSupportCount = \App\Models\SupportTicket::where('status', 'open')->count();
 
-        // Get sales data for the dashboard
-        $currentMonth = now()->month;
-        $currentYear = now()->year;
-
-        // Get current month sales
-        $currentMonthSales = \App\Models\Payment::where('status', 'completed')
-            ->whereYear('payment_date', $currentYear)
-            ->whereMonth('payment_date', $currentMonth)
-            ->sum('amount');
-
-        // Get current year sales
-        $currentYearSales = \App\Models\Payment::where('status', 'completed')
-            ->whereYear('payment_date', $currentYear)
-            ->sum('amount');
-
-        // Get monthly sales data for the current year
-        $monthlySales = [];
-        for ($i = 1; $i <= 12; $i++) {
-            $monthlySales[$i] = \App\Models\Payment::where('status', 'completed')
-                ->whereYear('payment_date', $currentYear)
-                ->whereMonth('payment_date', $i)
-                ->sum('amount');
-        }
-
-        // Get yearly sales data for the last 5 years
-        $yearlySales = [];
-        for ($i = 0; $i < 5; $i++) {
-            $year = $currentYear - $i;
-            $yearlySales[$year] = \App\Models\Payment::where('status', 'completed')
-                ->whereYear('payment_date', $year)
-                ->sum('amount');
-        }
-
-        // Sort yearly sales by year (ascending)
-        ksort($yearlySales);
+        // Sales data removed - payment functionality has been disabled
+        $currentMonthSales = 0;
+        $currentYearSales = 0;
+        $monthlySales = array_fill(1, 12, 0);
+        $yearlySales = array_fill(now()->year - 4, 5, 0);
 
         return view('admin.dashboard', compact(
             'stats',

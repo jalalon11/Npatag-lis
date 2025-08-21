@@ -54,14 +54,7 @@ class TeacherAdminMiddleware
             }
         }
 
-        // Check if school subscription is expired
-        if ($user->school && $user->school->subscription_status === 'expired') {
-            // Only allow access to payment pages
-            if (!$request->routeIs('teacher-admin.payments.*')) {
-                return redirect()->route('teacher-admin.payments.index')
-                    ->with('error', 'Your school subscription has expired. Please make a payment to continue using the system.');
-            }
-        }
+        // Subscription checks removed - payment functionality disabled
 
         return $next($request);
     }

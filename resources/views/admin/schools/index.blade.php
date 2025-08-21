@@ -73,8 +73,8 @@
                             </div>
                         </div>
                         <div class="flex-grow-1 ms-3">
-                            <h6 class="text-muted mb-1">Total Divisions</h6>
-                            <h3 class="mb-0">{{ $schools->pluck('schoolDivision')->unique()->count() }}</h3>
+                            <h6 class="text-muted mb-1">Active Schools</h6>
+                            <h3 class="mb-0">{{ $schools->where('is_active', true)->count() }}</h3>
                         </div>
                     </div>
                 </div>
@@ -95,13 +95,10 @@
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <select name="division" class="form-select">
-                        <option value="">All Divisions</option>
-                        @foreach($schools->pluck('schoolDivision')->unique() as $division)
-                            <option value="{{ $division->id }}" {{ request('division') == $division->id ? 'selected' : '' }}>
-                                {{ $division->name }}
-                            </option>
-                        @endforeach
+                    <select name="status" class="form-select">
+                        <option value="">All Status</option>
+                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
+                        <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                     </select>
                 </div>
                 <div class="col-md-2">
@@ -168,7 +165,7 @@
                                 </td>
                                 <td>
                                     <span class="badge bg-primary">
-                                        {{ $school->schoolDivision->name }}
+                                        {{ $school->division_name ?? 'Division of Davao del Sur' }}
                                     </span>
                                 </td>
                                 <td><span class="badge bg-secondary">{{ $school->code }}</span></td>
@@ -239,4 +236,4 @@
     </div>
 </div>
 @endforeach
-@endsection 
+@endsection

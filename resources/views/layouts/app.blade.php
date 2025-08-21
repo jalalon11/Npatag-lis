@@ -1006,11 +1006,7 @@
                         <i class="fas fa-home"></i> <span>Dashboard</span>
                     </a>
                 </li>
-                <li class="{{ Request::is('admin/school-divisions*') ? 'active' : '' }}">
-                    <a href="{{ route('admin.school-divisions.index') }}">
-                        <i class="fas fa-building"></i> <span>School Divisions</span>
-                    </a>
-                </li>
+                <!-- School Divisions navigation removed - moved to single school system -->
                 <li class="{{ Request::is('admin/schools*') ? 'active' : '' }}">
                     <a href="{{ route('admin.schools.index') }}">
                         <i class="fas fa-school"></i> <span>Schools</span>
@@ -1031,24 +1027,9 @@
                         <i class="fas fa-bullhorn"></i> <span>Announcements</span>
                     </a>
                 </li>
-                <li class="{{ Request::is('admin/payments*') ? 'active' : '' }}">
-                    <a href="{{ route('admin.payments.index') }}" class="position-relative">
-                        <i class="fas fa-credit-card"></i> <span>Payments</span>
-                        @if(isset($pendingPaymentsCount) && $pendingPaymentsCount > 0)
-                            <span class="badge bg-danger text-white rounded-pill ms-2 animate__animated animate__pulse animate__infinite support-badge">{{ $pendingPaymentsCount }}</span>
-                        @endif
-                    </a>
-                </li>
-                <li class="{{ Request::is('admin/payment-methods*') ? 'active' : '' }}">
-                    <a href="{{ route('admin.payment-methods.index') }}">
-                        <i class="fas fa-money-check-alt"></i> <span>Payment Methods</span>
-                    </a>
-                </li>
-                <li class="{{ Request::is('admin/reports/sales*') ? 'active' : '' }}">
-                    <a href="{{ route('admin.reports.sales') }}">
-                        <i class="fas fa-chart-line"></i> <span>Sales Reports</span>
-                    </a>
-                </li>
+                <!-- Payments functionality has been disabled -->
+                <!-- Payment methods functionality has been disabled -->
+                <!-- Sales reports functionality has been disabled -->
                 <li class="{{ Request::is('admin/support*') ? 'active' : '' }}">
                     <a href="{{ route('admin.support.index') }}" class="position-relative">
                         <i class="fas fa-headset"></i> <span>Support</span>
@@ -1114,6 +1095,11 @@
                         <li class="{{ Request::is('teacher-admin/subjects*') ? 'active' : '' }}">
                             <a href="{{ route('teacher-admin.subjects.index') }}">
                                 <i class="fas fa-book"></i> <span>Manage Subjects</span>
+                            </a>
+                        </li>
+                        <li class="{{ Request::is('teacher-admin/enrollments*') ? 'active' : '' }}">
+                            <a href="{{ route('teacher-admin.enrollments.index') }}">
+                                <i class="fas fa-user-plus"></i> <span>Enrollments</span>
                             </a>
                         </li>
                         <li class="{{ Request::is('teacher-admin/reports*') ? 'active' : '' }}">

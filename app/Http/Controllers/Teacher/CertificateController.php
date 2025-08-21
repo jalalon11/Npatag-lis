@@ -456,8 +456,9 @@ class CertificateController extends Controller
         ];
 
         // Get only active students in the section
-        $students = Student::where('section_id', $section->id)
+        $students = Student::where('section_id', $sectionId)
             ->where('is_active', true)
+            ->enrolled() // Only students created from enrollments
             ->orderBy('last_name')
             ->orderBy('first_name')
             ->get();

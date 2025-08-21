@@ -27,7 +27,10 @@ class Student extends Model
         'address',
         'guardian_name',
         'guardian_contact',
+        'guardian_email',
         'section_id',
+        'enrollment_id',
+        'school_year',
         'is_active',
     ];
 
@@ -82,6 +85,30 @@ class Student extends Model
     public function attendances(): HasMany
     {
         return $this->hasMany(Attendance::class);
+    }
+
+    /**
+     * Get the enrollment record that created this student
+     */
+    public function enrollment(): BelongsTo
+    {
+        return $this->belongsTo(Enrollment::class);
+    }
+
+    /**
+     * Scope to get only enrolled students (created from approved enrollments)
+     */
+    public function scopeEnrolled($query)
+    {
+        return $query->whereNotNull('enrollment_id');
+    }
+
+    /**
+     * Scope to get students by school year
+     */
+    public function scopeBySchoolYear($query, $schoolYear)
+    {
+        return $query->where('school_year', $schoolYear);
     }
 
     /**

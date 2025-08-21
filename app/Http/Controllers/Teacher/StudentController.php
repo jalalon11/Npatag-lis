@@ -27,9 +27,10 @@ class StudentController extends Controller
             // Get the status filter (active, disabled, all)
             $statusFilter = $request->query('status', 'active');
 
-            // Build the query for students
+            // Build the query for students - only enrolled students
             $query = Student::whereIn('section_id', $sections)
-                ->with('section');
+                ->with('section')
+                ->enrolled(); // Only students created from enrollments
 
             // Apply status filter
             if ($statusFilter === 'active') {
@@ -62,9 +63,10 @@ class StudentController extends Controller
                 ->where('is_active', true) // Double-check that sections are active
                 ->get();
 
-            // Get students from these assigned sections, including inactive ones
+            // Get students from these assigned sections - only enrolled students
             $assignedStudents = Student::whereIn('section_id', $assignedSectionIds)
                 ->with('section')
+                ->enrolled() // Only students created from enrollments
                 ->orderBy('is_active', 'desc') // Active students first
                 ->orderBy('last_name')
                 ->orderBy('first_name')
@@ -136,7 +138,7 @@ class StudentController extends Controller
             'middle_name' => 'nullable|string|max:255',
             'last_name' => 'required|string|max:255',
             'student_id' => 'required|string|max:50|unique:students',
-            'lrn' => 'required|numeric|unique:students',
+            'lrn' => 'required|string|size:12|regex:/^[0-9]{12}$/|unique:students',
             'gender' => 'required|in:Male,Female',
             'birth_date' => 'required|date',
             'section_id' => 'required|exists:sections,id',
@@ -149,6 +151,13 @@ class StudentController extends Controller
         $section = Section::where('id', $validated['section_id'])
             ->where('adviser_id', Auth::id())
             ->firstOrFail();
+
+        // Check if section has reached its student limit
+        if ($section->isFull()) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Cannot add student. Section "' . $section->name . '" has reached its maximum capacity of ' . $section->student_limit . ' students.');
+        }
 
         Student::create($validated);
 
@@ -247,9 +256,10 @@ class StudentController extends Controller
 
         // Find the student and ensure they belong to one of the teacher's sections
         // Note: We don't filter by is_active here because we need to be able to view disabled students
-        // when specifically requested by ID
+        // when specifically requested by ID, but only enrolled students
         $student = Student::whereIn('section_id', $sectionIds)
             ->with(['section.subjects', 'section.adviser', 'grades.subject', 'attendances'])
+            ->enrolled() // Only students created from enrollments
             ->findOrFail($id);
 
         // Get the selected transmutation table from the request or use default (1)
@@ -393,8 +403,10 @@ class StudentController extends Controller
         $sections = Section::where('adviser_id', Auth::id())->get();
         $sectionIds = $sections->pluck('id');
 
-        // Find the student and ensure they belong to one of the teacher's sections
-        $student = Student::whereIn('section_id', $sectionIds)->findOrFail($id);
+        // Find the student and ensure they belong to one of the teacher's sections - only enrolled students
+        $student = Student::whereIn('section_id', $sectionIds)
+            ->enrolled() // Only students created from enrollments
+            ->findOrFail($id);
 
         return view('teacher.students.edit', compact('student', 'sections'));
     }
@@ -408,14 +420,16 @@ class StudentController extends Controller
         $sectionIds = Section::where('adviser_id', Auth::id())->pluck('id');
 
         // Find the student and ensure they belong to one of the teacher's sections
-        $student = Student::whereIn('section_id', $sectionIds)->findOrFail($id);
+        $student = Student::whereIn('section_id', $sectionIds)
+            ->enrolled() // Only students created from enrollments
+            ->findOrFail($id);
 
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',
             'last_name' => 'required|string|max:255',
             'student_id' => 'required|string|max:50|unique:students,student_id,' . $student->id,
-            'lrn' => 'required|numeric|unique:students,lrn,' . $student->id,
+            'lrn' => 'required|string|size:12|regex:/^[0-9]{12}$/|unique:students,lrn,' . $student->id,
             'gender' => 'required|in:Male,Female',
             'birth_date' => 'required|date',
             'section_id' => 'required|exists:sections,id',
@@ -444,7 +458,9 @@ class StudentController extends Controller
         $sectionIds = Section::where('adviser_id', Auth::id())->pluck('id');
 
         // Find the student and ensure they belong to one of the teacher's sections
-        $student = Student::whereIn('section_id', $sectionIds)->findOrFail($id);
+        $student = Student::whereIn('section_id', $sectionIds)
+            ->enrolled() // Only students created from enrollments
+            ->findOrFail($id);
 
         // Instead of deleting, mark the student as inactive
         $student->is_active = false;

@@ -7,17 +7,9 @@
             <div class="d-flex justify-content-between align-items-center">
                 <h2><i class="fas fa-school text-success me-2"></i> {{ $school->name }}</h2>
                 <div>
-                    <a href="{{ route('admin.schools.index') }}" class="btn btn-outline-secondary me-2">
-                        <i class="fas fa-arrow-left me-1"></i> Back to Schools
+                    <a href="{{ route('admin.schools.edit', $school->id) }}" class="btn btn-warning">
+                        <i class="fas fa-edit me-1"></i> Edit School
                     </a>
-                    <div class="btn-group" role="group">
-                        <a href="{{ route('admin.schools.edit', $school->id) }}" class="btn btn-warning">
-                            <i class="fas fa-edit me-1"></i> Edit
-                        </a>
-                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteSchoolModal">
-                            <i class="fas fa-trash me-1"></i> Delete
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -60,7 +52,7 @@
                     </div>
                     <div class="mb-3 pb-3 border-bottom">
                         <label class="text-muted">Division:</label>
-                        <p class="fw-bold mb-0"><span class="badge bg-primary">{{ $school->schoolDivision->name }}</span></p>
+                        <p class="fw-bold mb-0"><span class="badge bg-primary">{{ $school->division_name ?? 'Division of Davao del Sur' }}</span></p>
                     </div>
                     <div class="mb-3 pb-3 border-bottom">
                         <label class="text-muted">Grade Levels:</label>
@@ -113,21 +105,7 @@
                             @endif
                         </div>
                     </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-muted">Subscription:
-                            @if($school->onTrial())
-                                <span class="badge bg-info">Trial</span>
-                                <small class="text-muted">({{ $school->remaining_trial_days === 'Unlimited' ? 'Unlimited' : $school->remaining_trial_days . ' remaining' }})</small>
-                            @elseif($school->hasActiveSubscription())
-                                <span class="badge bg-success">Active</span>
-                            @else
-                                <span class="badge bg-danger">Expired</span>
-                            @endif
-                        </span>
-                        <a href="{{ route('admin.schools.billing', $school->id) }}" class="btn btn-sm btn-primary">
-                            <i class="fas fa-cog me-1"></i> Billing Settings
-                        </a>
-                    </div>
+
                 </div>
             </div>
         </div>
@@ -287,29 +265,6 @@
     </div>
 </div>
 
-<!-- Delete School Modal -->
-<div class="modal fade" id="deleteSchoolModal" tabindex="-1" aria-labelledby="deleteSchoolModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteSchoolModalLabel">Confirm Delete</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to delete the school <strong>{{ $school->name }}</strong>?</p>
-                <p class="text-danger"><i class="fas fa-exclamation-triangle me-1"></i> This will also delete all data associated with this school including teachers, students, and grades.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form action="{{ route('admin.schools.destroy', $school->id) }}" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- Disable School Modal -->
 <div class="modal fade" id="disableSchoolModal" tabindex="-1" aria-labelledby="disableSchoolModalLabel" aria-hidden="true">

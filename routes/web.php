@@ -1,13 +1,13 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\Admin\SchoolDivisionController;
+// Removed SchoolDivisionController - moved to single school system
 use App\Http\Controllers\Admin\SchoolController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\TeacherAdminController;
 use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\RegistrationKeyController;
-use App\Http\Controllers\Admin\SalesReportController;
+
 use App\Http\Controllers\Teacher\AttendanceController;
 use App\Http\Controllers\Teacher\CertificateController;
 use App\Http\Controllers\Teacher\DashboardController as TeacherDashboardController;
@@ -24,11 +24,10 @@ use App\Http\Controllers\TeacherAdmin\SchoolController as TeacherAdminSchoolCont
 use App\Http\Controllers\Teacher\ResourceController as TeacherResourceController;
 use App\Http\Controllers\Admin\ResourceController;
 use App\Http\Controllers\Admin\ResourceCategoryController;
-use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
-use App\Http\Controllers\Admin\PaymentMethodsController;
+
 use App\Http\Controllers\Admin\BackupController;
 use App\Http\Controllers\Admin\SupportController as AdminSupportController;
-use App\Http\Controllers\TeacherAdmin\PaymentController as TeacherAdminPaymentController;
+
 use App\Http\Controllers\TeacherAdmin\SupportController as TeacherAdminSupportController;
 use App\Http\Controllers\MaintenanceController;
 use Illuminate\Support\Facades\Auth;
@@ -43,6 +42,26 @@ Route::get('/', function () {
 
 // Announcement routes for public access
 Route::get('/api/announcements', [\App\Http\Controllers\AnnouncementViewController::class, 'getActiveAnnouncements'])->name('api.announcements');
+
+// Public enrollment application routes
+Route::prefix('enrollment')->name('enrollment.')->group(function () {
+    // New enrollment form that submits to teacher admin panel
+    Route::get('/apply', [\App\Http\Controllers\EnrollmentApplicationController::class, 'apply'])->name('apply');
+    Route::post('/submit', [\App\Http\Controllers\EnrollmentApplicationController::class, 'submit'])->name('submit');
+    Route::get('/submitted/{enrollment}', [\App\Http\Controllers\EnrollmentApplicationController::class, 'submitted'])->name('submitted');
+    
+    // Legacy routes (keeping for backward compatibility)
+    Route::get('/create', [\App\Http\Controllers\EnrollmentApplicationController::class, 'create'])->name('create');
+    Route::post('/store', [\App\Http\Controllers\EnrollmentApplicationController::class, 'store'])->name('store');
+    Route::get('/success/{enrollment}', [\App\Http\Controllers\EnrollmentApplicationController::class, 'success'])->name('success');
+    
+    // Status checking routes
+    Route::get('/status', [\App\Http\Controllers\EnrollmentApplicationController::class, 'statusForm'])->name('status.form');
+    Route::post('/status', [\App\Http\Controllers\EnrollmentApplicationController::class, 'status'])->name('status');
+    
+    // AJAX route for school sections
+    Route::get('/schools/{school}/sections', [\App\Http\Controllers\EnrollmentApplicationController::class, 'getSectionsBySchool'])->name('schools.sections');
+});
 
 // Maintenance mode routes - these must be accessible during maintenance
 Route::get('/maintenance', [MaintenanceController::class, 'index'])->name('maintenance');
@@ -120,27 +139,13 @@ Route::middleware(['auth', CheckSchoolStatus::class])->group(function () {
         })->name('profile');
         Route::put('/profile/update', [AdminDashboardController::class, 'updateProfile'])->name('profile.update');
         Route::put('/profile/password', [AdminDashboardController::class, 'updatePassword'])->name('password.update');
-        Route::resource('school-divisions', SchoolDivisionController::class);
+        // School divisions route removed - moved to single school system
         Route::resource('schools', SchoolController::class);
         Route::patch('schools/{school}/disable', [SchoolController::class, 'disable'])->name('schools.disable');
         Route::patch('schools/{school}/enable', [SchoolController::class, 'enable'])->name('schools.enable');
-        Route::get('schools/{school}/billing', [SchoolController::class, 'showBilling'])->name('schools.billing');
-        Route::patch('schools/{school}/billing', [SchoolController::class, 'updateBilling'])->name('schools.update-billing');
 
-        // Payment Management
-        Route::get('payments', [AdminPaymentController::class, 'index'])->name('payments.index');
-        Route::get('payments/{payment}', [AdminPaymentController::class, 'show'])->name('payments.show');
-        Route::post('payments/{payment}/approve', [AdminPaymentController::class, 'approve'])->name('payments.approve');
-        Route::post('payments/{payment}/reject', [AdminPaymentController::class, 'reject'])->name('payments.reject');
 
-        // Payment Methods Management
-        Route::get('payment-methods', [PaymentMethodsController::class, 'index'])->name('payment-methods.index');
-        Route::put('payment-methods', [PaymentMethodsController::class, 'update'])->name('payment-methods.update');
 
-        // Sales Reports
-        Route::get('reports/sales', [SalesReportController::class, 'index'])->name('reports.sales');
-        Route::get('reports/sales/print/monthly', [SalesReportController::class, 'printMonthly'])->name('reports.sales.print.monthly');
-        Route::get('reports/sales/print/yearly', [SalesReportController::class, 'printYearly'])->name('reports.sales.print.yearly');
 
         Route::resource('teachers', TeacherController::class);
         Route::post('teachers/{teacher}/reset-password', [TeacherController::class, 'resetPassword'])->name('teachers.reset-password');
@@ -383,13 +388,7 @@ Route::middleware(['auth', CheckSchoolStatus::class])->group(function () {
             Route::get('/school/edit', [TeacherAdminSchoolController::class, 'edit'])->name('school.edit');
             Route::put('/school/update', [TeacherAdminSchoolController::class, 'update'])->name('school.update');
 
-            // Payment Management
-            Route::get('/payments', [TeacherAdminPaymentController::class, 'index'])->name('payments.index');
-            Route::get('/payments/create', [TeacherAdminPaymentController::class, 'create'])->name('payments.create');
-            Route::post('/payments', [TeacherAdminPaymentController::class, 'store'])->middleware('throttle:3,60')->name('payments.store');
-            Route::get('/payments/{payment}', [TeacherAdminPaymentController::class, 'show'])->name('payments.show');
-            Route::get('/payments/{payment}/receipt', [TeacherAdminPaymentController::class, 'receipt'])->name('payments.receipt');
-            Route::get('/subscription/remaining-time', [TeacherAdminPaymentController::class, 'getRemainingTime'])->name('subscription.remaining-time');
+
 
             // Support Routes
             Route::get('/support', [TeacherAdminSupportController::class, 'index'])->name('support.index');
@@ -407,6 +406,23 @@ Route::middleware(['auth', CheckSchoolStatus::class])->group(function () {
             Route::post('/teacher-admin/api/support/messages/{message}/read', [TeacherAdminSupportController::class, 'markAsRead']);
             Route::get('/teacher-admin/api/support/tickets/{id}/messages', [TeacherAdminSupportController::class, 'getMessages']);
             Route::get('/teacher-admin/api/support/messages/read-status', [TeacherAdminSupportController::class, 'checkReadStatus']);
+
+            // Enrollment Management
+            Route::get('/enrollments', [\App\Http\Controllers\TeacherAdmin\EnrollmentController::class, 'index'])->name('enrollments.index');
+            Route::get('/enrollments/{enrollment}', [\App\Http\Controllers\TeacherAdmin\EnrollmentController::class, 'show'])->name('enrollments.show');
+            Route::post('/enrollments/{enrollment}/approve', [\App\Http\Controllers\TeacherAdmin\EnrollmentController::class, 'approve'])->name('enrollments.approve');
+            Route::post('/enrollments/{enrollment}/reject', [\App\Http\Controllers\TeacherAdmin\EnrollmentController::class, 'reject'])->name('enrollments.reject');
+            Route::post('/enrollments/bulk-approve', [\App\Http\Controllers\TeacherAdmin\EnrollmentController::class, 'bulkApprove'])->name('enrollments.bulk-approve');
+            Route::get('/enrollments/statistics/data', [\App\Http\Controllers\TeacherAdmin\EnrollmentController::class, 'statistics'])->name('enrollments.statistics');
+
+            // Student Management (Enrolled Students Only)
+            Route::get('/students', [\App\Http\Controllers\TeacherAdmin\StudentController::class, 'index'])->name('students.index');
+            Route::get('/students/{student}', [\App\Http\Controllers\TeacherAdmin\StudentController::class, 'show'])->name('students.show');
+            Route::get('/students/{student}/edit', [\App\Http\Controllers\TeacherAdmin\StudentController::class, 'edit'])->name('students.edit');
+            Route::put('/students/{student}', [\App\Http\Controllers\TeacherAdmin\StudentController::class, 'update'])->name('students.update');
+            Route::patch('/students/{student}/toggle-status', [\App\Http\Controllers\TeacherAdmin\StudentController::class, 'toggleStatus'])->name('students.toggle-status');
+            Route::get('/students/section/{section}', [\App\Http\Controllers\TeacherAdmin\StudentController::class, 'getBySection'])->name('students.by-section');
+            Route::get('/students/statistics/data', [\App\Http\Controllers\TeacherAdmin\StudentController::class, 'statistics'])->name('students.statistics');
 
             // Help Routes
             Route::get('/help', [\App\Http\Controllers\TeacherAdmin\HelpController::class, 'index'])->name('help.index');

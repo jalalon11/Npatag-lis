@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\School;
-use App\Models\SchoolDivision;
+// Removed SchoolDivision dependency for single school system
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -19,56 +19,34 @@ class SchoolController extends Controller
 {
     /**
      * Display a listing of the resource.
+     * For single school system, redirect to show the single school.
      */
     public function index()
     {
-        $query = School::with(['schoolDivision', 'teachers']);
-
-        // Handle search
-        if (request('search')) {
-            $search = request('search');
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('code', 'like', "%{$search}%")
-                  ->orWhere('address', 'like', "%{$search}%");
-            });
+        $school = School::single();
+        
+        if (!$school) {
+            return redirect()->route('admin.schools.create')
+                ->with('info', 'No school found. Please create the primary school.');
         }
-
-        // Handle division filter
-        if (request('division')) {
-            $query->where('school_division_id', request('division'));
-        }
-
-        // Handle sorting
-        $sort = request('sort', 'name');
-        $order = request('order', 'asc');
-
-        switch ($sort) {
-            case 'name':
-                $query->orderBy('name', $order);
-                break;
-            case 'division':
-                $query->orderBy('school_division_id', $order);
-                break;
-            case 'created_at':
-                $query->orderBy('created_at', $order);
-                break;
-            default:
-                $query->orderBy('name', 'asc');
-        }
-
-        $schools = $query->get();
-
-        return view('admin.schools.index', compact('schools'));
+        
+        return redirect()->route('admin.schools.show', $school->id);
     }
 
     /**
      * Show the form for creating a new resource.
+     * Only allow if no school exists (single school system).
      */
     public function create()
     {
-        $divisions = SchoolDivision::all();
-        return view('admin.schools.create', compact('divisions'));
+        $existingSchool = School::first();
+        
+        if ($existingSchool) {
+            return redirect()->route('admin.schools.show', $existingSchool->id)
+                ->with('error', 'A school already exists. Only one school is allowed in this system.');
+        }
+        
+        return view('admin.schools.create');
     }
 
     /**
@@ -86,7 +64,10 @@ class SchoolController extends Controller
             'address' => 'nullable|string',
             'principal' => 'nullable|string|max:255',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'school_division_id' => 'required|exists:school_divisions,id',
+            'division_name' => 'required|string|max:255',
+            'division_code' => 'required|string|max:50',
+            'division_address' => 'nullable|string',
+            'region' => 'required|string|max:255',
             'grade_levels' => 'required|array|min:1',
             'grade_levels.*' => 'required|in:K,1,2,3,4,5,6,7,8,9,10,11,12',
             'teachers' => 'nullable|array',
@@ -107,6 +88,13 @@ class SchoolController extends Controller
         try {
             DB::beginTransaction();
 
+            // Check if a school already exists (single school system)
+            $existingSchool = School::first();
+            if ($existingSchool) {
+                return redirect()->route('admin.schools.show', $existingSchool->id)
+                    ->with('error', 'A school already exists. Only one school is allowed in this system.');
+            }
+            
             // Create school data array
             $schoolData = [
                 'name' => $request->name,
@@ -114,7 +102,11 @@ class SchoolController extends Controller
                 'address' => $request->address,
                 'principal' => $request->principal,
                 'grade_levels' => json_encode($request->grade_levels),
-                'school_division_id' => $request->school_division_id,
+                'division_name' => $request->division_name,
+                'division_code' => $request->division_code,
+                'division_address' => $request->division_address,
+                'region' => $request->region,
+                'is_primary' => true, // Set as primary school
             ];
 
             // Handle logo upload
@@ -188,7 +180,7 @@ class SchoolController extends Controller
      */
     public function show(string $id)
     {
-        $school = School::with(['schoolDivision'])->findOrFail($id);
+        $school = School::findOrFail($id);
         $teachers = User::where('role', 'teacher')
             ->where('is_teacher_admin', false)
             ->where('school_id', $school->id)
@@ -207,8 +199,7 @@ class SchoolController extends Controller
     public function edit(string $id)
     {
         $school = School::with('teachers')->findOrFail($id);
-        $divisions = SchoolDivision::all();
-        return view('admin.schools.edit', compact('school', 'divisions'));
+        return view('admin.schools.edit', compact('school'));
     }
 
     /**
@@ -229,7 +220,10 @@ class SchoolController extends Controller
             'address' => 'nullable|string',
             'principal' => 'nullable|string|max:255',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'school_division_id' => 'required|exists:school_divisions,id',
+            'division_name' => 'required|string|max:255',
+            'division_code' => 'required|string|max:50',
+            'division_address' => 'nullable|string',
+            'region' => 'required|string|max:255',
             'grade_levels' => 'required|array|min:1',
             'grade_levels.*' => 'required|in:K,1,2,3,4,5,6,7,8,9,10,11,12',
         ]);
@@ -239,7 +233,10 @@ class SchoolController extends Controller
             'code' => $request->code,
             'address' => $request->address,
             'principal' => $request->principal,
-            'school_division_id' => $request->school_division_id,
+            'division_name' => $request->division_name,
+            'division_code' => $request->division_code,
+            'division_address' => $request->division_address,
+            'region' => $request->region,
             'grade_levels' => json_encode($request->grade_levels),
             'is_active' => $request->has('is_active') ? 1 : 0,
         ];
@@ -294,23 +291,14 @@ class SchoolController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * Disabled for single school system.
      */
     public function destroy(string $id)
     {
-        try {
-            $school = School::findOrFail($id);
-
-            // Handle associated teachers if needed
-            // This would depend on your application's structure and business rules
-
-            $school->delete();
-
-            return redirect()->route('admin.schools.index')
-                ->with('success', 'School deleted successfully.');
-        } catch (\Exception $e) {
-            return redirect()->route('admin.schools.index')
-                ->with('error', 'Unable to delete school: ' . $e->getMessage());
-        }
+        $school = School::findOrFail($id);
+        
+        return redirect()->route('admin.schools.show', $school->id)
+            ->with('error', 'Cannot delete the school. This system supports only one school.');
     }
 
     /**
@@ -347,63 +335,5 @@ class SchoolController extends Controller
         }
     }
 
-    /**
-     * Show billing settings for a school
-     */
-    public function showBilling(string $id)
-    {
-        $school = School::findOrFail($id);
-        return view('admin.schools.billing', compact('school'));
-    }
 
-    /**
-     * Update billing settings for a school
-     */
-    public function updateBilling(Request $request, string $id)
-    {
-        $school = School::findOrFail($id);
-
-        $request->validate([
-            'subscription_status' => 'required|in:trial,active,expired',
-            'billing_cycle' => 'required|in:monthly,yearly',
-            'monthly_price' => 'required|numeric|min:0',
-            'yearly_price' => 'required|numeric|min:0',
-            'trial_ends_at' => 'nullable|date',
-            'subscription_ends_at' => 'nullable|date',
-        ]);
-
-        try {
-            DB::beginTransaction();
-
-            $school->subscription_status = $request->subscription_status;
-            $school->billing_cycle = $request->billing_cycle;
-            $school->monthly_price = $request->monthly_price;
-            $school->yearly_price = $request->yearly_price;
-
-            // Handle trial end date
-            if ($request->has('remove_trial_ends_at') && $request->remove_trial_ends_at) {
-                $school->trial_ends_at = null;
-            } elseif ($request->trial_ends_at) {
-                $school->trial_ends_at = Carbon::parse($request->trial_ends_at);
-            }
-
-            // Handle subscription end date
-            if ($request->has('remove_subscription_ends_at') && $request->remove_subscription_ends_at) {
-                $school->subscription_ends_at = null;
-            } elseif ($request->subscription_ends_at) {
-                $school->subscription_ends_at = Carbon::parse($request->subscription_ends_at);
-            }
-
-            $school->save();
-
-            DB::commit();
-
-            return redirect()->route('admin.schools.billing', $school->id)
-                ->with('success', 'Billing settings updated successfully.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()
-                ->with('error', 'Unable to update billing settings: ' . $e->getMessage());
-        }
-    }
 }

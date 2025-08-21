@@ -229,7 +229,8 @@
                                         <label for="lrn" class="form-label">Learner Reference Number (LRN) <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control @error('lrn') is-invalid @enderror"
                                             id="lrn" name="lrn" value="{{ old('lrn', $student->lrn) }}" required
-                                            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                            maxlength="12" placeholder="12-digit number">
                                         @error('lrn')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror

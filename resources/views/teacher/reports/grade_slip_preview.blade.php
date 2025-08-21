@@ -26,8 +26,8 @@
     <div class="grade-slip">
         @php
             $schoolName = isset($section) && $section->school ? $section->school->name : 'St. Anthony Parish School';
-            $region = isset($section) && $section->school && $section->school->schoolDivision ? $section->school->schoolDivision->region : 'Region XI';
-            $division = isset($section) && $section->school && $section->school->schoolDivision ? $section->school->schoolDivision->name : 'Division of Davao del Sur';
+            $region = isset($section) && $section->school ? $section->school->region ?? 'Region XI' : 'Region XI';
+            $division = isset($section) && $section->school ? $section->school->division_name ?? 'Division of Davao del Sur' : 'Division of Davao del Sur';
             $district = isset($section) && $section->school ? $section->school->district : '';
             $address = isset($section) && $section->school ? $section->school->address : '';
         @endphp

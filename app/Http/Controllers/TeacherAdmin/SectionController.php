@@ -297,6 +297,7 @@ class SectionController extends Controller
                     'grade_level' => 'required|string',
                     'adviser_id' => 'required|exists:users,id',
                     'school_year' => 'required|string|max:20',
+                    'student_limit' => 'nullable|integer|min:1|max:100',
                 ]);
 
                 Log::info('Creating new section', ['data' => $validated]);
@@ -311,6 +312,7 @@ class SectionController extends Controller
                     'adviser_id' => $request->adviser_id,
                     'school_id' => Auth::user()->school_id,
                     'school_year' => $request->school_year,
+                    'student_limit' => $request->student_limit,
                     'is_active' => true,
                     'created_at' => now(),
                     'updated_at' => now(),
@@ -480,6 +482,7 @@ class SectionController extends Controller
                 'grade_level' => 'required|string',
                 'adviser_id' => 'required|exists:users,id',
                 'school_year' => 'required|string|max:20',
+                'student_limit' => 'nullable|integer|min:1|max:100',
             ]);
 
             Log::info('Updating section', ['section_id' => $section->id, 'data' => $validated]);
@@ -495,6 +498,7 @@ class SectionController extends Controller
                     'grade_level' => $request->grade_level,
                     'adviser_id' => $request->adviser_id,
                     'school_year' => $request->school_year,
+                    'student_limit' => $request->student_limit,
                     'updated_at' => now(),
                 ]);
 

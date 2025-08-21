@@ -23,6 +23,7 @@ return new class extends Migration
             $table->foreignId('adviser_id')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('school_id')->constrained()->onDelete('cascade');
             $table->string('school_year');
+            $table->integer('student_limit')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
