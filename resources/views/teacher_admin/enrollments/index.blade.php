@@ -253,10 +253,6 @@
                 </div>
                 <div class="modal-body">
                     <p>Please review the enrollment details and verify if the information is correct and complete.</p>
-                    <div class="form-group">
-                        <label for="verify_notes">Verification Notes (Optional)</label>
-                        <textarea name="notes" id="verify_notes" class="form-control" rows="3" placeholder="Any notes about the verification..."></textarea>
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -288,10 +284,6 @@
                             <option value="">Loading sections...</option>
                         </select>
                         <small class="form-text text-muted">Numbers show current students / capacity limit</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="assign_notes">Assignment Notes (Optional)</label>
-                        <textarea name="notes" id="assign_notes" class="form-control" rows="3" placeholder="Any notes about the section assignment..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
