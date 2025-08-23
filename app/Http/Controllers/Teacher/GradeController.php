@@ -646,8 +646,8 @@ class GradeController extends Controller
 
             // Define assessment limits
             $assessmentLimits = [
-                'written_work' => 7,
-                'performance_task' => 8,
+                'written_work' => 12,
+                'performance_task' => 10,
                 'quarterly' => 1
             ];
 
@@ -938,8 +938,8 @@ class GradeController extends Controller
 
             // Define assessment limits
             $assessmentLimits = [
-                'written_work' => 7,
-                'performance_task' => 8,
+                'written_work' => 12,
+                'performance_task' => 10,
                 'quarterly' => 1
             ];
 
@@ -1355,8 +1355,8 @@ class GradeController extends Controller
 
         // Define assessment limits
         $assessmentLimits = [
-            'written_work' => 7,
-            'performance_task' => 8,
+            'written_work' => 12,
+            'performance_task' => 10,
             'quarterly' => 1
         ];
 
@@ -1465,8 +1465,8 @@ class GradeController extends Controller
 
             // Define assessment limits
             $assessmentLimits = [
-                'written_work' => 7,
-                'performance_task' => 8,
+                'written_work' => 12,
+                'performance_task' => 10,
                 'quarterly' => 1
             ];
 
@@ -1527,7 +1527,7 @@ class GradeController extends Controller
 
             // Define assessment limits
             $assessmentLimits = [
-                'written_work' => 7,
+                'written_work' => 12,
                 'performance_task' => 8,
                 'quarterly' => 1
             ];

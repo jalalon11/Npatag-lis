@@ -1389,7 +1389,7 @@
                         </div>
                     </div>
                     <div class="card-footer text-center">
-                        <span class="text-muted">&copy; {{ date('Y') }} Grading System by VSMART TUNE UP</span>
+                        <span class="text-muted">&copy; {{ date('Y') }} Patag LIS All Rights Reserve</span>
                     </div>
                 </div>
             </div>

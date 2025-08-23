@@ -1621,15 +1621,15 @@
             <table>
                 <tr>
                     <th rowspan="2" style="width: 20%;">LEARNERS' NAMES</th>
-                    <th colspan="10" style="width: 25%;">WRITTEN WORKS ({{ $gradeConfig->written_work_percentage }}%)</th>
-                    <th colspan="11" style="width: 35%;">PERFORMANCE TASKS ({{ $gradeConfig->performance_task_percentage }}%)</th>
+                    <th colspan="{{ min(count($writtenWorks), 12) + 3 }}" style="width: 25%;">WRITTEN WORKS ({{ $gradeConfig->written_work_percentage }}%)</th>
+                    <th colspan="{{ min(count($performanceTasks), 10) + 3 }}" style="width: 35%;">PERFORMANCE TASKS ({{ $gradeConfig->performance_task_percentage }}%)</th>
                     <th colspan="3" style="width: 10%;">QUARTERLY ASSESSMENT ({{ $gradeConfig->quarterly_assessment_percentage }}%)</th>
                     <th rowspan="2" style="width: 5%;">Initial Grade</th>
                     <th rowspan="2" style="width: 5%;">Quarterly Grade</th>
                 </tr>
                 <tr>
                     <!-- Written Works Columns -->
-                    @for($i = 1; $i <= 7; $i++)
+                    @for($i = 1; $i <= min(count($writtenWorks), 12); $i++)
                     <th class="column-header">{{ $i }}</th>
                     @endfor
 
@@ -1638,7 +1638,7 @@
                     <th class="column-header">WS</th>
 
                     <!-- Performance Tasks Columns -->
-                    @for($i = 1; $i <= 8; $i++)
+                    @for($i = 1; $i <= min(count($performanceTasks), 10); $i++)
                     <th class="column-header">{{ $i }}</th>
                     @endfor
 
@@ -1662,12 +1662,12 @@
                     @endphp
 
                     <!-- Display Written Works -->
-                    @foreach($writtenWorks->take(7) as $work)
+                    @foreach($writtenWorks->take(12) as $work)
                         <td>{{ number_format($work->max_score, 0) }}</td>
                         @php $writtenWorksTotal += $work->max_score; @endphp
                     @endforeach
 
-                    @for($i = $writtenWorks->count(); $i < 7; $i++)
+                    @for($i = $writtenWorks->count(); $i < min(count($writtenWorks), 12); $i++)
                         <td></td>
                     @endfor
 
@@ -1676,12 +1676,12 @@
                     <td>{{ number_format($gradeConfig->written_work_percentage, 1) }}%</td>
 
                     <!-- Performance Tasks Max Scores -->
-                    @foreach($performanceTasks->take(8) as $task)
+                    @foreach($performanceTasks->take(10) as $task)
                         <td>{{ number_format($task->max_score, 0) }}</td>
                         @php $performanceTasksTotal += $task->max_score; @endphp
                     @endforeach
 
-                    @for($i = $performanceTasks->count(); $i < 8; $i++)
+                    @for($i = $performanceTasks->count(); $i < min(count($performanceTasks), 10); $i++)
                         <td></td>
                     @endfor
 
@@ -1706,7 +1706,7 @@
 
                 <!-- Male Students -->
                 <tr>
-                    <td class="gender-label" colspan="27" style="text-align: left; background-color: #d9d9d9; color: #000; font-size: 11pt; padding: 5px 8px; font-weight: normal; border: 1px solid #000;">MALE</td>
+                    <td class="gender-label" colspan="{{ min(count($writtenWorks), 12) + min(count($performanceTasks), 10) + 14 }}" style="text-align: left; background-color: #d9d9d9; color: #000; font-size: 11pt; padding: 5px 8px; font-weight: normal; border: 1px solid #000;">MALE</td>
                 </tr>
                 @php
                     $maleStudents = $students->where('gender', 'Male')->sortBy('last_name');
@@ -1730,7 +1730,7 @@
 
                         <!-- Display Written Works Scores -->
                         @php $studentWWTotal = 0; @endphp
-                        @foreach($writtenWorks->take(7) as $index => $work)
+                        @foreach($writtenWorks->take(12) as $index => $work)
                             @php
                                 $grade = $studentWrittenWorks->first(function($item) use ($work) {
                                     return $item->assessment_name == $work->assessment_name;
@@ -1752,7 +1752,7 @@
                             </td>
                         @endforeach
 
-                        @for($i = $writtenWorks->count(); $i < 7; $i++)
+                        @for($i = $writtenWorks->count(); $i < min(count($writtenWorks), 12); $i++)
                             <td></td>
                         @endfor
 
@@ -1768,7 +1768,7 @@
                             $assessmentCount = 0;
                             $totalPercentage = 0;
 
-                            foreach($writtenWorks->take(7) as $work) {
+                            foreach($writtenWorks->take(12) as $work) {
                                 $grade = $studentWrittenWorks->first(function($item) use ($work) {
                                     return $item->assessment_name == $work->assessment_name;
                                 });
@@ -1791,7 +1791,7 @@
 
                             // Calculate total max score for written works
                             $writtenWorksMaxTotal = 0;
-                            foreach($writtenWorks->take(7) as $work) {
+                            foreach($writtenWorks->take(12) as $work) {
                                 $writtenWorksMaxTotal += $work->max_score;
                             }
 
@@ -1809,7 +1809,7 @@
 
                         <!-- Performance Tasks -->
                         @php $studentPTTotal = 0; @endphp
-                        @foreach($performanceTasks->take(8) as $index => $task)
+                        @foreach($performanceTasks->take(10) as $index => $task)
                             @php
                                 $grade = $studentPerfTasks->first(function($item) use ($task) {
                                     return $item->assessment_name == $task->assessment_name;
@@ -1831,7 +1831,7 @@
                             </td>
                         @endforeach
 
-                        @for($i = $performanceTasks->count(); $i < 8; $i++)
+                        @for($i = $performanceTasks->count(); $i < min(count($performanceTasks), 10); $i++)
                             <td></td>
                         @endfor
 
@@ -1842,7 +1842,7 @@
 
                             // Calculate total max score for performance tasks
                             $performanceTasksMaxTotal = 0;
-                            foreach($performanceTasks->take(8) as $task) {
+                            foreach($performanceTasks->take(10) as $task) {
                                 $performanceTasksMaxTotal += $task->max_score;
                             }
 
@@ -1920,13 +1920,13 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="27" class="text-center">No male students in this section</td>
+                        <td colspan="{{ min(count($writtenWorks), 12) + min(count($performanceTasks), 10) + 14 }}" class="text-center">No male students in this section</td>
                     </tr>
                 @endforelse
 
                 <!-- Female Students -->
                 <tr>
-                    <td class="gender-label" colspan="27" style="text-align: left; background-color: #d9d9d9; color: #000; font-size: 11pt; padding: 5px 8px; font-weight: normal; border: 1px solid #000;">FEMALE</td>
+                    <td class="gender-label" colspan="{{ min(count($writtenWorks), 12) + min(count($performanceTasks), 10) + 14 }}" style="text-align: left; background-color: #d9d9d9; color: #000; font-size: 11pt; padding: 5px 8px; font-weight: normal; border: 1px solid #000;">FEMALE</td>
                 </tr>
                 @php
                     $femaleStudents = $students->where('gender', 'Female')->sortBy('last_name');
@@ -1946,7 +1946,7 @@
 
                         <!-- Display Written Works Scores -->
                         @php $studentWWTotal = 0; @endphp
-                        @foreach($writtenWorks->take(7) as $index => $work)
+                        @foreach($writtenWorks->take(12) as $index => $work)
                             @php
                                 $grade = $studentWrittenWorks->first(function($item) use ($work) {
                                     return $item->assessment_name == $work->assessment_name;
@@ -1968,7 +1968,7 @@
                             </td>
                         @endforeach
 
-                        @for($i = $writtenWorks->count(); $i < 7; $i++)
+                        @for($i = $writtenWorks->count(); $i < min(count($writtenWorks), 12); $i++)
                             <td></td>
                         @endfor
 
@@ -1984,7 +1984,7 @@
                             $assessmentCount = 0;
                             $totalPercentage = 0;
 
-                            foreach($writtenWorks->take(7) as $work) {
+                            foreach($writtenWorks->take(12) as $work) {
                                 $grade = $studentWrittenWorks->first(function($item) use ($work) {
                                     return $item->assessment_name == $work->assessment_name;
                                 });
@@ -2006,7 +2006,7 @@
 
                             // Calculate total max score for written works
                             $writtenWorksMaxTotal = 0;
-                            foreach($writtenWorks->take(7) as $work) {
+                            foreach($writtenWorks->take(12) as $work) {
                                 $writtenWorksMaxTotal += $work->max_score;
                             }
 
@@ -2024,7 +2024,7 @@
 
                         <!-- Performance Tasks -->
                         @php $studentPTTotal = 0; @endphp
-                        @foreach($performanceTasks->take(8) as $index => $task)
+                        @foreach($performanceTasks->take(10) as $index => $task)
                             @php
                                 $grade = $studentPerfTasks->first(function($item) use ($task) {
                                     return $item->assessment_name == $task->assessment_name;
@@ -2046,7 +2046,7 @@
                             </td>
                         @endforeach
 
-                        @for($i = $performanceTasks->count(); $i < 8; $i++)
+                        @for($i = $performanceTasks->count(); $i < min(count($performanceTasks), 10); $i++)
                             <td></td>
                         @endfor
 
@@ -2057,7 +2057,7 @@
 
                             // Calculate total max score for performance tasks
                             $performanceTasksMaxTotal = 0;
-                            foreach($performanceTasks->take(8) as $task) {
+                            foreach($performanceTasks->take(10) as $task) {
                                 $performanceTasksMaxTotal += $task->max_score;
                             }
 
@@ -2134,7 +2134,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="27" class="text-center">No female students in this section</td>
+                        <td colspan="{{ min(count($writtenWorks), 12) + min(count($performanceTasks), 10) + 14 }}" class="text-center">No female students in this section</td>
                     </tr>
                 @endforelse
             </table>
@@ -2279,7 +2279,7 @@
                 </div>
                 <div class="help-section">
                     <h5><i class="help-icon">ℹ️</i> Important Notes</h5>
-                    <p>After changing a score, the system will automatically recalculate all grades. The page will reload after 3 seconds to show updated values.</p>                </div>
+                    <p>After changing a score, the system will automatically recalculate all grades. The page will reload after 2 seconds to show updated values.</p>                </div>
             </div>
             <div class="modal-footer">
                 <button id="closeHelpBtn" class="modal-btn">Got it</button>
