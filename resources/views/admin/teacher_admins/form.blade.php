@@ -14,7 +14,7 @@
             <div class="row align-items-center">
                 <div class="col">
                     <h5 class="mb-0">
-                        <i class="fas fa-user-shield text-info me-2"></i>
+                        <i class="fas fa-user-shield text-primary me-2"></i>
                         {{ isset($teacherAdmin) ? 'Edit Teacher Admin' : 'Assign Teacher Admin' }}
                     </h5>
                 </div>
