@@ -24,6 +24,8 @@ class StudentController extends Controller
         });
     }
 
+
+
     /**
      * Display a listing of enrolled students in the school
      */

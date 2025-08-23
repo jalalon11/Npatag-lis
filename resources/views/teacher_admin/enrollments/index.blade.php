@@ -162,7 +162,10 @@
                                             <div>
                                                 <strong>{{ $enrollment->preferred_grade_level }}</strong>
                                                 @if($enrollment->preferredSection)
-                                                    <br><small class="text-muted">{{ $enrollment->preferredSection->name }}</small>
+                                                    <br><small class="text-muted">Preferred: {{ $enrollment->preferredSection->name }}</small>
+                                                @endif
+                                                @if($enrollment->assignedSection && $enrollment->isApproved())
+                                                    <br><span class="badge badge-info">Assigned: {{ $enrollment->assignedSection->name }}</span>
                                                 @endif
                                             </div>
                                         </td>
@@ -185,14 +188,17 @@
                                         </td>
                                         <td>
                                             <div class="btn-group" role="group">
-                                                <a href="{{ route('teacher-admin.enrollments.show', $enrollment) }}" class="btn btn-info btn-sm">
+                                                <a href="{{ route('teacher-admin.enrollments.show', $enrollment) }}" class="btn btn-info btn-sm" title="View Details">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
                                                 @if($enrollment->isPending())
-                                                    <button type="button" class="btn btn-success btn-sm" onclick="showApproveModal({{ $enrollment->id }})">
+                                                    <button type="button" class="btn btn-warning btn-sm" onclick="showQuickAssignModal({{ $enrollment->id }}, '{{ $enrollment->full_name }}', '{{ $enrollment->preferred_grade_level }}')" title="Quick Assign Section">
+                                                        <i class="fas fa-users"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-success btn-sm" onclick="showApproveModal({{ $enrollment->id }})" title="Approve">
                                                         <i class="fas fa-check"></i>
                                                     </button>
-                                                    <button type="button" class="btn btn-danger btn-sm" onclick="showRejectModal({{ $enrollment->id }})">
+                                                    <button type="button" class="btn btn-danger btn-sm" onclick="showRejectModal({{ $enrollment->id }})" title="Reject">
                                                         <i class="fas fa-times"></i>
                                                     </button>
                                                 @endif
@@ -297,6 +303,46 @@
     </div>
 </div>
 
+<!-- Quick Assign Section Modal -->
+<div class="modal fade" id="quickAssignModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="quickAssignForm" method="POST">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">Quick Assign Section</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <strong>Student:</strong> <span id="quickAssignStudentName"></span><br>
+                        <strong>Grade Level:</strong> <span id="quickAssignGradeLevel"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="quickAssignSection">Assign to Section *</label>
+                        <select name="section_id" id="quickAssignSection" class="form-control" required>
+                            <option value="">Loading sections...</option>
+                        </select>
+                        <small class="form-text text-muted">Numbers show current students / capacity limit</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="quickAssignNotes">Notes (Optional)</label>
+                        <textarea name="notes" id="quickAssignNotes" class="form-control" rows="2" placeholder="Any additional notes..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check"></i> Assign & Approve
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Bulk Approve Modal -->
 <div class="modal fade" id="bulkApproveModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -374,6 +420,43 @@ function showRejectModal(enrollmentId) {
     const form = document.getElementById('rejectForm');
     form.action = `/teacher-admin/enrollments/${enrollmentId}/reject`;
     $('#rejectModal').modal('show');
+}
+
+function showQuickAssignModal(enrollmentId, studentName, gradeLevel) {
+    document.getElementById('quickAssignStudentName').textContent = studentName;
+    document.getElementById('quickAssignGradeLevel').textContent = gradeLevel;
+    
+    // Load sections for the specific grade level
+    fetch(`/teacher-admin/enrollments/${enrollmentId}/sections`)
+        .then(response => response.json())
+        .then(data => {
+            const sectionSelect = document.getElementById('quickAssignSection');
+            sectionSelect.innerHTML = '<option value="">Select Section</option>';
+            
+            data.sections.forEach(section => {
+                const currentCount = section.current_student_count || 0;
+                const capacity = section.student_limit;
+                const isFull = currentCount >= capacity;
+                const capacityText = `(${currentCount}/${capacity})`;
+                
+                const option = document.createElement('option');
+                option.value = section.id;
+                option.textContent = `${section.name} ${capacityText}${isFull ? ' - FULL' : ''}`;
+                option.disabled = isFull;
+                if (isFull) option.style.color = '#dc3545';
+                
+                sectionSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading sections:', error);
+            alert('Error loading sections. Please try again.');
+        });
+    
+    const form = document.getElementById('quickAssignForm');
+    form.action = `/teacher-admin/enrollments/${enrollmentId}/quick-assign`;
+    
+    $('#quickAssignModal').modal('show');
 }
 
 function showBulkApproveModal() {

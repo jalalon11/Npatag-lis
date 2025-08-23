@@ -289,4 +289,124 @@ class EnrollmentController extends Controller
 
         return response()->json($stats);
     }
+
+    /**
+     * Get available sections for an enrollment
+     */
+    public function getSections(Enrollment $enrollment)
+    {
+        $user = Auth::user();
+        $school = $user->school;
+        
+        if (!$school || $enrollment->school_id !== $school->id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $sections = Section::where('school_id', $school->id)
+            ->where('grade_level', $enrollment->preferred_grade_level)
+            ->with(['students' => function($query) {
+                $query->where('status', 'active');
+            }])
+            ->get()
+            ->map(function($section) {
+                return [
+                    'id' => $section->id,
+                    'name' => $section->name,
+                    'grade_level' => $section->grade_level,
+                    'student_limit' => $section->student_limit,
+                    'current_student_count' => $section->getCurrentStudentCount()
+                ];
+            });
+
+        return response()->json(['sections' => $sections]);
+    }
+
+    /**
+     * Quick assign section and approve enrollment
+     */
+    public function quickAssign(Request $request, Enrollment $enrollment)
+    {
+        $user = Auth::user();
+        $school = $user->school;
+        
+        if (!$school || $enrollment->school_id !== $school->id) {
+            return redirect()->back()->with('error', 'Unauthorized access.');
+        }
+
+        if ($enrollment->status !== 'pending') {
+            return redirect()->back()->with('error', 'This enrollment has already been processed.');
+        }
+
+        $request->validate([
+            'section_id' => [
+                'required',
+                'exists:sections,id',
+                Rule::exists('sections', 'id')->where(function ($query) use ($school) {
+                    $query->where('school_id', $school->id);
+                })
+            ],
+            'notes' => 'nullable|string|max:1000'
+        ]);
+
+        $section = Section::findOrFail($request->section_id);
+        
+        // Verify section belongs to the same school and grade level
+        if ($section->school_id !== $school->id) {
+            return redirect()->back()->with('error', 'Invalid section selected.');
+        }
+        
+        if ($section->grade_level !== $enrollment->preferred_grade_level) {
+            return redirect()->back()->with('error', 'Section grade level does not match enrollment request.');
+        }
+
+        // Check section capacity
+        $currentCount = $section->getCurrentStudentCount();
+        if ($section->student_limit && $currentCount >= $section->student_limit) {
+            return redirect()->back()->with('error', 'Selected section is at full capacity.');
+        }
+
+        DB::beginTransaction();
+        try {
+            // Update enrollment status and assign section
+            $enrollment->update([
+                'status' => 'approved',
+                'assigned_section_id' => $section->id,
+                'processed_by' => $user->id,
+                'processed_at' => now(),
+                'notes' => $request->notes
+            ]);
+
+            // Create student record
+            $student = Student::create([
+                'first_name' => $enrollment->first_name,
+                'middle_name' => $enrollment->middle_name,
+                'last_name' => $enrollment->last_name,
+                'student_id' => $enrollment->student_id,
+                'lrn' => $enrollment->lrn,
+                'gender' => $enrollment->gender,
+                'birth_date' => $enrollment->birth_date,
+                'address' => $enrollment->address,
+                'guardian_name' => $enrollment->guardian_name,
+                'guardian_contact' => $enrollment->guardian_contact,
+                'section_id' => $section->id,
+                'school_id' => $school->id,
+                'status' => 'active'
+            ]);
+
+            // Update enrollment to enrolled status
+            $enrollment->update([
+                'status' => 'enrolled',
+                'student_id' => $student->id
+            ]);
+
+            DB::commit();
+            
+            return redirect()->route('teacher-admin.enrollments.index')
+                ->with('success', "Enrollment approved and {$enrollment->first_name} {$enrollment->last_name} has been assigned to {$section->name}.");
+                
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', 'An error occurred while processing the enrollment. Please try again.');
+        }
+    }
 }

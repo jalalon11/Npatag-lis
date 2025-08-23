@@ -412,6 +412,8 @@ Route::middleware(['auth', CheckSchoolStatus::class])->group(function () {
             Route::get('/enrollments/{enrollment}', [\App\Http\Controllers\TeacherAdmin\EnrollmentController::class, 'show'])->name('enrollments.show');
             Route::post('/enrollments/{enrollment}/approve', [\App\Http\Controllers\TeacherAdmin\EnrollmentController::class, 'approve'])->name('enrollments.approve');
             Route::post('/enrollments/{enrollment}/reject', [\App\Http\Controllers\TeacherAdmin\EnrollmentController::class, 'reject'])->name('enrollments.reject');
+            Route::get('/enrollments/{enrollment}/sections', [\App\Http\Controllers\TeacherAdmin\EnrollmentController::class, 'getSections'])->name('enrollments.sections');
+            Route::post('/enrollments/{enrollment}/quick-assign', [\App\Http\Controllers\TeacherAdmin\EnrollmentController::class, 'quickAssign'])->name('enrollments.quick-assign');
             Route::post('/enrollments/bulk-approve', [\App\Http\Controllers\TeacherAdmin\EnrollmentController::class, 'bulkApprove'])->name('enrollments.bulk-approve');
             Route::get('/enrollments/statistics/data', [\App\Http\Controllers\TeacherAdmin\EnrollmentController::class, 'statistics'])->name('enrollments.statistics');
 
