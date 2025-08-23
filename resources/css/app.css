@@ -11,3 +11,6 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+.bg-gradient-dark {
+    background: linear-gradient(145deg, #343a40, #212529);
+}

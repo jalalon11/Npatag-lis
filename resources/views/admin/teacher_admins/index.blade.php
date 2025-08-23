@@ -21,7 +21,7 @@
             <div class="row align-items-center">
                 <div class="col">
                     <h5 class="mb-0">
-                        <i class="fas fa-user-shield text-info me-2"></i>
+                        <i class="fas fa-user-shield text-primary me-2"></i>
                         Teacher Admins
                     </h5>
                 </div>
@@ -50,8 +50,8 @@
                             <tr>
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <div class="avatar-sm me-3 bg-info bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center">
-                                            <span class="text-info">{{ strtoupper(substr($admin->name, 0, 1)) }}</span>
+                                        <div class="avatar-sm me-3 bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center">
+                                            <span class="text-primary">{{ strtoupper(substr($admin->name, 0, 1)) }}</span>
                                         </div>
                                         {{ $admin->name }}
                                     </div>

@@ -37,7 +37,7 @@
                     </div>
                     
                     <div class="d-grid gap-2 mt-auto w-100">
-                        <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#editProfileForm" aria-expanded="false">
+                        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#editProfileForm" aria-expanded="false">
                             <i class="fas fa-user-edit me-1"></i> Edit Profile
                         </button>
                         <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#changePasswordForm" aria-expanded="false">

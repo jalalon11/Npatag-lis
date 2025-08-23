@@ -5,7 +5,7 @@
     <div class="row mb-4">
         <div class="col-md-12">
             <div class="d-flex justify-content-between align-items-center">
-                <h2><i class="fas fa-user-plus text-info me-2"></i> Add New Teacher</h2>
+                <h2>Add New Teacher</h2>
                 <div>
                     <a href="{{ route('admin.dashboard') }}" class="btn btn-primary me-2">
                         <i class="fas fa-home me-1"></i> Dashboard
@@ -102,7 +102,7 @@
                         </div>
 
                         <div class="mt-4 text-end">
-                            <button type="submit" class="btn btn-info px-4">
+                            <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save me-1"></i> Create Teacher
                             </button>
                         </div>

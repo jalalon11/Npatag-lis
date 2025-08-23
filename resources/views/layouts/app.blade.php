@@ -1009,7 +1009,7 @@
                 <!-- School Divisions navigation removed - moved to single school system -->
                 <li class="{{ Request::is('admin/schools*') ? 'active' : '' }}">
                     <a href="{{ route('admin.schools.index') }}">
-                        <i class="fas fa-school"></i> <span>Schools</span>
+                        <i class="fas fa-school"></i> <span>My School</span>
                     </a>
                 </li>
                 <li class="{{ Request::is('admin/teachers*') ? 'active' : '' }}">
@@ -1019,7 +1019,7 @@
                 </li>
                 <li class="{{ Request::is('admin/teacher-admins*') ? 'active' : '' }}">
                     <a href="{{ route('admin.teacher-admins.index') }}">
-                        <i class="fas fa-user-shield"></i> <span>Teacher Admins</span>
+                        <i class="fas fa-user-shield"></i> <span>Teacher Admin</span>
                     </a>
                 </li>
                 <li class="{{ Request::is('admin/announcements*') ? 'active' : '' }}">

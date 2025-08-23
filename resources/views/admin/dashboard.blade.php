@@ -12,24 +12,28 @@
 
 @section('content')
 <div class="container-fluid px-4">
-    <!-- Modern Dashboard Header -->
-    <div class="dashboard-header bg-white rounded-4 shadow-sm mb-4 p-4 position-relative overflow-hidden">
-        <div class="position-absolute top-0 end-0 w-50 h-100 bg-primary bg-opacity-5 z-0 d-none d-lg-block" style="clip-path: polygon(15% 0, 100% 0%, 100% 100%, 0% 100%);"></div>
-        <div class="row align-items-center position-relative z-1">
-            <div class="col-lg-8">
-                <div class="d-flex align-items-center">
-                    <div class="dashboard-icon-wrapper bg-primary bg-opacity-10 p-3 rounded-3 me-4 d-flex align-items-center justify-content-center">
-                        <i class="fas fa-tachometer-alt text-primary fa-2x"></i>
-                    </div>
+    <!-- Fixed Dashboard Layout -->
+    <div class="row g-4 mb-4">
+        <!-- Welcome Card - Left Side -->
+        <div class="col-lg-8">
+            <div class="dashboard-header rounded-4 shadow-sm h-100 p-4 position-relative overflow-hidden" style="background: linear-gradient(135deg, #1e2c38 0%, #2d3e4f 100%)">
+                <!-- Layered Blue Polygons -->
+                <div class="position-absolute top-0 end-0 w-60 h-100 z-0 d-none d-lg-block bg-primary" style="opacity: 0.10; clip-path: polygon(20% 0, 100% 0%, 100% 100%, 0% 100%);"></div>
+                <div class="position-absolute top-0 end-0 w-50 h-100 z-0 d-none d-lg-block bg-primary" style="opacity: 0.45; clip-path: polygon(25% 0, 100% 0%, 100% 100%, 5% 100%);"></div>
+                <div class="position-absolute top-0 end-0 w-40 h-100 z-0 d-none d-lg-block bg-primary" style="opacity: 0.60; clip-path: polygon(30% 0, 100% 0%, 100% 100%, 10% 100%);"></div>
+                <div class="position-absolute top-0 end-0 w-30 h-100 z-0 d-none d-lg-block bg-primary" style=" clip-path: polygon(35% 0, 100% 0%, 100% 100%, 15% 100%);"></div>
+                
+                
+                <div class="d-flex position-relative z-1 h-100">
                     <div>
-                        <h1 class="fw-bold mb-2 display-6">Admin Dashboard</h1>
-                        <p class="text-muted mb-0 lead">Welcome back, {{ Auth::user()->name }}!</p>
-                        <div class="d-flex align-items-center mt-2">
-                            <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
+                        <h1 class="fw-bold mb-2 text-white display-6">Admin Dashboard</h1>
+                        <p class="text-white mb-0 lead opacity-90">Welcome back, {{ Auth::user()->name }}!</p>
+                        <div class="d-flex align-items-center mt-3">
+                            <span class="badge bg-success bg-opacity-10 text-white border border-success border-opacity-20 px-3 py-2 rounded-pill">
                                 <i class="fas fa-check-circle me-1"></i> System Online
                             </span>
-                            <div class="ms-3 d-flex align-items-center">
-                                <i class="far fa-calendar-alt text-primary me-2"></i>
+                            <div class="ms-3 d-flex align-items-center text-white text-opacity-70">
+                                <i class="far fa-calendar-alt text-info me-2"></i>
                                 <span>{{ date('F d, Y') }}</span>
                             </div>
                         </div>
@@ -37,248 +41,180 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Main Stats Cards -->
-    <div class="row g-4 mb-4">
-        <div class="col-xl-3 col-md-6">
-            <div class="stat-card bg-white rounded-4 shadow-sm h-100 position-relative overflow-hidden transition-all hover-lift">
-                <div class="position-absolute top-0 start-0 h-100 w-1 bg-primary"></div>
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <div class="d-flex align-items-center mb-2">
-                                <div class="stat-icon-sm bg-primary bg-opacity-10 rounded-circle p-2 me-2">
-                                    <i class="fas fa-chalkboard-teacher text-primary"></i>
+        <!-- Stats Cards - Right Side -->
+        <div class="col-lg-4">
+            <div class="row g-3 h-100">
+                <!-- Teachers Card -->
+                <div class="col-12">
+                    <div class="stat-card bg-white rounded-4 shadow-sm h-100 position-relative overflow-hidden transition-all hover-lift p-4">
+                        <div class="position-absolute top-0 start-0 h-100 w-1 bg-primary"></div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div class="w-100">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="stat-icon-sm bg-primary bg-opacity-10 rounded-circle p-2 me-2">
+                                            <i class="fas fa-chalkboard-teacher text-primary"></i>
+                                        </div>
+                                        <h6 class="text-uppercase fw-semibold mb-0 small">Teachers</h6>
+                                    </div>
+                                    <h3 class="fw-bold mb-0 display-6">{{ $stats['teachersCount'] }}</h3>
+                                    <p class="small text-muted mb-0 mt-2">
+                                        Active Faculty Members
+                                    </p>
                                 </div>
-                                <h6 class="text-uppercase fw-semibold mb-0 small">Teachers</h6>
                             </div>
-                            <h3 class="fw-bold mb-0 display-6">{{ $stats['teachersCount'] }}</h3>
-                            <!-- <div class="progress mt-3" style="height: 6px;">
-                                <div class="progress-bar bg-primary" role="progressbar" style="width: 75%"></div>
-                            </div> -->
-                            <p class="small text-muted mb-0 mt-2">
-                                <i class="fas fa-user-tie me-1"></i> Active Faculty Members
-                            </p>
+                        </div>
+                        <div class="card-footer bg-white border-0 mt-3">
+                            <a href="{{ route('admin.teachers.index') }}" class="btn btn-md btn-primary w-100 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-eye me-2"></i> View All Teachers
+                            </a>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer bg-white border-0 py-3">
-                    <a href="{{ route('admin.teachers.index') }}" class="btn btn-sm btn-primary w-100 d-flex align-items-center justify-content-center">
-                        <i class="fas fa-eye me-2"></i> View All Teachers
-                    </a>
-                </div>
-            </div>
-        </div>
-        <!-- School Divisions card removed - moved to single school system -->
-        <div class="col-xl-3 col-md-6">
-            <div class="stat-card bg-white rounded-4 shadow-sm h-100 position-relative overflow-hidden transition-all hover-lift">
-                <div class="position-absolute top-0 start-0 h-100 w-1 bg-warning"></div>
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <div class="d-flex align-items-center mb-2">
-                                <div class="stat-icon-sm bg-warning bg-opacity-10 rounded-circle p-2 me-2">
-                                    <i class="fas fa-school text-warning"></i>
+
+                <!-- Students Card -->
+                <div class="col-12">
+                    <div class="stat-card bg-white rounded-4 shadow-sm h-100 position-relative overflow-hidden transition-all hover-lift p-4">
+                        <div class="position-absolute top-0 start-0 h-100 w-1 bg-success"></div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div class="w-100">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="stat-icon-sm bg-primary bg-opacity-10 rounded-circle p-2 me-2">
+                                            <i class="fas fa-user-graduate text-primary"></i>
+                                        </div>
+                                        <h6 class="text-uppercase fw-semibold mb-0 small">Students</h6>
+                                    </div>
+                                    <h3 class="fw-bold mb-0 display-6">{{ $stats['studentsCount'] }}</h3>
+                                    <p class="small text-muted mb-0 mt-2">
+                                        Enrolled Learners
+                                    </p>
                                 </div>
-                                <h6 class="text-uppercase fw-semibold mb-0 small">Schools</h6>
                             </div>
-                            <h3 class="fw-bold mb-0 display-6">{{ $stats['schoolsCount'] }}</h3>
-                            <!-- <div class="progress mt-3" style="height: 6px;">
-                                <div class="progress-bar bg-warning" role="progressbar" style="width: 85%"></div>
-                            </div> -->
-                            <p class="small text-muted mb-0 mt-2">
-                                <i class="fas fa-school me-1"></i> Registered Institutions
-                            </p>
+                        </div>
+                        <div class="card-footer bg-white border-0 mt-2">
+                            <a href="#" class="btn btn-md btn-primary w-100 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-eye me-2"></i> View All Students
+                            </a>
                         </div>
                     </div>
-                </div>
-                <div class="card-footer bg-white border-0 py-3">
-                    <a href="{{ route('admin.schools.index') }}" class="btn btn-sm btn-warning text-white w-100 d-flex align-items-center justify-content-center">
-                        <i class="fas fa-eye me-2"></i> View All Schools
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="stat-card bg-white rounded-4 shadow-sm h-100 position-relative overflow-hidden transition-all hover-lift">
-                <div class="position-absolute top-0 start-0 h-100 w-1 bg-danger"></div>
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <div class="d-flex align-items-center mb-2">
-                                <div class="stat-icon-sm bg-danger bg-opacity-10 rounded-circle p-2 me-2">
-                                    <i class="fas fa-user-graduate text-danger"></i>
-                                </div>
-                                <h6 class="text-uppercase fw-semibold mb-0 small">Students</h6>
-                            </div>
-                            <h3 class="fw-bold mb-0 display-6">{{ $stats['studentsCount'] }}</h3>
-                            <!-- <div class="progress mt-3" style="height: 6px;">
-                                <div class="progress-bar bg-danger" role="progressbar" style="width: 90%"></div>
-                            </div> -->
-                            <p class="small text-muted mb-0 mt-2">
-                                <i class="fas fa-user-graduate me-1"></i> Enrolled Learners
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer bg-white border-0 py-3">
-                    <a href="#" class="btn btn-sm btn-danger w-100 d-flex align-items-center justify-content-center">
-                        <i class="fas fa-eye me-2"></i> View All Students
-                    </a>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="row g-4">
+        <!-- Quick Actions - Simplified -->
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm mb-4 position-relative overflow-hidden animate__animated animate__fadeIn" style="animation-delay: 0.2s;">
-                <div class="position-absolute top-0 start-0 w-100 h-1 bg-primary"></div>
-                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center">
-                        <div class="bg-primary bg-opacity-10 p-2 rounded-circle me-2">
-                            <i class="fas fa-bolt text-primary"></i>
+                <div class="p-4 bg-white d-flex justify-content-between align-items-center">
+                    <div class="d-flex">
+                        <div class=" rounded-circle me-3">
+                            <i class="fas fa-bolt text-primary fa-lg"></i>
                         </div>
-                        <h5 class="mb-0 fw-bold">Quick Actions</h5>
+                        <div>
+                            <h5 class="mb-1 fw-bold">Essential Controls</h5>
+                            <p class="text-muted mb-0 small">Core administrative functions</p>
+                        </div>
                     </div>
-                    <span class="badge bg-primary rounded-pill px-3 py-2">
-                        <i class="fas fa-tasks me-1"></i> Administrative Tasks
+                    <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-4 py-2 fw-semibold">
+                        <i class="fas fa-shield-alt me-1"></i> Admin Panel
                     </span>
                 </div>
-                <div class="card-body p-0">
+                <div class="card-body bg-white p-0">
                     <div class="row g-0">
-                        <!-- School Divisions quick action removed - moved to single school system -->
-                        <div class="col-md-6 border-bottom">
-                            <a href="{{ route('admin.schools.create') }}" class="quick-action-item d-flex align-items-center p-4 text-decoration-none transition-all hover-bg">
-                                <div class="d-flex align-items-center justify-content-center me-3 bg-success bg-opacity-10 rounded-circle" style="width: 60px; height: 60px;">
-                                    <i class="fas fa-school text-success fa-lg"></i>
+                        <!-- Registration Keys -->
+                        <div class="col-md-12 border-bottom">
+                            <a href="{{ route('admin.registration-keys') }}" class="quick-action-item d-flex align-items-center p-5 text-decoration-none transition-all hover-bg position-relative">
+                                <div class="position-absolute start-0 top-0 bottom-0 w-1 bg-warning opacity-0 transition-all hover-opacity-100"></div>
+                                <div class="d-flex align-items-center justify-content-center me-4 bg-warning bg-opacity-10 rounded-3" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-key text-warning fa-2x"></i>
                                 </div>
-                                <div>
-                                    <h6 class="mb-1 fw-semibold text-dark">Add New School</h6>
-                                    <p class="text-muted small mb-0">Register a new school</p>
+                                <div class="flex-grow-1">
+                                    <h5 class="mb-2 fw-bold text-dark">Registration Keys Management</h5>
+                                    <p class="text-muted mb-2">Create, manage, and monitor access keys for user registration</p>
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge bg-warning bg-opacity-10 text-warning me-2 px-3 py-1">
+                                            <i class="fas fa-users me-1"></i> User Access Control
+                                        </span>
+                                        <span class="badge bg-info bg-opacity-10 text-info px-3 py-1">
+                                            <i class="fas fa-shield-check me-1"></i> Secure Authentication
+                                        </span>
+                                    </div>
                                 </div>
-                                <span class="badge bg-success bg-opacity-10 text-success ms-auto px-3 py-2 rounded-pill">
-                                    <i class="fas fa-arrow-right"></i>
-                                </span>
-                            </a>
-                        </div>
-                        <div class="col-md-6 border-end">
-                            <a href="{{ route('admin.teacher-admins.create') }}" class="quick-action-item d-flex align-items-center p-4 text-decoration-none transition-all hover-bg">
-                                <div class="d-flex align-items-center justify-content-center me-3 bg-info bg-opacity-10 rounded-circle" style="width: 60px; height: 60px;">
-                                    <i class="fas fa-user-shield text-info fa-lg"></i>
+                                <div class="ms-3">
+                                    <div class="bg-warning bg-opacity-10 rounded-circle p-3 transition-all hover-bg-warning">
+                                        <i class="fas fa-arrow-right text-warning fa-lg"></i>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h6 class="mb-1 fw-semibold text-dark">Assign Teacher Admin</h6>
-                                    <p class="text-muted small mb-0">Designate a teacher as admin</p>
-                                </div>
-                                <span class="badge bg-info bg-opacity-10 text-info ms-auto px-3 py-2 rounded-pill">
-                                    <i class="fas fa-arrow-right"></i>
-                                </span>
-                            </a>
-                        </div>
-                        <div class="col-md-6">
-                            <a href="{{ route('admin.registration-keys') }}" class="quick-action-item d-flex align-items-center p-4 text-decoration-none transition-all hover-bg">
-                                <div class="d-flex align-items-center justify-content-center me-3 bg-warning bg-opacity-10 rounded-circle" style="width: 60px; height: 60px;">
-                                    <i class="fas fa-key text-warning fa-lg"></i>
-                                </div>
-                                <div>
-                                    <h6 class="mb-1 fw-semibold text-dark">Registration Keys</h6>
-                                    <p class="text-muted small mb-0">Manage access keys</p>
-                                </div>
-                                <span class="badge bg-warning bg-opacity-10 text-warning ms-auto px-3 py-2 rounded-pill">
-                                    <i class="fas fa-arrow-right"></i>
-                                </span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body p-0 border-top">
-                    <div class="row g-0">
-                        <!-- Sales reports functionality has been disabled -->
-                        <div class="col-md-6 border-end border-bottom">
-                            <div class="quick-action-item d-flex align-items-center p-4 text-muted">
-                                <div class="d-flex align-items-center justify-content-center me-3 bg-secondary bg-opacity-10 rounded-circle" style="width: 60px; height: 60px;">
-                                    <i class="fas fa-chart-line text-secondary fa-lg"></i>
-                                </div>
-                                <div>
-                                    <h6 class="mb-1 fw-semibold text-muted">Sales Reports</h6>
-                                    <p class="text-muted small mb-0">Feature disabled</p>
-                                </div>
-                                <span class="badge bg-secondary bg-opacity-10 text-secondary ms-auto px-3 py-2 rounded-pill">
-                                    <i class="fas fa-times"></i>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="col-md-6 border-bottom">
-                            <a href="{{ route('admin.resources.index') }}" class="quick-action-item d-flex align-items-center p-4 text-decoration-none transition-all hover-bg">
-                                <div class="d-flex align-items-center justify-content-center me-3 bg-danger bg-opacity-10 rounded-circle" style="width: 60px; height: 60px;">
-                                    <i class="fas fa-book-reader text-danger fa-lg"></i>
-                                </div>
-                                <div>
-                                    <h6 class="mb-1 fw-semibold text-dark">Manage Resources</h6>
-                                    <p class="text-muted small mb-0">Add and manage learning materials</p>
-                                </div>
-                                <span class="badge bg-danger bg-opacity-10 text-danger ms-auto px-3 py-2 rounded-pill">
-                                    <i class="fas fa-arrow-right"></i>
-                                </span>
                             </a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- System Status -->
         <div class="col-lg-4">
-            <!-- Maintenance Mode Card -->
             <div class="card border-0 shadow-sm mb-4 position-relative overflow-hidden animate__animated animate__fadeIn" style="animation-delay: 0.3s;">
-                <div class="position-absolute top-0 start-0 w-100 h-1 {{ $maintenanceMode ? 'bg-danger' : 'bg-warning' }}"></div>
-                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <div class=" bg-white p-4 d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center">
-                        <div class="bg-{{ $maintenanceMode ? 'danger' : 'warning' }} bg-opacity-10 p-2 rounded-circle me-2">
-                            <i class="fas fa-{{ $maintenanceMode ? 'exclamation-triangle' : 'tools' }} text-{{ $maintenanceMode ? 'danger' : 'warning' }}"></i>
+                        <div class="bg-{{ $maintenanceMode ? 'danger' : 'primary' }} bg-opacity-10 p-3 rounded-circle me-3">
+                            <i class="fas fa-{{ $maintenanceMode ? 'exclamation-triangle' : 'server' }} text-{{ $maintenanceMode ? 'danger' : 'primary' }} fa-lg"></i>
                         </div>
-                        <h5 class="mb-0 fw-bold">System Status</h5>
+                        <div>
+                            <h5 class="mb-1 fw-bold">System Status</h5>
+                            <p class="text-muted mb-0 small">Monitor & control system</p>
+                        </div>
                     </div>
-                    <span class="badge {{ $maintenanceMode ? 'bg-danger' : 'bg-success' }} rounded-pill px-3 py-2">
+                    <span class="badge {{ $maintenanceMode ? 'bg-danger' : 'bg-primary' }} rounded-pill px-3 py-2 fw-semibold">
                         <i class="fas fa-{{ $maintenanceMode ? 'exclamation-circle' : 'check-circle' }} me-1"></i>
-                        {{ $maintenanceMode ? 'Maintenance Mode' : 'Online' }}
+                        {{ $maintenanceMode ? 'Maintenance' : 'Online' }}
                     </span>
                 </div>
-                <div class="card-body p-4">
+                <div class="card-body bg-white p-4">
                     <div class="text-center mb-4">
                         <div class="mx-auto mb-3">
-                            <div class="p-4 rounded-circle {{ $maintenanceMode ? 'bg-danger' : 'bg-success' }} bg-opacity-10 d-inline-block">
-                                <i class="fas fa-{{ $maintenanceMode ? 'server' : 'shield-alt' }} {{ $maintenanceMode ? 'text-danger' : 'text-success' }} fa-3x"></i>
+                            <div class="p-4 rounded-circle {{ $maintenanceMode ? 'bg-danger' : 'bg-primary' }} bg-opacity-10 d-inline-block position-relative">
+                                <i class="fas fa-{{ $maintenanceMode ? 'tools' : 'shield-alt' }} {{ $maintenanceMode ? 'text-danger' : 'text-primary' }} fa-3x"></i>
+                                @if(!$maintenanceMode)
+                                <div class="position-absolute top-0 end-0">
+                                    <span class="badge bg-primary rounded-circle p-2">
+                                        <i class="fas fa-check text-white"></i>
+                                    </span>
+                                </div>
+                                @endif
                             </div>
                         </div>
-                        <h5 class="fw-bold mb-2">{{ $maintenanceMode ? 'Maintenance In Progress' : 'System Operational' }}</h5>
+                        <h5 class="fw-bold mb-2">{{ $maintenanceMode ? 'Maintenance Active' : 'All Systems Operational' }}</h5>
                         <p class="text-muted mb-0">
                             {{ $maintenanceMode
-                                ? 'The system is currently in maintenance mode. Only administrators can access the system.'
-                                : 'All systems are operational and accessible to users.'
+                                ? 'System is in maintenance mode. Only administrators have access.'
+                                : 'All systems are running smoothly and accessible to users.'
                             }}
                         </p>
                     </div>
 
                     @if($maintenanceMode)
-                    <div class="maintenance-details bg-light rounded-3 p-3 mb-4">
+                    <div class="maintenance-details bg-danger bg-opacity-5 border border-danger border-opacity-20 rounded-3 p-3 mb-4">
                         <div class="d-flex align-items-center mb-2">
-                            <i class="fas fa-clock text-secondary me-2"></i>
-                            <span class="text-muted">Estimated duration: {{ $maintenanceDuration }} minutes</span>
+                            <i class="fas fa-clock text-danger me-2"></i>
+                            <span class="text-danger fw-semibold">Duration: {{ $maintenanceDuration }} minutes</span>
                         </div>
                         @if($maintenanceMessage)
                         <div class="d-flex align-items-start">
-                            <i class="fas fa-info-circle text-secondary me-2 mt-1"></i>
-                            <span class="text-muted">{{ $maintenanceMessage }}</span>
+                            <i class="fas fa-info-circle text-danger me-2 mt-1"></i>
+                            <span class="text-danger">{{ $maintenanceMessage }}</span>
                         </div>
                         @endif
                     </div>
                     @endif
 
-                    <button type="button" class="btn btn-{{ $maintenanceMode ? 'success' : 'warning' }} w-100 py-3 d-flex align-items-center justify-content-center shadow-sm"
+                    <button type="button" class="btn btn-{{ $maintenanceMode ? 'success' : 'primary' }} w-100 py-3 d-flex align-items-center justify-content-center shadow-sm fw-semibold"
                             data-bs-toggle="modal" data-bs-target="#maintenanceModal">
                         <i class="fas fa-{{ $maintenanceMode ? 'power-off' : 'tools' }} me-2"></i>
-                        <span>{{ $maintenanceMode ? 'Disable Maintenance Mode' : 'Enable Maintenance Mode' }}</span>
+                        <span>{{ $maintenanceMode ? 'Exit Maintenance Mode' : 'Enter Maintenance Mode' }}</span>
                     </button>
                 </div>
             </div>
@@ -286,43 +222,69 @@
     </div>
 
     <style>
-    .h-1 {
-        height: 4px;
-    }
-    .border-opacity-0 {
-        --bs-border-opacity: 0;
-    }
-    .hover-border-opacity-100:hover {
-        --bs-border-opacity: 1;
-    }
+    .w-60 { width: 60%; }
+    .w-40 { width: 40%; }
+    .w-30 { width: 30%; }
+    .h-1 { height: 4px; }
+    .border-opacity-0 { --bs-border-opacity: 0; }
+    .hover-border-opacity-100:hover { --bs-border-opacity: 1; }
+    .hover-opacity-100:hover { opacity: 1 !important; }
+    .hover-bg-warning:hover { background-color: rgba(255, 193, 7, 0.1) !important; }
+    
     .transition-all {
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
+    
     .hover-lift {
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     .hover-lift:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
     }
+    
     .hover-bg {
-        transition: background-color 0.3s ease;
+        transition: all 0.3s ease;
     }
     .hover-bg:hover {
         background-color: rgba(0,0,0,0.02);
+        transform: translateX(5px);
     }
+    
     .quick-action-item {
-        transition: all 0.3s ease;
-        border-radius: 0.5rem;
-        margin: 0.25rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .quick-action-item:hover {
         background-color: rgba(0,0,0,0.02);
-        transform: translateY(-2px);
     }
-    /* Animation styles removed as requested */
+    
+    .dashboard-header {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .dashboard-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at top right, rgba(52, 152, 219, 0.1) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    
+    .dashboard-header .fas {
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    .dashboard-header .fas:nth-child(2) {
+        animation-delay: -2s;
+    }
     </style>
 </div>
+
 <!-- Maintenance Mode Modal -->
 <div class="modal fade" id="maintenanceModal" tabindex="-1" aria-labelledby="maintenanceModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
