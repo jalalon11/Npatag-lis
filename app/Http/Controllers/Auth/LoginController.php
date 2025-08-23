@@ -40,6 +40,17 @@ class LoginController extends Controller
     }
 
     /**
+     * Show the application's login form.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function showLoginForm()
+    {
+        $school = \App\Models\School::single();
+        return view('auth.login', compact('school'));
+    }
+
+    /**
      * Get the post authentication redirect path for the user.
      *
      * @return string

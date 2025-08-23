@@ -37,7 +37,8 @@ use App\Models\Student;
 use App\Http\Middleware\CheckSchoolStatus;
 
 Route::get('/', function () {
-    return view('welcome');
+    $school = \App\Models\School::single();
+    return view('welcome', compact('school'));
 });
 
 // Announcement routes for public access

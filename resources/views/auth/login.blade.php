@@ -161,38 +161,12 @@
     }
 
     .school-logo {
-        width: 90px;
-        height: 90px;
-        background: linear-gradient(135deg, #1C2833 0%, #2E4053 100%);
-        border-radius: 24px;
+        width: 120px;
+        height: 120px;
         display: flex;
         align-items: center;
         justify-content: center;
         margin: 0 auto 2rem;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        position: relative;
-        overflow: hidden;
-        animation: float 6s ease-in-out infinite;
-    }
-
-    .school-logo::after {
-        content: '';
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-        transform: translateX(-100%);
-        animation: shine 3s infinite;
-    }
-
-    @keyframes shine {
-        100% { transform: translateX(100%); }
-    }
-
-    @keyframes float {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
-        100% { transform: translateY(0px); }
     }
 
     .auth-header {
@@ -1153,7 +1127,11 @@
                 <div class="auth-card card border-0 shadow-lg mx-auto">
                     <div class="card-body p-5">
                         <div class="school-logo">
-                            <i class="fas fa-graduation-cap text-white" style="font-size: 2.25rem;"></i>
+                            @if($school && $school->logo_path)
+                                <img src="{{ $school->logo_url }}" alt="{{ $school->name }} Logo" style="max-width: 100px; max-height: 100px; object-fit: contain;">
+                            @else
+                                <i class="fas fa-graduation-cap text-white" style="font-size: 3rem;"></i>
+                            @endif
                         </div>
 
                         <ul class="nav nav-tabs" id="authTabs" role="tablist">
