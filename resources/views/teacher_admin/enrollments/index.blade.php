@@ -25,6 +25,14 @@
                             </div>
                         </div>
                         <div class="col-md-2">
+                            <div class="card bg-info text-white">
+                                <div class="card-body text-center">
+                                    <h5 id="verified-count">0</h5>
+                                    <small>Verified</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
                             <div class="card bg-success text-white">
                                 <div class="card-body text-center">
                                     <h5 id="approved-count">0</h5>
@@ -65,6 +73,7 @@
                                 <select name="status" class="form-control" onchange="this.form.submit()">
                                     <option value="">All Status</option>
                                     <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                                    <option value="verified" {{ request('status') == 'verified' ? 'selected' : '' }}>Verified</option>
                                     <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
                                     <option value="enrolled" {{ request('status') == 'enrolled' ? 'selected' : '' }}>Enrolled</option>
                                     <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
@@ -172,6 +181,8 @@
                                         <td>
                                             @if($enrollment->isPending())
                                                 <span class="badge badge-warning">Pending</span>
+                                            @elseif($enrollment->isVerified())
+                                                <span class="badge badge-info">Verified</span>
                                             @elseif($enrollment->isApproved())
                                                 <span class="badge badge-success">Approved</span>
                                             @elseif($enrollment->isEnrolled())
@@ -192,14 +203,15 @@
                                                     <i class="fas fa-eye"></i>
                                                 </a>
                                                 @if($enrollment->isPending())
-                                                    <button type="button" class="btn btn-warning btn-sm" onclick="showQuickAssignModal({{ $enrollment->id }}, '{{ $enrollment->full_name }}', '{{ $enrollment->preferred_grade_level }}')" title="Quick Assign Section">
-                                                        <i class="fas fa-users"></i>
-                                                    </button>
-                                                    <button type="button" class="btn btn-success btn-sm" onclick="showApproveModal({{ $enrollment->id }})" title="Approve">
-                                                        <i class="fas fa-check"></i>
+                                                    <button type="button" class="btn btn-primary btn-sm" onclick="showVerifyModal({{ $enrollment->id }})" title="Verify Enrollment">
+                                                        <i class="fas fa-check-circle"></i>
                                                     </button>
                                                     <button type="button" class="btn btn-danger btn-sm" onclick="showRejectModal({{ $enrollment->id }})" title="Reject">
                                                         <i class="fas fa-times"></i>
+                                                    </button>
+                                                @elseif($enrollment->isVerified())
+                                                    <button type="button" class="btn btn-success btn-sm" onclick="showAssignSectionModal({{ $enrollment->id }}, '{{ $enrollment->full_name }}', '{{ $enrollment->preferred_grade_level }}')" title="Assign to Section">
+                                                        <i class="fas fa-users"></i>
                                                     </button>
                                                 @endif
                                             </div>
@@ -229,6 +241,70 @@
     </div>
 </div>
 
+<!-- Verify Modal -->
+<div class="modal fade" id="verifyModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="verifyForm" method="POST">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">Verify Enrollment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Please review the enrollment details and verify if the information is correct and complete.</p>
+                    <div class="form-group">
+                        <label for="verify_notes">Verification Notes (Optional)</label>
+                        <textarea name="notes" id="verify_notes" class="form-control" rows="3" placeholder="Any notes about the verification..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Verify Enrollment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Assign Section Modal -->
+<div class="modal fade" id="assignSectionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="assignSectionForm" method="POST">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">Assign Student to Section</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <strong>Student:</strong> <span id="assignSectionStudentName"></span><br>
+                        <strong>Grade Level:</strong> <span id="assignSectionGradeLevel"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="assign_section_id">Assign to Section *</label>
+                        <select name="assigned_section_id" id="assign_section_id" class="form-control" required>
+                            <option value="">Loading sections...</option>
+                        </select>
+                        <small class="form-text text-muted">Numbers show current students / capacity limit</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="assign_notes">Assignment Notes (Optional)</label>
+                        <textarea name="notes" id="assign_notes" class="form-control" rows="3" placeholder="Any notes about the section assignment..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-users"></i> Assign to Section
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Approve Modal -->
 <div class="modal fade" id="approveModal" tabindex="-1">
     <div class="modal-dialog">
@@ -237,9 +313,7 @@
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title">Approve Enrollment</h5>
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span>&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
@@ -268,7 +342,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-success">Approve Enrollment</button>
                 </div>
             </form>
@@ -284,9 +358,7 @@
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title">Reject Enrollment</h5>
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span>&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
@@ -295,7 +367,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-danger">Reject Enrollment</button>
                 </div>
             </form>
@@ -311,9 +383,7 @@
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title">Quick Assign Section</h5>
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span>&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -333,7 +403,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-success">
                         <i class="fas fa-check"></i> Assign & Approve
                     </button>
@@ -351,16 +421,14 @@
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title">Bulk Approve Enrollments</h5>
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span>&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <p>Assign sections for the selected enrollments:</p>
                     <div id="bulk-assignments"></div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-success">Approve Selected</button>
                 </div>
             </form>
@@ -413,13 +481,60 @@ function updateBulkActions() {
 function showApproveModal(enrollmentId) {
     const form = document.getElementById('approveForm');
     form.action = `/teacher-admin/enrollments/${enrollmentId}/approve`;
-    $('#approveModal').modal('show');
+    const approveModal = new bootstrap.Modal(document.getElementById('approveModal'));
+    approveModal.show();
 }
 
 function showRejectModal(enrollmentId) {
     const form = document.getElementById('rejectForm');
     form.action = `/teacher-admin/enrollments/${enrollmentId}/reject`;
-    $('#rejectModal').modal('show');
+    const rejectModal = new bootstrap.Modal(document.getElementById('rejectModal'));
+    rejectModal.show();
+}
+
+function showVerifyModal(enrollmentId) {
+    const form = document.getElementById('verifyForm');
+    form.action = `/teacher-admin/enrollments/${enrollmentId}/verify`;
+    const verifyModal = new bootstrap.Modal(document.getElementById('verifyModal'));
+    verifyModal.show();
+}
+
+function showAssignSectionModal(enrollmentId, studentName, gradeLevel) {
+    document.getElementById('assignSectionStudentName').textContent = studentName;
+    document.getElementById('assignSectionGradeLevel').textContent = gradeLevel;
+    
+    // Load sections for the specific grade level
+    fetch(`/teacher-admin/enrollments/${enrollmentId}/sections`)
+        .then(response => response.json())
+        .then(data => {
+            const sectionSelect = document.getElementById('assign_section_id');
+            sectionSelect.innerHTML = '<option value="">Select Section</option>';
+            
+            data.sections.forEach(section => {
+                const currentCount = section.current_student_count || 0;
+                const capacity = section.student_limit;
+                const isFull = currentCount >= capacity;
+                const capacityText = `(${currentCount}/${capacity})`;
+                
+                const option = document.createElement('option');
+                option.value = section.id;
+                option.textContent = `${section.name} ${capacityText}${isFull ? ' - FULL' : ''}`;
+                option.disabled = isFull;
+                if (isFull) option.style.color = '#dc3545';
+                
+                sectionSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading sections:', error);
+            alert('Error loading sections. Please try again.');
+        });
+    
+    const form = document.getElementById('assignSectionForm');
+    form.action = `/teacher-admin/enrollments/${enrollmentId}/assign-section`;
+    
+    const assignSectionModal = new bootstrap.Modal(document.getElementById('assignSectionModal'));
+    assignSectionModal.show();
 }
 
 function showQuickAssignModal(enrollmentId, studentName, gradeLevel) {
@@ -456,7 +571,8 @@ function showQuickAssignModal(enrollmentId, studentName, gradeLevel) {
     const form = document.getElementById('quickAssignForm');
     form.action = `/teacher-admin/enrollments/${enrollmentId}/quick-assign`;
     
-    $('#quickAssignModal').modal('show');
+    const quickAssignModal = new bootstrap.Modal(document.getElementById('quickAssignModal'));
+    quickAssignModal.show();
 }
 
 function showBulkApproveModal() {
@@ -490,7 +606,8 @@ function showBulkApproveModal() {
         assignmentsDiv.innerHTML += assignmentHtml;
     });
     
-    $('#bulkApproveModal').modal('show');
+    const bulkApproveModal = new bootstrap.Modal(document.getElementById('bulkApproveModal'));
+    bulkApproveModal.show();
 }
 </script>
 @endpush

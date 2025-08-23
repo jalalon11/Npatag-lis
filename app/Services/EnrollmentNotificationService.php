@@ -45,12 +45,20 @@ class EnrollmentNotificationService
         try {
             // Create a temporary notifiable object for the applicant
             $notifiable = new class($enrollment) {
+                use \Illuminate\Notifications\Notifiable;
+                
                 public $enrollment;
+                
                 public function __construct($enrollment) {
                     $this->enrollment = $enrollment;
                 }
+                
                 public function routeNotificationForMail() {
                     return $this->enrollment->getNotificationEmail();
+                }
+                
+                public function getKey() {
+                    return $this->enrollment->id;
                 }
             };
 

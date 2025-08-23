@@ -409,22 +409,26 @@ Route::middleware(['auth', CheckSchoolStatus::class])->group(function () {
 
             // Enrollment Management
             Route::get('/enrollments', [\App\Http\Controllers\TeacherAdmin\EnrollmentController::class, 'index'])->name('enrollments.index');
-            Route::get('/enrollments/{enrollment}', [\App\Http\Controllers\TeacherAdmin\EnrollmentController::class, 'show'])->name('enrollments.show');
-            Route::post('/enrollments/{enrollment}/approve', [\App\Http\Controllers\TeacherAdmin\EnrollmentController::class, 'approve'])->name('enrollments.approve');
-            Route::post('/enrollments/{enrollment}/reject', [\App\Http\Controllers\TeacherAdmin\EnrollmentController::class, 'reject'])->name('enrollments.reject');
+        Route::get('/enrollments/{enrollment}', [\App\Http\Controllers\TeacherAdmin\EnrollmentController::class, 'show'])->name('enrollments.show');
+        Route::post('/enrollments/{enrollment}/verify', [\App\Http\Controllers\TeacherAdmin\EnrollmentController::class, 'verify'])->name('enrollments.verify');
+        Route::post('/enrollments/{enrollment}/assign-section', [\App\Http\Controllers\TeacherAdmin\EnrollmentController::class, 'assignSection'])->name('enrollments.assign-section');
+        Route::post('/enrollments/{enrollment}/approve', [\App\Http\Controllers\TeacherAdmin\EnrollmentController::class, 'approve'])->name('enrollments.approve');
+        Route::post('/enrollments/{enrollment}/reject', [\App\Http\Controllers\TeacherAdmin\EnrollmentController::class, 'reject'])->name('enrollments.reject');
             Route::get('/enrollments/{enrollment}/sections', [\App\Http\Controllers\TeacherAdmin\EnrollmentController::class, 'getSections'])->name('enrollments.sections');
             Route::post('/enrollments/{enrollment}/quick-assign', [\App\Http\Controllers\TeacherAdmin\EnrollmentController::class, 'quickAssign'])->name('enrollments.quick-assign');
             Route::post('/enrollments/bulk-approve', [\App\Http\Controllers\TeacherAdmin\EnrollmentController::class, 'bulkApprove'])->name('enrollments.bulk-approve');
             Route::get('/enrollments/statistics/data', [\App\Http\Controllers\TeacherAdmin\EnrollmentController::class, 'statistics'])->name('enrollments.statistics');
 
-            // Student Management (Enrolled Students Only)
-            Route::get('/students', [\App\Http\Controllers\TeacherAdmin\StudentController::class, 'index'])->name('students.index');
-            Route::get('/students/{student}', [\App\Http\Controllers\TeacherAdmin\StudentController::class, 'show'])->name('students.show');
-            Route::get('/students/{student}/edit', [\App\Http\Controllers\TeacherAdmin\StudentController::class, 'edit'])->name('students.edit');
-            Route::put('/students/{student}', [\App\Http\Controllers\TeacherAdmin\StudentController::class, 'update'])->name('students.update');
-            Route::patch('/students/{student}/toggle-status', [\App\Http\Controllers\TeacherAdmin\StudentController::class, 'toggleStatus'])->name('students.toggle-status');
-            Route::get('/students/section/{section}', [\App\Http\Controllers\TeacherAdmin\StudentController::class, 'getBySection'])->name('students.by-section');
-            Route::get('/students/statistics/data', [\App\Http\Controllers\TeacherAdmin\StudentController::class, 'statistics'])->name('students.statistics');
+            // Student Management
+    Route::get('/students', [\App\Http\Controllers\TeacherAdmin\StudentController::class, 'index'])->name('students.index');
+    Route::get('/students/create', [\App\Http\Controllers\TeacherAdmin\StudentController::class, 'create'])->name('students.create');
+    Route::post('/students', [\App\Http\Controllers\TeacherAdmin\StudentController::class, 'store'])->name('students.store');
+    Route::get('/students/{student}', [\App\Http\Controllers\TeacherAdmin\StudentController::class, 'show'])->name('students.show');
+    Route::get('/students/{student}/edit', [\App\Http\Controllers\TeacherAdmin\StudentController::class, 'edit'])->name('students.edit');
+    Route::put('/students/{student}', [\App\Http\Controllers\TeacherAdmin\StudentController::class, 'update'])->name('students.update');
+    Route::patch('/students/{student}/toggle-status', [\App\Http\Controllers\TeacherAdmin\StudentController::class, 'toggleStatus'])->name('students.toggle-status');
+    Route::get('/students/section/{section}', [\App\Http\Controllers\TeacherAdmin\StudentController::class, 'getBySection'])->name('students.by-section');
+    Route::get('/students/statistics/data', [\App\Http\Controllers\TeacherAdmin\StudentController::class, 'statistics'])->name('students.statistics');
 
             // Help Routes
             Route::get('/help', [\App\Http\Controllers\TeacherAdmin\HelpController::class, 'index'])->name('help.index');

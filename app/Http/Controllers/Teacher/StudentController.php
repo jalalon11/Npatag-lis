@@ -116,54 +116,7 @@ class StudentController extends Controller
         }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        $sections = Section::where('adviser_id', Auth::id())
-            ->where('is_active', true)
-            ->get();
-
-        return view('teacher.students.create', compact('sections'));
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'middle_name' => 'nullable|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'student_id' => 'required|string|max:50|unique:students',
-            'lrn' => 'required|string|size:12|regex:/^[0-9]{12}$/|unique:students',
-            'gender' => 'required|in:Male,Female',
-            'birth_date' => 'required|date',
-            'section_id' => 'required|exists:sections,id',
-            'address' => 'nullable|string',
-            'guardian_name' => 'required|string|max:255',
-            'guardian_contact' => 'required|string|max:50',
-        ]);
-
-        // Verify the section belongs to this teacher
-        $section = Section::where('id', $validated['section_id'])
-            ->where('adviser_id', Auth::id())
-            ->firstOrFail();
-
-        // Check if section has reached its student limit
-        if ($section->isFull()) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Cannot add student. Section "' . $section->name . '" has reached its maximum capacity of ' . $section->student_limit . ' students.');
-        }
-
-        Student::create($validated);
-
-        return redirect()->route('teacher.students.index')
-            ->with('success', 'Student added successfully.');
-    }
+    // Student creation removed - students are now created through enrollment process only
 
     /**
      * Display the specified resource.

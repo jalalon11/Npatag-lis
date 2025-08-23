@@ -8,6 +8,9 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 mb-0 text-gray-800">Student Management</h1>
         <div>
+            <a href="{{ route('teacher_admin.students.create') }}" class="btn btn-primary btn-sm me-2">
+                <i class="fas fa-user-plus"></i> Enroll Student
+            </a>
             <button type="button" class="btn btn-info btn-sm" onclick="loadStatistics()">
                 <i class="fas fa-chart-bar"></i> Statistics
             </button>

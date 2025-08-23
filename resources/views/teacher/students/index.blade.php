@@ -1208,9 +1208,7 @@
             <a href="{{ route('teacher.dashboard') }}" class="btn btn-outline-secondary">
                 <i class="fas fa-home me-1"></i> Dashboard
             </a>
-            <a href="{{ route('teacher.students.create') }}" class="btn btn-primary shadow-sm">
-                <i class="fas fa-plus-circle me-1"></i> Add New Student
-            </a>
+            <!-- Student creation removed - students are now created through enrollment process only -->
         </div>
     </div>
 
@@ -1802,9 +1800,7 @@
                     </div>
                     <h3 class="text-primary mb-3">No Students Found</h3>
                     <p class="text-muted mb-4">You haven't added any students to your sections yet.</p>
-                    <a href="{{ route('teacher.students.create') }}" class="btn btn-primary px-4">
-                        <i class="fas fa-plus-circle me-1"></i> Add Your First Student
-                    </a>
+                    <!-- Student creation removed - students are now created through enrollment process only -->
                 </div>
             </div>
         </div>

@@ -29,6 +29,7 @@ class Student extends Model
         'guardian_contact',
         'guardian_email',
         'section_id',
+        'school_id',
         'enrollment_id',
         'school_year',
         'is_active',

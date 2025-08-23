@@ -112,6 +112,68 @@ class StudentController extends Controller
     }
 
     /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        $sections = Section::where('school_id', Auth::user()->school_id)
+            ->where('is_active', true)
+            ->with('gradeLevel')
+            ->get()
+            ->groupBy('grade_level.name');
+
+        return view('teacher_admin.students.create', compact('sections'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'first_name' => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'student_id' => 'required|string|max:50|unique:students',
+            'lrn' => 'required|string|size:12|regex:/^[0-9]{12}$/|unique:students',
+            'gender' => 'required|in:Male,Female',
+            'birth_date' => 'required|date',
+            'address' => 'nullable|string',
+            'guardian_name' => 'required|string|max:255',
+            'guardian_contact' => 'required|string|max:50',
+            'guardian_email' => 'nullable|email|max:255',
+            'student_email' => 'nullable|email|max:255',
+            'emergency_contact_number' => 'nullable|string|max:50',
+            'emergency_contact_relationship' => 'nullable|string|max:100',
+            'previous_school' => 'nullable|string|max:255',
+            'medical_conditions' => 'nullable|string',
+            'medications' => 'nullable|string',
+            'section_id' => 'required|exists:sections,id',
+        ]);
+
+        // Verify the section belongs to this teacher admin's school
+        $section = Section::where('id', $validated['section_id'])
+            ->where('school_id', Auth::user()->school_id)
+            ->firstOrFail();
+
+        // Check if section has reached its student limit
+        if ($section->isFull()) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Cannot add student. Section "' . $section->name . '" has reached its maximum capacity of ' . $section->student_limit . ' students.');
+        }
+
+        // Set default status as enrolled
+        $validated['status'] = 'enrolled';
+        $validated['school_year'] = now()->year . '-' . (now()->year + 1);
+
+        Student::create($validated);
+
+        return redirect()->route('teacher_admin.students.index')
+            ->with('success', 'Student enrolled successfully.');
+    }
+
+    /**
      * Display the specified student
      */
     public function show(Student $student)

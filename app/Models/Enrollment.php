@@ -26,6 +26,7 @@ class Enrollment extends Model
         'preferred_section',
         'preferred_section_id',
         'status',
+        'previous_status',
         'rejection_reason',
         'processed_by',
         'processed_at',
@@ -119,6 +120,11 @@ class Enrollment extends Model
         return $this->status === 'enrolled';
     }
 
+    public function isVerified(): bool
+    {
+        return $this->status === 'verified';
+    }
+
     // Scopes
     public function scopePending($query)
     {
@@ -128,6 +134,11 @@ class Enrollment extends Model
     public function scopeApproved($query)
     {
         return $query->where('status', 'approved');
+    }
+
+    public function scopeVerified($query)
+    {
+        return $query->where('status', 'verified');
     }
 
     public function scopeForSchool($query, $schoolId)

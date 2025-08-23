@@ -108,7 +108,112 @@ class EnrollmentController extends Controller
     }
 
     /**
-     * Approve an enrollment request
+     * Verify an enrollment request (first step)
+     */
+    public function verify(Request $request, Enrollment $enrollment)
+    {
+        $user = Auth::user();
+        
+        // Ensure the enrollment belongs to the teacher admin's school
+        if ($enrollment->school_id !== $user->school->id) {
+            abort(403, 'Access denied.');
+        }
+
+        if (!$enrollment->isPending()) {
+            return redirect()->back()->with('error', 'This enrollment request has already been processed.');
+        }
+
+        $request->validate([
+            'notes' => 'nullable|string|max:1000'
+        ]);
+
+        $enrollment->update([
+            'status' => 'verified',
+            'processed_by' => $user->id,
+            'processed_at' => now(),
+            'notes' => $request->notes
+        ]);
+
+        return redirect()->route('teacher-admin.enrollments.index')
+            ->with('success', 'Enrollment verified successfully. You can now assign the student to a section.');
+    }
+
+    /**
+     * Assign student to section (second step)
+     */
+    public function assignSection(Request $request, Enrollment $enrollment)
+    {
+        $user = Auth::user();
+        
+        // Ensure the enrollment belongs to the teacher admin's school
+        if ($enrollment->school_id !== $user->school->id) {
+            abort(403, 'Access denied.');
+        }
+
+        if (!$enrollment->isVerified()) {
+            return redirect()->back()->with('error', 'This enrollment must be verified first before section assignment.');
+        }
+
+        $request->validate([
+            'assigned_section_id' => [
+                'required',
+                'exists:sections,id',
+                Rule::exists('sections', 'id')->where(function ($query) use ($enrollment) {
+                    $query->where('school_id', $enrollment->school_id)
+                          ->where('is_active', true);
+                })
+            ],
+            'notes' => 'nullable|string|max:1000'
+        ]);
+
+        // Check section capacity before assignment
+        $assignedSection = Section::find($request->assigned_section_id);
+        if ($assignedSection && !$assignedSection->canAccommodate(1)) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Cannot assign student to this section. Section is at full capacity (' . 
+                    $assignedSection->getCurrentStudentCount() . '/' . $assignedSection->student_limit . ').');
+        }
+
+        DB::transaction(function () use ($request, $enrollment, $user) {
+            // Update enrollment with section assignment
+            $enrollment->update([
+                'assigned_section_id' => $request->assigned_section_id,
+                'notes' => $request->notes
+            ]);
+
+            // Create student record
+            $student = Student::create([
+                'first_name' => $enrollment->first_name,
+                'middle_name' => $enrollment->middle_name,
+                'last_name' => $enrollment->last_name,
+                'birth_date' => $enrollment->birth_date,
+                'gender' => $enrollment->gender,
+                'student_id' => $enrollment->student_id,
+                'lrn' => $enrollment->lrn,
+                'address' => $enrollment->address,
+                'guardian_name' => $enrollment->guardian_name,
+                'guardian_contact' => $enrollment->guardian_contact,
+                'section_id' => $request->assigned_section_id,
+                'school_id' => $enrollment->school_id,
+                'enrollment_id' => $enrollment->id,
+                'school_year' => now()->year . '-' . (now()->year + 1),
+                'is_active' => true
+            ]);
+
+            // Update enrollment with student_id
+            $enrollment->update(['student_id' => $student->id]);
+
+            // Update enrollment status to enrolled
+            $enrollment->update(['status' => 'enrolled']);
+        });
+
+        return redirect()->route('teacher-admin.enrollments.index')
+            ->with('success', 'Student has been successfully enrolled and assigned to section.');
+    }
+
+    /**
+     * Approve an enrollment request (legacy method - now combines verify and assign)
      */
     public function approve(Request $request, Enrollment $enrollment)
     {
@@ -304,9 +409,7 @@ class EnrollmentController extends Controller
 
         $sections = Section::where('school_id', $school->id)
             ->where('grade_level', $enrollment->preferred_grade_level)
-            ->with(['students' => function($query) {
-                $query->where('status', 'active');
-            }])
+            ->with(['students'])
             ->get()
             ->map(function($section) {
                 return [
@@ -390,6 +493,8 @@ class EnrollmentController extends Controller
                 'guardian_contact' => $enrollment->guardian_contact,
                 'section_id' => $section->id,
                 'school_id' => $school->id,
+                'enrollment_id' => $enrollment->id,
+                'school_year' => now()->year . '-' . (now()->year + 1),
                 'status' => 'active'
             ]);
 
