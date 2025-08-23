@@ -5,9 +5,9 @@
     <div class="row mb-4">
         <div class="col-md-12">
             <div class="d-flex justify-content-between align-items-center">
-                <h2><i class="fas fa-school text-success me-2"></i> {{ $school->name }}</h2>
+                <h2> {{ $school->name }}</h2>
                 <div>
-                    <a href="{{ route('admin.schools.edit', $school->id) }}" class="btn btn-warning">
+                    <a href="{{ route('admin.schools.edit', $school->id) }}" class="btn btn-primary">
                         <i class="fas fa-edit me-1"></i> Edit School
                     </a>
                 </div>
@@ -116,12 +116,12 @@
                 <div class="card-header bg-white py-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
-                            <i class="fas fa-user-shield text-info me-2"></i>
+                            <i class="fas fa-user-shield text-primary me-2"></i>
                             Teacher Admins
-                            <span class="badge bg-info ms-2">{{ $teacherAdmins->count() }}/2</span>
+                            <span class="badge bg-primary ms-2">{{ $teacherAdmins->count() }}/2</span>
                         </h5>
                         @if($teacherAdmins->count() < 2)
-                            <a href="{{ route('admin.teacher-admins.create') }}" class="btn btn-info btn-sm">
+                            <a href="{{ route('admin.teacher-admins.create') }}" class="btn btn-primary btn-sm">
                                 <i class="fas fa-plus-circle me-1"></i>
                                 Assign Teacher Admin
                             </a>
@@ -145,8 +145,8 @@
                                         <tr>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <div class="avatar-sm me-3 bg-info bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center">
-                                                        <span class="text-info">{{ strtoupper(substr($admin->name, 0, 1)) }}</span>
+                                                    <div class="avatar-sm me-3 bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center">
+                                                        <span class="text-primary">{{ strtoupper(substr($admin->name, 0, 1)) }}</span>
                                                     </div>
                                                     {{ $admin->name }}
                                                 </div>
@@ -189,11 +189,11 @@
                 <div class="card-header bg-white py-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
-                            <i class="fas fa-chalkboard-teacher text-success me-2"></i>
+                            <i class="fas fa-chalkboard-teacher text-primary me-2"></i>
                             Teachers
-                            <span class="badge bg-success ms-2">{{ $teachers->count() }}</span>
+                            <span class="badge bg-primary ms-2">{{ $teachers->count() }}</span>
                         </h5>
-                        <a href="{{ route('admin.teachers.create') }}" class="btn btn-success btn-sm">
+                        <a href="{{ route('admin.teachers.create') }}" class="btn btn-primary btn-sm">
                             <i class="fas fa-plus-circle me-1"></i>
                             Add Teacher
                         </a>
@@ -216,8 +216,8 @@
                                         <tr>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <div class="avatar-sm me-3 bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center">
-                                                        <span class="text-success">{{ strtoupper(substr($teacher->name, 0, 1)) }}</span>
+                                                    <div class="avatar-sm me-3 bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center">
+                                                        <span class="text-primary">{{ strtoupper(substr($teacher->name, 0, 1)) }}</span>
                                                     </div>
                                                     {{ $teacher->name }}
                                                 </div>
@@ -252,7 +252,7 @@
                             <div class="d-flex flex-column align-items-center">
                                 <i class="fas fa-chalkboard-teacher text-muted mb-3" style="font-size: 2rem;"></i>
                                 <p class="text-muted mb-0">No teachers assigned to this school yet</p>
-                                <a href="{{ route('admin.teachers.create') }}" class="btn btn-success btn-sm mt-3">
+                                <a href="{{ route('admin.teachers.create') }}" class="btn btn-primary btn-sm mt-3">
                                     <i class="fas fa-plus-circle me-1"></i>
                                     Add Teacher
                                 </a>

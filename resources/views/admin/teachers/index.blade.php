@@ -5,10 +5,7 @@
     <div class="row mb-4">
         <div class="col-md-12">
             <div class="d-flex justify-content-between align-items-center">
-                <h2><i class="fas fa-chalkboard-teacher text-info me-2"></i> Teachers</h2>
-                <a href="{{ route('admin.teachers.create') }}" class="btn btn-info">
-                    <i class="fas fa-plus-circle me-1"></i> Add New Teacher
-                </a>
+                <h2>Teachers</h2>
             </div>
         </div>
     </div>
@@ -30,12 +27,12 @@
     <!-- Statistics Cards -->
     <div class="row mb-4">
         <div class="col-md-4">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card bg-white border-0 shadow-sm h-100">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-shrink-0">
-                            <div class="bg-info bg-opacity-10 rounded-circle p-3">
-                                <i class="fas fa-chalkboard-teacher text-info fa-2x"></i>
+                            <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                                <i class="fas fa-chalkboard-teacher text-primary fa-2x"></i>
                             </div>
                         </div>
                         <div class="flex-grow-1 ms-3">
@@ -47,24 +44,7 @@
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <div class="bg-success bg-opacity-10 rounded-circle p-3">
-                                <i class="fas fa-school text-success fa-2x"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h6 class="text-muted mb-1">Total Schools</h6>
-                            <h3 class="mb-0">{{ $teachers->pluck('school')->unique()->count() }}</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card bg-white border-0 shadow-sm h-100">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-shrink-0">
@@ -83,9 +63,9 @@
     </div>
 
     <!-- Search and Filter Section -->
-    <div class="card border-0 shadow-sm mb-4">
+    <div class="card bg-white border-0 shadow-sm mb-4">
         <div class="card-body">
-            <form action="{{ route('admin.teachers.index') }}" method="GET" class="row g-3">
+            <form action="{{ route('admin.teachers.index') }}" method="GET" class="row g-3 align-items-end">
                 <div class="col-md-3">
                     <div class="input-group">
                         <span class="input-group-text bg-white border-end-0">
@@ -94,21 +74,10 @@
                         <input type="text" name="search" class="form-control border-start-0" placeholder="Search teachers..." value="{{ request('search') }}">
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <select name="school" class="form-select">
-                        <option value="">All Schools</option>
-                        @foreach($teachers->pluck('school')->unique() as $school)
-                            <option value="{{ $school->id }}" {{ request('school') == $school->id ? 'selected' : '' }}>
-                                {{ $school->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
                 <div class="col-md-2">
                     <select name="sort" class="form-select">
                         <option value="">Sort by...</option>
                         <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Name</option>
-                        <option value="school" {{ request('sort') == 'school' ? 'selected' : '' }}>School</option>
                         <option value="created_at" {{ request('sort') == 'created_at' ? 'selected' : '' }}>Date Created</option>
                     </select>
                 </div>
@@ -123,16 +92,21 @@
                         <i class="fas fa-filter me-1"></i> Apply
                     </button>
                 </div>
+                <div class="col-md-3 d-flex justify-content-end">
+                    <a href="{{ route('admin.teachers.create') }}" class="btn btn-primary">
+                        <i class="fas fa-plus-circle me-1"></i> Add New Teacher
+                    </a>
+                </div>
             </form>
         </div>
     </div>
 
     <!-- Teachers Table -->
-    <div class="card border-0 shadow-sm">
+    <div class="card border-0 bg-white shadow-sm">
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
-                    <thead class="table-light">
+                    <thead class="bg-white table-light">
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Teacher</th>
@@ -149,8 +123,8 @@
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <div class="flex-shrink-0 me-2">
-                                            <div class="bg-info bg-opacity-10 rounded-circle p-2">
-                                                <i class="fas fa-chalkboard-teacher text-info"></i>
+                                            <div class="bg-primary bg-opacity-10 rounded-circle p-2">
+                                                <i class="fas fa-chalkboard-teacher text-primary"></i>
                                             </div>
                                         </div>
                                         <div>
@@ -175,14 +149,14 @@
                                             <i class="fas fa-user-shield me-1"></i> Teacher Admin
                                         </span>
                                     @else
-                                        <span class="badge bg-info">
+                                        <span class="badge bg-primary">
                                             <i class="fas fa-chalkboard-teacher me-1"></i> Teacher
                                         </span>
                                     @endif
                                 </td>
                                 <td class="text-end">
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <a href="{{ route('admin.teachers.show', $teacher->id) }}" class="btn btn-info" title="View Details">
+                                        <a href="{{ route('admin.teachers.show', $teacher->id) }}" class="btn btn-primary" title="View Details">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                         <a href="{{ route('admin.teachers.edit', $teacher->id) }}" class="btn btn-warning" title="Edit Teacher">
@@ -201,7 +175,7 @@
                                         <i class="fas fa-chalkboard-teacher fa-2x mb-3"></i>
                                         <h5>No Teachers Found</h5>
                                         <p>Start by adding a new teacher.</p>
-                                        <a href="{{ route('admin.teachers.create') }}" class="btn btn-info">
+                                        <a href="{{ route('admin.teachers.create') }}" class="btn btn-primary">
                                             <i class="fas fa-plus-circle me-1"></i> Add New Teacher
                                         </a>
                                     </div>
