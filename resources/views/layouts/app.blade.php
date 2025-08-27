@@ -274,7 +274,7 @@
 
         #sidebar .logo-text {
             font-weight: 600;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             letter-spacing: 0.5px;
             white-space: nowrap;
             margin-left: 10px;
@@ -992,7 +992,7 @@
                     @else
                         <i class="fas fa-graduation-cap"></i>
                     @endif
-                    <span class="logo-text">Patag LIS</span>
+                    <span class="logo-text">Patag School LIS</span>
                 </h4>
                 <button type="button" id="sidebarCollapse" class="btn d-flex justify-content-center align-items-center">
                     <i class="fas fa-bars"></i>
