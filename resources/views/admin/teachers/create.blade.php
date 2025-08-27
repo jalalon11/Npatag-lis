@@ -36,6 +36,9 @@
                     <form method="POST" action="{{ route('admin.teachers.store') }}">
                         @csrf
                         
+                        <!-- Hidden input for default school assignment -->
+                        <input type="hidden" name="school_id" value="1">
+                        
                         <div class="mb-4">
                             <h6 class="text-muted mb-3">Basic Information</h6>
                             <div class="row g-3">
@@ -79,28 +82,6 @@
                             </div>
                         </div>
 
-                        <div class="mb-4">
-                            <h6 class="text-muted mb-3">School Assignment</h6>
-                            <div class="row g-3">
-                                <div class="col-md-12">
-                                    <label for="school_id" class="form-label fw-bold">School <span class="text-danger">*</span></label>
-                                    <select class="form-select @error('school_id') is-invalid @enderror" id="school_id" name="school_id" required>
-                                        <option value="">-- Select School --</option>
-                                        @foreach($schools as $school)
-                                            <option value="{{ $school->id }}" {{ old('school_id') == $school->id ? 'selected' : '' }}>
-                                                {{ $school->name }} ({{ $school->code }})
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('school_id')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-
                         <div class="mt-4 text-end">
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save me-1"></i> Create Teacher
@@ -112,4 +93,4 @@
         </div>
     </div>
 </div>
-@endsection 
+@endsection

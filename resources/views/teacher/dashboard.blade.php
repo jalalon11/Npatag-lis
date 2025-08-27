@@ -1,43 +1,41 @@
 @extends('layouts.app')
 
 @push('styles')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 <link href="{{ asset('css/dashboard.css') }}" rel="stylesheet">
 <style>
+    /* Global Design Tokens */
+    :root {
+        --border-radius: 12px;
+        --border-radius-pill: 50px;
+        --padding-sm: 1rem;
+        --padding-md: 1.5rem;
+        --margin-sm: 1rem;
+        --margin-md: 1.5rem;
+        --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --shadow-hover: 0 12px 24px rgba(0, 0, 0, 0.12);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
     /* Enhanced Resource Card Styles */
     .resource-card {
-        transition: all 0.3s ease;
-        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+        transition: var(--transition);
+        box-shadow: var(--shadow-sm);
         position: relative;
         overflow: hidden;
         border: none !important;
-        border-radius: 12px !important;
+        border-radius: var(--border-radius) !important;
     }
 
     .resource-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        box-shadow: var(--shadow-hover);
     }
 
     .resource-header {
-        position: relative;
-        padding: 1.25rem !important;
+        padding: var(--padding-md) !important;
         border-bottom: none !important;
-    }
-
-    .resource-header::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 100%;
         background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
-        z-index: 1;
-    }
-
-    .resource-header .d-flex {
-        position: relative;
-        z-index: 2;
     }
 
     .resource-icon {
@@ -46,9 +44,9 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 12px !important;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
-        margin-right: 1rem !important;
+        border-radius: var(--border-radius) !important;
+        box-shadow: var(--shadow-sm) !important;
+        margin-right: var(--margin-sm) !important;
     }
 
     .resource-icon i {
@@ -56,22 +54,14 @@
     }
 
     .resource-body {
-        padding: 1.25rem !important;
-        position: relative;
+        padding: var(--padding-md) !important;
     }
 
     .resource-count {
-        position: relative;
-        display: inline-flex;
-        align-items: center;
         padding: 0.5rem 1rem;
-        border-radius: 50px;
+        border-radius: var(--border-radius-pill);
         font-weight: 600;
         font-size: 0.85rem;
-    }
-
-    .resource-count i {
-        margin-right: 0.5rem;
     }
 
     .resource-card::after {
@@ -81,405 +71,354 @@
         left: 0;
         width: 100%;
         height: 4px;
-        transition: all 0.3s ease;
+        transition: var(--transition);
     }
 
     .resource-card:hover::after {
         height: 6px;
     }
 
-    .resource-hover-overlay {
+    /* Welcome Header Styles */
+    .welcome-header {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, #1e2c38 0%, #2d3e4f 100%);
+        border-radius: var(--border-radius);
+    }
+
+    .welcome-header::before {
+        content: '';
         position: absolute;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.75);
-        opacity: 0;
-        transition: all 0.3s ease;
-        visibility: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at top right, rgba(52, 152, 219, 0.1) 0%, transparent 70%);
+        pointer-events: none;
     }
 
-    .resource-hover-content {
-        padding: 1.5rem;
-        text-align: center;
+    .transition-all {
+        transition: var(--transition);
     }
 
-    .resource-card:hover .resource-hover-overlay {
-        opacity: 1;
-        visibility: visible;
+    .hover-lift {
+        transition: var(--transition);
     }
 
-    /* Decorative elements */
-    .resource-decoration {
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-        opacity: 0.15;
-        font-size: 3rem;
-        transform: rotate(-15deg);
-        z-index: 0;
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover) !important;
     }
 
-    .resource-card .resource-header .badge {
-        font-size: 0.65rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+    .hover-bg:hover {
+        background-color: rgba(0,0,0,0.02);
+        transform: translateX(5px);
+    }
+
+    .stat-card .card-body {
+        padding: var(--padding-md);
+    }
+
+    .w-60 { width: 60%; }
+    .w-40 { width: 40%; }
+    .w-30 { width: 30%; }
+
+    /* Consistent Table Styles */
+    .table {
+        border-radius: var(--border-radius);
+        overflow: hidden;
+    }
+
+    .table th, .table td {
+        padding: var(--padding-sm);
+        vertical-align: middle;
+    }
+
+    .table thead {
+        background-color: #f8f9fa;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0,0,0,0.02);
+    }
+
+    .badge {
+        border-radius: var(--border-radius-pill);
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .btn {
+        border-radius: var(--border-radius-pill);
+        padding: 0.5rem 1.25rem;
+    }
+
+    .avatar {
+        border-radius: var(--border-radius);
     }
 </style>
 @endpush
 
+@php
+    $maintenanceMode = \App\Models\SystemSetting::isMaintenanceMode();
+    $maintenanceMessage = \App\Models\SystemSetting::getMaintenanceMessage();
+    $maintenanceDuration = \App\Models\SystemSetting::getMaintenanceDuration();
+@endphp
+
 @section('content')
-<div class="container-fluid">
-    <!-- Welcome Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card border-0 shadow-sm bg-primary text-white welcome-header">
-                <div class="card-body p-4">
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
-                        <div class="d-flex flex-column flex-md-row align-items-center mb-3 mb-md-0">
-                            @if(Auth::user()->school && Auth::user()->school->logo_path)
-                            <div class="me-md-3 mb-3 mb-md-0 text-center">
-                                <img src="{{ Auth::user()->school->logo_url }}" alt="{{ Auth::user()->school->name }} Logo" class="rounded" style="max-height: 60px;">
+<div class="container-fluid px-4">
+    <!-- Welcome Header and System Status -->
+    <div class="row g-4 mb-4">
+        <!-- Welcome Header (Left Side) -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm welcome-header text-white position-relative overflow-hidden animate__animated animate__fadeIn h-100">
+                <div class="position-absolute top-0 end-0 w-60 h-100 z-0 d-none d-lg-block bg-primary" style="opacity: 0.10; clip-path: polygon(20% 0, 100% 0%, 100% 100%, 0% 100%);"></div>
+                <div class="position-absolute top-0 end-0 w-50 h-100 z-0 d-none d-lg-block bg-primary" style="opacity: 0.45; clip-path: polygon(25% 0, 100% 0%, 100% 100%, 5% 100%);"></div>
+                <div class="position-absolute top-0 end-0 w-40 h-100 z-0 d-none d-lg-block bg-primary" style="opacity: 0.60; clip-path: polygon(30% 0, 100% 0%, 100% 100%, 10% 100%);"></div>
+                <div class="position-absolute top-0 end-0 w-30 h-100 z-0 d-none d-lg-block bg-primary" style="clip-path: polygon(35% 0, 100% 0%, 100% 100%, 15% 100%);"></div>
+                
+                <div class="card-body p-4 position-relative z-1 d-flex flex-column h-100">
+                    <div class="d-flex flex-column align-items-start">
+                        @if(Auth::user()->school && Auth::user()->school->logo_path)
+                            <div class="mb-3">
+                                <img src="{{ Auth::user()->school->logo_url }}" alt="{{ Auth::user()->school->name }} Logo" class="rounded" style="max-height: 50px;">
                             </div>
-                            @else
-                            <div class="avatar bg-white bg-opacity-25 rounded-circle p-3 me-md-3 mb-3 mb-md-0 mx-auto">
-                                <i class="fas fa-chalkboard-teacher fa-2x"></i>
+                        @else
+                            <div class="avatar bg-white bg-opacity-25 rounded p-2 mb-3">
+                                <i class="fas fa-chalkboard-teacher fa-lg"></i>
                             </div>
-                            @endif
-                            <div class="text-center text-md-start">
-                                <h3 class="fw-bold mb-1">Welcome, {{ Auth::user()->name }}</h3>
-                                <p class="mb-0 opacity-75">{{ now()->format('l, F d, Y') }}</p>
-                                @if(Auth::user()->school)
-                                <p class="mb-0 opacity-75">{{ Auth::user()->school->name }}</p>
+                        @endif
+                        <h3 class="fw-bold mb-2 text-white display-6">Teacher Dashboard</h3>
+                        <p class="text-white mb-0 lead opacity-90">Welcome back, {{ Auth::user()->name }}!</p>
+                        <div class="d-flex align-items-center mt-3">
+                            <span class="badge bg-primary bg-opacity-10 text-white border border-primary border-opacity-20 px-3 py-2">
+                                <i class="fas fa-check-circle me-1"></i> System Online
+                            </span>
+                            <div class="ms-3 d-flex align-items-center text-white text-opacity-70">
+                                <i class="far fa-calendar-alt text-info me-2"></i>
+                                <span>{{ now()->format('F d, Y') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Status (Right Side) -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm position-relative overflow-hidden animate__animated animate__fadeIn h-100" style="animation-delay: 0.3s;">
+                <div class="bg-white p-4 d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <h5 class="mb-1 fw-bold">System Status</h5>
+                            <p class="text-muted mb-0 small">Current system state</p>
+                        </div>
+                    </div>
+                    <span class="badge {{ $maintenanceMode ? 'bg-danger bg-opacity-10 text-danger' : 'bg-primary bg-opacity-10 text-primary' }} px-3 py-2 fw-semibold">
+                        <i class="fas fa-{{ $maintenanceMode ? 'exclamation-circle' : 'check-circle' }} me-1"></i>
+                        {{ $maintenanceMode ? 'Maintenance' : 'Online' }}
+                    </span>
+                </div>
+                <div class="card-body bg-white p-4 d-flex flex-column justify-content-center h-100">
+                    <div class="text-center mb-4">
+                        <div class="mx-auto mb-3">
+                            <div class="p-4 rounded-circle {{ $maintenanceMode ? 'bg-danger' : 'bg-primary' }} bg-opacity-10 d-inline-block position-relative">
+                                <i class="fas fa-{{ $maintenanceMode ? 'tools' : 'shield-alt' }} {{ $maintenanceMode ? 'text-danger' : 'text-primary' }} fa-3x"></i>
+                                @if(!$maintenanceMode)
+                                <div class="position-absolute top-0 end-0">
+                                    <span class="badge bg-primary rounded-circle p-2">
+                                        <i class="fas fa-check text-white"></i>
+                                    </span>
+                                </div>
                                 @endif
                             </div>
                         </div>
-                        <div class="text-center">
-                            <a href="{{ route('teacher.attendances.create') }}" class="btn btn-light">
-                                <i class="fas fa-plus-circle me-2"></i> Manage Attendance
-                            </a>
-                        </div>
+                        <h5 class="fw-bold mb-2">{{ $maintenanceMode ? 'Maintenance Active' : 'All Systems Operational' }}</h5>
+                        <p class="text-muted mb-0">
+                            {{ $maintenanceMode
+                                ? 'System is in maintenance mode. Only administrators have access.'
+                                : 'All systems are running smoothly and accessible to users.'
+                            }}
+                        </p>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Stats Overview -->
-    <div class="row mb-4">
-        <div class="col-md-3 mb-3 mb-md-0">
-            <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                <div class="card-body position-relative p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div>
-                            <p class="text-muted mb-1 small text-uppercase">Sections</p>
-                            <h2 class="display-5 fw-bold mb-0">{{ $stats['sectionsCount'] }}</h2>
+                    @if($maintenanceMode)
+                    <div class="maintenance-details bg-danger bg-opacity-5 border border-danger border-opacity-20 rounded-3 p-3 mb-0">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-clock text-danger me-2"></i>
+                            <span class="text-danger fw-semibold">Duration: {{ $maintenanceDuration }} minutes</span>
                         </div>
-                        <div class="rounded-circle bg-primary bg-opacity-10 p-3">
-                            <i class="fas fa-users fa-2x text-primary"></i>
+                        @if($maintenanceMessage)
+                        <div class="d-flex align-items-start">
+                            <i class="fas fa-info-circle text-danger me-2 mt-1"></i>
+                            <span class="text-danger">{{ $maintenanceMessage }}</span>
                         </div>
+                        @endif
                     </div>
-                    <div class="progress" style="height: 4px;">
-                        <div class="progress-bar bg-primary" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                </div>
-                <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-success small">
-                            <i class="fas fa-check-circle me-1"></i> All Active
-                        </span>
-                        <!-- <a href="{{ route('teacher-admin.sections.index') }}" class="btn btn-sm btn-outline-primary rounded-pill">
-                            <i class="fas fa-external-link-alt me-1"></i> View All
-                        </a> -->
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 mb-3 mb-md-0">
-            <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                <div class="card-body position-relative p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div>
-                            <p class="text-muted mb-1 small text-uppercase">Subjects</p>
-                            <h2 class="display-5 fw-bold mb-0">{{ $stats['subjectsCount'] }}</h2>
-                        </div>
-                        <div class="rounded-circle bg-success bg-opacity-10 p-3">
-                            <i class="fas fa-book fa-2x text-success"></i>
-                        </div>
-                    </div>
-                    <div class="progress" style="height: 4px;">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                </div>
-                <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-success small">
-                            <i class="fas fa-check-circle me-1"></i> All Assigned
-                        </span>
-                        <!-- <a href="{{ route('teacher-admin.subjects.index') }}" class="btn btn-sm btn-outline-success rounded-pill">
-                            <i class="fas fa-external-link-alt me-1"></i> View All
-                        </a> -->
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 mb-3 mb-md-0">
-            <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                <div class="card-body position-relative p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div>
-                            <p class="text-muted mb-1 small text-uppercase">Students</p>
-                            <h2 class="display-5 fw-bold mb-0">{{ $stats['studentsCount'] }}</h2>
-                        </div>
-                        <div class="rounded-circle bg-info bg-opacity-10 p-3">
-                            <i class="fas fa-user-graduate fa-2x text-info"></i>
-                        </div>
-                    </div>
-                    <div class="progress" style="height: 4px;">
-                        <div class="progress-bar bg-info" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                </div>
-                <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-success small">
-                            <i class="fas fa-check-circle me-1"></i> All Enrolled
-                        </span>
-                        <!-- <a href="{{ route('teacher.students.index') }}" class="btn btn-sm btn-outline-info rounded-pill">
-                            <i class="fas fa-external-link-alt me-1"></i> View All
-                        </a> -->
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 mb-3 mb-md-0">
-            <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                <div class="card-body position-relative p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div>
-                            <p class="text-muted mb-1 small text-uppercase">Today's Attendance</p>
-                            <h2 class="display-5 fw-bold mb-0">{{ $stats['todayAttendance'] }}</h2>
-                        </div>
-                        <div class="rounded-circle bg-warning bg-opacity-10 p-3">
-                            <i class="fas fa-clipboard-check fa-2x text-warning"></i>
-                        </div>
-                    </div>
-                   <!-- <div class="attendance-summary d-flex justify-content-between align-items-center mb-2">
-                        <div class="d-flex align-items-center">
-                            <span class="status-badge status-present me-1"></span>
-                            <small>{{ $todayStats['present'] ?? 0 }} Present</small>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <span class="status-badge status-absent me-1"></span>
-                            <small>{{ $todayStats['absent'] ?? 0 }} Absent</small>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <span class="status-badge status-late me-1"></span>
-                            <small>{{ $todayStats['late'] ?? 0 }} Late</small>
-                        </div>
-                    </div> -->
-                    <div class="progress" style="height: 4px;">
-                    <div class="progress-bar bg-warning" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                </div>
-                <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="{{ $stats['todayAttendance'] > 0 ? 'text-success' : 'text-danger' }} small">
-                            <i class="{{ $stats['todayAttendance'] > 0 ? 'fas fa-check-circle' : 'fas fa-exclamation-circle' }} me-1"></i>
-                            {{ $stats['todayAttendance'] > 0 ? 'Recorded' : 'Not Recorded' }}
-                        </span>
-                        <a href="{{ route('teacher.attendances.index') }}" class="btn btn-sm btn-outline-primary rounded-pill">
-                            <i class="fas fa-calendar-check me-1"></i> Attendance
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Analytics Section -->
-    <div class="row mb-4">
-        <!-- Attendance Trends -->
-        <div class="col-lg-12">
-            @include('teacher.dashboard.attendance-charts')
-        </div>
-    </div>
-
-    <!-- Quick Actions & Performance Analytics -->
-    <div class="row mb-4">
-        <!-- Quick Actions -->
-        <div class="col-lg-4 mb-4 mb-lg-0">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white py-3">
-                    <h5 class="mb-0"><i class="fas fa-bolt text-warning me-2"></i> Quick Actions</h5>
-                </div>
-                <div class="card-body p-0">
-                    <div class="list-group list-group-flush">
-                        <a href="{{ route('teacher.students.create') }}" class="list-group-item list-group-item-action d-flex align-items-center py-3 px-4">
-                            <div class="avatar rounded-circle bg-primary bg-opacity-10 p-2 me-3">
-                                <i class="fas fa-user-plus text-primary"></i>
-                            </div>
-                            <div>
-                                <h6 class="mb-0">Add New Student</h6>
-                                <small class="text-muted">Register a new student to your section</small>
-                            </div>
-                            <i class="fas fa-chevron-right ms-auto text-muted"></i>
-                        </a>
-                        <a href="{{ route('teacher.grades.index') }}" class="list-group-item list-group-item-action d-flex align-items-center py-3 px-4">
-                            <div class="avatar rounded-circle bg-success bg-opacity-10 p-2 me-3">
-                                <i class="fas fa-star text-success"></i>
-                            </div>
-                            <div>
-                                <h6 class="mb-0">Manage Grades</h6>
-                                <small class="text-muted">View and update student grades</small>
-                            </div>
-                            <i class="fas fa-chevron-right ms-auto text-muted"></i>
-                        </a>
-                        <a href="{{ route('teacher.attendances.create') }}" class="list-group-item list-group-item-action d-flex align-items-center py-3 px-4">
-                            <div class="avatar rounded-circle bg-info bg-opacity-10 p-2 me-3">
-                                <i class="fas fa-clipboard-list text-info"></i>
-                            </div>
-                            <div>
-                                <h6 class="mb-0">Take Attendance</h6>
-                                <small class="text-muted">Record daily student attendance</small>
-                            </div>
-                            <i class="fas fa-chevron-right ms-auto text-muted"></i>
-                        </a>
-                        <a href="{{ route('teacher.grade-approvals.index') }}" class="list-group-item list-group-item-action d-flex align-items-center py-3 px-4">
-                            <div class="avatar rounded-circle bg-warning bg-opacity-10 p-2 me-3">
-                                <i class="fas fa-check-circle text-warning"></i>
-                            </div>
-                            <div>
-                                <h6 class="mb-0">Grade Approvals</h6>
-                                <small class="text-muted">Manage approval status for your grades</small>
-                            </div>
-                            <i class="fas fa-chevron-right ms-auto text-muted"></i>
-                        </a>
-                        <a href="{{ route('teacher.profile') }}" class="list-group-item list-group-item-action d-flex align-items-center py-3 px-4">
-                            <div class="avatar rounded-circle bg-danger bg-opacity-10 p-2 me-3">
-                                <i class="fas fa-user-cog text-danger"></i>
-                            </div>
-                            <div>
-                                <h6 class="mb-0">Update Profile</h6>
-                                <small class="text-muted">Manage your account settings</small>
-                            </div>
-                            <i class="fas fa-chevron-right ms-auto text-muted"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Learning Resource Materials -->
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center">
-                        <div class="rounded-circle bg-info bg-opacity-10 p-2 me-3">
-                            <i class="fas fa-book-reader text-info"></i>
-                        </div>
-                        <h5 class="mb-0 fw-bold">Learning Resource Materials</h5>
-                    </div>
-                    <a href="{{ route('teacher.resources.index') }}" class="btn btn-sm btn-outline-primary rounded-pill">
-                        <i class="fas fa-external-link-alt me-1"></i> View All Resources
-                    </a>
-                </div>
-                <div class="card-body">
-                    @if(isset($resourceLinks) && count($resourceLinks) > 0)
-                        <div class="row g-4">
-                            @foreach($resourceLinks as $category)
-                                <div class="col-md-6 col-lg-4">
-                                    <a href="{{ route('teacher.resources.index') }}?category={{ $category->id }}" class="text-decoration-none">
-                                        <div class="resource-card h-100 position-relative">
-                                            <!-- Colored accent line at bottom of card -->
-                                            <div class="position-absolute bottom-0 start-0 w-100 bg-{{ $category->color ?? 'primary' }}" style="height: 4px; transition: all 0.3s ease;"></div>
-
-                                            <!-- Card header with gradient effect -->
-                                            <div class="resource-header bg-{{ $category->color ?? 'primary' }} bg-opacity-10">
-                                                <div class="d-flex align-items-center">
-                                                    <!-- Enhanced icon -->
-                                                    <div class="resource-icon bg-white">
-                                                        <i class="fas fa-{{ $category->icon ?? 'folder' }} text-{{ $category->color ?? 'primary' }}"></i>
-                                                    </div>
-                                                    <div>
-                                                        <!-- Category name with badge -->
-                                                        <span class="badge bg-{{ $category->color ?? 'primary' }} bg-opacity-20 text-white mb-1">CATEGORY</span>
-                                                        <h5 class="mb-0 fw-bold">{{ $category->name }}</h5>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Card body with resource count -->
-                                            <div class="resource-body">
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <div class="resource-count bg-{{ $category->color ?? 'primary' }} bg-opacity-10 text-{{ $category->color ?? 'primary' }}">
-                                                        <i class="fas fa-layer-group"></i>
-                                                        <span>{{ $category->resources_count ?? 0 }} resources</span>
-                                                    </div>
-                                                    <i class="fas fa-arrow-right text-{{ $category->color ?? 'primary' }}"></i>
-                                                </div>
-                                            </div>
-
-                                            <!-- Decorative background icon -->
-                                            <div class="resource-decoration text-{{ $category->color ?? 'primary' }}">
-                                                <i class="fas fa-{{ $category->icon ?? 'folder' }}"></i>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                            @endforeach
-                        </div>
-                    @else
-                        <div class="text-center py-5">
-                            <div class="empty-state-container position-relative mx-auto mb-4" style="width: 120px; height: 120px;">
-                                <div class="position-absolute top-0 start-0 w-100 h-100 rounded-circle bg-info bg-opacity-10 d-flex align-items-center justify-content-center">
-                                    <i class="fas fa-book-reader text-info fa-3x"></i>
-                                </div>
-                                <div class="position-absolute" style="bottom: 0; right: 0; transform: translate(25%, 25%);">
-                                    <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                        <i class="fas fa-plus text-white fa-lg"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <h5 class="fw-bold text-dark mb-2">No Resource Materials Yet</h5>
-                            <p class="text-muted mb-4">Educational resources will be added by administrators soon</p>
-                            <a href="{{ route('teacher.resources.index') }}" class="btn btn-primary rounded-pill px-4 py-2">
-                                <i class="fas fa-external-link-alt me-2"></i> Go to Resources Page
-                            </a>
-                        </div>
                     @endif
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Stats Cards -->
+    <div class="col-lg-12 mb-4">
+        <div class="row g-3">
+            <!-- Sections Card -->
+            <div class="col-3">
+                <div class="card bg-white resource-card position-relative overflow-hidden transition-all hover-lift">
+                    <div class="card-body p-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <h6 class="text-uppercase fw-semibold mb-0 small">Sections</h6>
+                        </div>
+                        <h4 class="fw-bold mb-0">{{ $stats['sectionsCount'] }}</h4>
+                        <p class="small text-muted mb-0 mt-1">Active Sections</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subjects Card -->
+            <div class="col-3">
+                <div class="card bg-white resource-card position-relative overflow-hidden transition-all hover-lift">
+                    <div class="card-body p-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <h6 class="text-uppercase fw-semibold mb-0 small">Subjects</h6>
+                        </div>
+                        <h4 class="fw-bold mb-0">{{ $stats['subjectsCount'] }}</h4>
+                        <p class="small text-muted mb-0 mt-1">Assigned Subjects</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Students Card -->
+            <div class="col-3">
+                <div class="card bg-white resource-card position-relative overflow-hidden transition-all hover-lift">
+                    <div class="card-body p-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <h6 class="text-uppercase fw-semibold mb-0 small">Students</h6>
+                        </div>
+                        <h4 class="fw-bold mb-0">{{ $stats['studentsCount'] }}</h4>
+                        <p class="small text-muted mb-0 mt-1">Enrolled Students</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Attendance Card -->
+            <div class="col-3">
+                <div class="card bg-white resource-card position-relative overflow-hidden transition-all hover-lift">
+                    <div class="card-body p-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <h6 class="text-uppercase fw-semibold mb-0 small">Today's Attendance</h6>
+                        </div>
+                        <h4 class="fw-bold mb-0">{{ $stats['todayAttendance'] }}</h4>
+                        <p class="small text-muted mb-0 mt-1">Attendance Recorded</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions & Learning Resources -->
+    <div class="row g-4 mb-4">
+        <!-- Quick Actions -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4 position-relative overflow-hidden animate__animated animate__fadeIn" style="animation-delay: 0.2s;">
+                <div class="p-4 bg-white d-flex justify-content-between align-items-center">
+                    <div class="d-flex">
+                        <div>
+                            <h5 class="mb-1 fw-bold">Quick Actions</h5>
+                            <p class="text-muted mb-0 small">Core teaching functions</p>
+                        </div>
+                    </div>
+                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 fw-semibold">
+                        <i class="fas fa-shield-alt me-1"></i> Teacher Panel
+                    </span>
+                </div>
+                <div class="card-body bg-white p-0">
+                    <div class="row g-0">
+                        <div class="col-md-12">
+                            <a href="{{ route('teacher.students.create') }}" class="quick-action-item d-flex py-2 px-4 text-decoration-none transition-all hover-bg position-relative">
+                                <div class="d-flex me-4 rounded">
+                                    <i class="fas fa-user-plus text-primary fa-md"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="mb-2 fw-bold text-dark">Add New Student</h5>
+                                    <p class="text-muted mb-2">Register a new student to your section</p>
+                                </div>
+                                <div class="ms-3">
+                                    <div class="rounded-circle transition-all hover-bg-primary">
+                                        <i class="fas fa-arrow-right text-primary fa-lg"></i>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-12">
+                            <a href="{{ route('teacher.grades.index') }}" class="quick-action-item d-flex py-2 px-4 text-decoration-none transition-all hover-bg position-relative">
+                                <div class="d-flex me-4 rounded">
+                                    <i class="fas fa-star text-primary fa-md"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="mb-2 fw-bold text-dark">Manage Grades</h5>
+                                    <p class="text-muted mb-2">View and update student grades</p>
+                                </div>
+                                <div class="ms-3">
+                                    <div class="transition-all hover-bg-primary">
+                                        <i class="fas fa-arrow-right text-primary fa-lg"></i>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-12">
+                            <a href="{{ route('teacher.attendances.create') }}" class="quick-action-item d-flex py-2 px-4 text-decoration-none transition-all hover-bg position-relative">
+                                <div class="d-flex me-4 rounded">
+                                    <i class="fas fa-clipboard-list text-primary fa-md"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="mb-2 fw-bold text-dark">Take Attendance</h5>
+                                    <p class="text-muted mb-2">Record daily student attendance</p>
+                                </div>
+                                <div class="ms-3">
+                                    <div class="transition-all hover-bg-primary">
+                                        <i class="fas fa-arrow-right text-primary fa-lg"></i>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Section -->
+        <div class="col-lg-8">
+            @include('teacher.dashboard.attendance-charts')
+        </div>
+    </div>
+
     <!-- Recent Data Tables -->
-    <div class="row">
+    <div class="row g-4">
         <!-- Recent Sections -->
-        <div class="col-md-6 mb-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
-                    <h5 class="mb-0"><i class="fas fa-users text-primary me-2"></i> Assigned Sections</h5>
-                    <!-- <a href="{{ route('teacher-admin.sections.create') }}" class="btn btn-sm btn-primary">
-                        <i class="fas fa-plus-circle me-1"></i> Add Section
-                    </a> -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeIn" style="animation-delay: 0.4s;">
+                <div class="p-4 bg-white d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-1 fw-bold">Assigned Sections</h5>
+                        <p class="text-muted mb-0 small">Your assigned sections</p>
+                    </div>
+                    <a href="{{ route('teacher-admin.sections.create') }}" class="btn btn-md btn-primary fw-semibold">
+                        Add Section
+                    </a>
                 </div>
                 <div class="card-body p-0">
                     @if($recentSections->count() > 0)
-                        <div class="table-responsive assigned-sections-table">
+                        <div class="table-responsive">
                             <table class="table table-hover mb-0">
                                 <thead class="table-light">
                                     <tr>
                                         <th class="ps-4">Section</th>
                                         <th>Grade Level</th>
                                         <th>Students</th>
-                                        {{-- <th class="text-end pe-4">Action</th> --}}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -488,15 +427,10 @@
                                         <td class="ps-4 fw-bold">{{ $section->name ?? 'N/A' }}</td>
                                         <td>{{ $section->grade_level ?? 'N/A' }}</td>
                                         <td>
-                                            <span class="badge bg-primary rounded-pill">
+                                            <span class="badge bg-primary">
                                                 {{ $section->students->count() }} students
                                             </span>
                                         </td>
-                                        {{-- <td class="text-end pe-4">
-                                            <a href="{{ route('teacher-admin.sections.show', $section->id) }}" class="btn btn-sm btn-outline-primary">
-                                                <i class="fas fa-eye me-1"></i> View
-                                            </a>
-                                        </td> --}}
                                     </tr>
                                     @endforeach
                                 </tbody>
@@ -509,7 +443,7 @@
                             </div>
                             <h6 class="text-muted">No sections found</h6>
                             <a href="{{ route('teacher-admin.sections.create') }}" class="btn btn-sm btn-primary mt-2">
-                                <i class="fas fa-plus-circle me-1"></i> Create Section
+                                Create Section
                             </a>
                         </div>
                     @endif
@@ -518,43 +452,38 @@
         </div>
 
         <!-- Recent Subjects -->
-        <div class="col-md-6 mb-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
-                    <h5 class="mb-0"><i class="fas fa-book text-success me-2"></i> Assigned Subjects</h5>
-                    <!-- <a href="{{ route('teacher-admin.subjects.create') }}" class="btn btn-sm btn-success">
-                        <i class="fas fa-plus-circle me-1"></i> Add Subject
-                    </a> -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeIn" style="animation-delay: 0.4s;">
+                <div class="p-4 bg-white d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-1 fw-bold">Assigned Subjects</h5>
+                        <p class="text-muted mb-0 small">Your assigned subjects</p>
+                    </div>
+                    <a href="{{ route('teacher-admin.subjects.create') }}" class="btn btn-md btn-primary fw-semibold">
+                        Add Subject
+                    </a>
                 </div>
                 <div class="card-body p-0">
                     @if($recentSubjects->count() > 0)
-                        <div class="table-responsive assigned-subjects-table">
+                        <div class="table-responsive">
                             <table class="table table-hover mb-0">
                                 <thead class="table-light">
                                     <tr>
                                         <th class="ps-4">Subject</th>
                                         <th>Code</th>
                                         <th>Grade Level</th>
-                                        {{-- <th class="text-end pe-4">Action</th> --}}
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach($recentSubjects as $subject)
                                         @php
-                                            // Get unique grade levels for this subject from its sections
                                             $gradeLevels = $subject->sections->pluck('grade_level')->unique()->sort();
                                         @endphp
-
                                         @foreach($gradeLevels as $gradeLevel)
                                         <tr>
                                             <td class="ps-4 fw-bold">{{ $subject->name ?? 'N/A' }}</td>
                                             <td><code>{{ $subject->code ?? 'N/A' }}</code></td>
-                                            <td class="badge bg-success rounded-pill text-white">{{ $gradeLevel ?? 'N/A' }}</td>
-                                            {{-- <td class="text-end pe-4">
-                                                <a href="{{ route('teacher-admin.subjects.show', $subject->id) }}" class="btn btn-sm btn-outline-success">
-                                                    <i class="fas fa-eye me-1"></i> View
-                                                </a>
-                                            </td> --}}
+                                            <td class="badge bg-primary text-white">{{ $gradeLevel ?? 'N/A' }}</td>
                                         </tr>
                                         @endforeach
                                     @endforeach
@@ -567,8 +496,8 @@
                                 <i class="fas fa-book text-muted fa-3x"></i>
                             </div>
                             <h6 class="text-muted">No subjects found</h6>
-                            <a href="{{ route('teacher-admin.subjects.create') }}" class="btn btn-sm btn-success mt-2">
-                                <i class="fas fa-plus-circle me-1"></i> Create Subject
+                            <a href="{{ route('teacher-admin.subjects.create') }}" class="btn btn-sm btn-primary mt-2">
+                                Create Subject
                             </a>
                         </div>
                     @endif
@@ -586,25 +515,17 @@
         const attendanceDataUrl = "{{ route('teacher.dashboard.attendance-data') }}";
         const performanceDataUrl = "{{ route('teacher.dashboard.performance-data') }}";
 
-        // Chart instances
-        let attendanceChart, gradeChart;
-
-        // Function to initialize charts
+        // Initialize charts
         function initCharts() {
-            // Define colors for charts
             const fontColor = '#666';
             const gridColor = 'rgba(0, 0, 0, 0.1)';
-
-            // Create a simple test chart
             const testChartCtx = document.getElementById('testChart');
             if (testChartCtx) {
-                // Sample data
                 const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
                 const presentData = [5, 4, 3, 5, 4];
                 const lateData = [0, 1, 0, 0, 1];
                 const absentData = [0, 0, 2, 0, 0];
 
-                // Create the chart
                 new Chart(testChartCtx, {
                     type: 'bar',
                     data: {
@@ -637,71 +558,49 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            legend: {
-                                position: 'top'
-                            }
+                            legend: { position: 'top' }
                         },
                         scales: {
-                            x: {
-                                ticks: {
-                                    color: fontColor
-                                },
-                                grid: {
-                                    color: gridColor
-                                }
-                            },
-                            y: {
-                                ticks: {
-                                    color: fontColor
-                                },
-                                grid: {
-                                    color: gridColor
-                                }
-                            }
+                            x: { ticks: { color: fontColor }, grid: { color: gridColor } },
+                            y: { ticks: { color: fontColor }, grid: { color: gridColor } }
                         }
                     }
                 });
             }
         }
 
-        // Initialize charts
         initCharts();
 
         // Handle attendance period buttons
-        document.addEventListener('DOMContentLoaded', function() {
-            const weeklyViewBtn = document.getElementById('weeklyViewBtn');
-            const monthlyViewBtn = document.getElementById('monthlyViewBtn');
-            const weeklyAttendanceView = document.getElementById('weeklyAttendanceView');
-            const monthlyAttendanceView = document.getElementById('monthlyAttendanceView');
+        const weeklyViewBtn = document.getElementById('weeklyViewBtn');
+        const monthlyViewBtn = document.getElementById('monthlyViewBtn');
+        const weeklyAttendanceView = document.getElementById('weeklyAttendanceView');
+        const monthlyAttendanceView = document.getElementById('monthlyAttendanceView');
 
-            if (weeklyViewBtn && monthlyViewBtn) {
-                weeklyViewBtn.addEventListener('click', function() {
-                    weeklyViewBtn.classList.add('active');
-                    monthlyViewBtn.classList.remove('active');
-                    weeklyAttendanceView.style.display = 'block';
-                    monthlyAttendanceView.style.display = 'none';
-                });
+        if (weeklyViewBtn && monthlyViewBtn) {
+            weeklyViewBtn.addEventListener('click', function() {
+                weeklyViewBtn.classList.add('active');
+                monthlyViewBtn.classList.remove('active');
+                weeklyAttendanceView.style.display = 'block';
+                monthlyAttendanceView.style.display = 'none';
+            });
 
-                monthlyViewBtn.addEventListener('click', function() {
-                    monthlyViewBtn.classList.add('active');
-                    weeklyViewBtn.classList.remove('active');
-                    monthlyAttendanceView.style.display = 'block';
-                    weeklyAttendanceView.style.display = 'none';
-                });
-            }
-        });
+            monthlyViewBtn.addEventListener('click', function() {
+                monthlyViewBtn.classList.add('active');
+                weeklyViewBtn.classList.remove('active');
+                monthlyAttendanceView.style.display = 'block';
+                weeklyAttendanceView.style.display = 'none';
+            });
+        }
 
-        // Add event listener for section select change to update performance metrics
+        // Section select change handler
         const sectionSelect = document.getElementById('performanceMetricSection');
         if (sectionSelect) {
             sectionSelect.addEventListener('change', function() {
                 const sectionId = this.value;
-
-                // Update attendance chart for the selected section
                 const activePeriodBtn = document.querySelector('.attendance-period-btn.active');
                 const period = activePeriodBtn ? activePeriodBtn.dataset.period : 'week';
 
-                // Show loading state
                 const performanceTable = document.querySelector('.student-performance-table tbody');
                 if (performanceTable) {
                     performanceTable.innerHTML = `
@@ -716,16 +615,13 @@
                     `;
                 }
 
-                // Fetch attendance data for the selected section
                 fetch(`${attendanceDataUrl}?period=${period}&section_id=${sectionId}`)
                     .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`HTTP error ${response.status}`);
-                        }
+                        if (!response.ok) throw new Error(`HTTP error ${response.status}`);
                         return response.json();
                     })
                     .then(data => {
-                        // Update chart with section-specific data
+                        // Update attendance chart
                         attendanceChart.data.labels = data.labels;
                         attendanceChart.data.datasets[0].data = data.present;
                         attendanceChart.data.datasets[1].data = data.late;
@@ -733,72 +629,48 @@
                         attendanceChart.data.datasets[3].data = data.absent;
                         attendanceChart.data.datasets[4].data = data.excused;
 
-                        // Determine the max value for y-axis
                         const allValues = [...data.present, ...data.late, ...data.half_day, ...data.absent, ...data.excused];
-                        const maxValue = Math.max(...allValues, 1); // Minimum of 1
-
-                        // Update y-axis max value and step size
+                        const maxValue = Math.max(...allValues, 1);
                         const stepSize = maxValue <= 10 ? 1 : Math.ceil(maxValue / 10);
                         attendanceChart.options.scales.y.ticks.stepSize = stepSize;
-
                         attendanceChart.update();
                     })
-                    .catch(error => {
-                        console.error('Error fetching section attendance data:', error);
-                    });
+                    .catch(error => console.error('Error fetching section attendance data:', error));
 
-                // Also update the student performance metrics table
                 fetch(`${performanceDataUrl}?section_id=${sectionId}`)
                     .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`HTTP error ${response.status}`);
-                        }
+                        if (!response.ok) throw new Error(`HTTP error ${response.status}`);
                         return response.json();
                     })
                     .then(data => {
-                        // Debug log to check response structure
-                        console.log('Performance data response:', data);
-
-                        // Update the student performance table with new data
                         if (performanceTable && data.students && data.students.length > 0) {
                             let tableHTML = '';
                             data.students.forEach(student => {
-                                // Calculate stars based on new grading scale
                                 let stars = 0;
                                 const score = student.grades_avg_score || 0;
+                                if (score >= 94) stars = 5;
+                                else if (score >= 87) stars = 4;
+                                else if (score >= 82) stars = 3;
+                                else if (score >= 78) stars = 2;
+                                else if (score >= 75) stars = 1;
 
-                                if (score >= 94) {
-                                    stars = 5;
-                                } else if (score >= 87) {
-                                    stars = 4;
-                                } else if (score >= 82) {
-                                    stars = 3;
-                                } else if (score >= 78) {
-                                    stars = 2;
-                                } else if (score >= 75) {
-                                    stars = 1;
-                                }
-
-                                // Generate star icons
                                 let starsHTML = '';
                                 for (let i = 1; i <= 5; i++) {
                                     starsHTML += `<i class="fas fa-star ${i <= stars ? 'text-warning' : 'text-muted'} me-1"></i>`;
                                 }
 
-                                // Determine grade badge color
                                 let badgeClass = 'bg-danger';
                                 if (score >= 90) badgeClass = 'bg-success';
                                 else if (score >= 80) badgeClass = 'bg-primary';
                                 else if (score >= 70) badgeClass = 'bg-info';
                                 else if (score >= 60) badgeClass = 'bg-warning';
 
-                                // Add row to table
                                 tableHTML += `
                                     <tr>
                                         <td class="ps-4">
                                             <div class="d-flex align-items-center">
                                                 <div class="avatar-container me-2">
-                                                    <span class="avatar bg-primary text-white rounded-circle" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
+                                                    <span class="avatar bg-primary text-white rounded" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
                                                         ${student.first_name ? student.first_name.substring(0, 1) : 'S'}${student.last_name ? student.last_name.substring(0, 1) : ''}
                                                     </span>
                                                 </div>
@@ -809,7 +681,7 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <span class="badge ${badgeClass} rounded-pill px-3 py-2">
+                                            <span class="badge ${badgeClass} px-3 py-2">
                                                 ${student.grades_avg_score ? student.grades_avg_score.toFixed(1) : '0.0'}%
                                             </span>
                                         </td>
@@ -840,7 +712,7 @@
                                 <tr>
                                     <td colspan="5" class="text-center py-4">
                                         <div class="py-5">
-                                            <div class="avatar bg-light rounded-circle mx-auto mb-3" style="width: 60px; height: 60px;">
+                                            <div class="avatar bg-light rounded mx-auto mb-3" style="width: 60px; height: 60px;">
                                                 <i class="fas fa-user-graduate text-muted fa-2x"></i>
                                             </div>
                                             <h6 class="text-muted">No student performance data available</h6>
@@ -861,7 +733,7 @@
                                 <tr>
                                     <td colspan="5" class="text-center py-4">
                                         <div class="py-5">
-                                            <div class="avatar bg-light rounded-circle mx-auto mb-3" style="width: 60px; height: 60px;">
+                                            <div class="avatar bg-light rounded mx-auto mb-3" style="width: 60px; height: 60px;">
                                                 <i class="fas fa-exclamation-triangle text-danger fa-2x"></i>
                                             </div>
                                             <h6 class="text-danger">Error loading data</h6>

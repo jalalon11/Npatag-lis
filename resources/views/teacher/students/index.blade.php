@@ -1197,9 +1197,6 @@
                 <i class="fas fa-user-graduate text-primary fa-lg"></i>
             </div>
             <h1 class="h3 mb-1 text-gray-800 fw-bold">
-                <span class=" me-3 text-primary shadow-sm d-none d-sm-inline-flex align-items-center justify-content-center">
-                    <i class="fas fa-user-graduate"></i>
-                </span>
                 Student Management
             </h1>
             <p class="text-muted mb-0">Manage, monitor, and organize your student records effectively</p>

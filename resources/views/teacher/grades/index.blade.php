@@ -36,6 +36,58 @@
             padding: 0.75rem;
         }
     }
+    :root {
+        --border-radius: 12px;
+        --border-radius-pill: 50px;
+        --padding-sm: 1rem;
+        --padding-md: 1.5rem;
+        --margin-sm: 1rem;
+        --margin-md: 1.5rem;
+        --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --shadow-hover: 0 12px 24px rgba(0, 0, 0, 0.12);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --primary-color: #0d6efd;
+        --text-muted: #6c757d;
+        --bg-light: #f8f9fa;
+    }
+
+    /* Card Styles */
+    .card {
+        border: none !important;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+    }
+
+    .card-header {
+        background: var(--bg-light);
+        border-bottom: none;
+        padding: var(--padding-md);
+    }
+
+    .card-body {
+        padding: var(--padding-md);
+    }
+
+    /* Button Styles */
+    .btn {
+        border-radius: var(--border-radius-pill);
+        padding: 0.5rem 1.25rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: var(--transition);
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .btn-outline-primary {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+
 
     .assessment-card {
         transition: transform 0.2s, box-shadow 0.2s;
@@ -547,11 +599,9 @@
     <!-- Page Header - Professional Mobile Centered -->
     <div class="d-flex flex-column d-sm-flex flex-sm-row align-items-center align-items-sm-center justify-content-sm-between mb-4">
         <div class="text-center text-sm-start mb-4 mb-sm-0 w-100 w-sm-auto">
-            <div class="d-inline-block bg-primary bg-opacity-10 rounded-3 p-2 mb-2 d-sm-none">
-                <i class="fas fa-graduation-cap text-primary fa-lg"></i>
-            </div>
+
             <h1 class="h3 mb-1 text-gray-800 fw-bold">
-                <i class="fas fa-graduation-cap me-2 text-primary d-none d-sm-inline-block"></i> Grade Management
+                Grade Management
             </h1>
             <p class="text-muted mb-0">Manage and track student performance across all subjects and terms</p>
         </div>
@@ -582,102 +632,93 @@
 
     <!-- Filter Selection Card -->
     <div class="card shadow-sm rounded-3 mb-4 border-0">
-        <div class="card-header py-3 bg-white">
+        <div class="card-header d-flex justify-content-between align-items-center py-3 bg-white">
             <h5 class="mb-0 fw-bold text-primary">
                 <i class="fas fa-filter me-2"></i> Grade Filters
             </h5>
+            <button type="submit" form="filterForm" class="btn btn-primary btn-sm">
+                <i class="fas fa-check me-1"></i> Apply Filter
+            </button>
         </div>
         <div class="card-body bg-light py-4">
             @if(empty($subjects) || $subjects->isEmpty())
                 <!-- No Subjects View -->
-                <div class="text-center py-5">
-                    <div class="mb-3">
-                        <i class="fas fa-book-open fa-3x text-muted"></i>
-                    </div>
-                    <h5>No Subjects Assigned</h5>
-                    <p class="text-muted">You don't have any subjects assigned to your account yet.</p>
-                    <div class="mt-3">
-                        <a href="{{ route('teacher.dashboard') }}" class="btn btn-primary me-2">
-                            <i class="fas fa-home me-1"></i> Return to Dashboard
+                <div class="text-center py-4">
+                    <i class="fas fa-book-open fa-2x text-muted mb-3"></i>
+                    <h6 class="fw-bold">No Subjects Assigned</h6>
+                    <p class="text-muted mb-3">No subjects are currently assigned to your account.</p>
+                    <div class="d-flex justify-content-center gap-2">
+                        <a href="{{ route('teacher.dashboard') }}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-home me-1"></i> Dashboard
                         </a>
-                        <a href="{{ route('teacher.grades.index') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-sync-alt me-1"></i> Refresh Page
+                        <a href="{{ route('teacher.grades.index') }}" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-sync-alt me-1"></i> Refresh
                         </a>
                     </div>
-
                     <!-- Emergency Access -->
-                    <div class="border-top mt-4 pt-4 text-start w-75 mx-auto">
-                        <h6 class="fw-bold text-muted mb-3">Emergency Access</h6>
-                        <div class="alert alert-warning">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            <strong>Note:</strong> If you should have access to subjects, you can try the emergency access option below.
-                        </div>
-
-                        @php
-                            $directSubject = DB::table('subjects')->where('id', 1)->first();
-                        @endphp
-
-                        @if($directSubject)
+                    @php
+                        $directSubject = DB::table('subjects')->where('id', 1)->first();
+                    @endphp
+                    @if($directSubject)
+                        <div class="mt-4 pt-3 border-top w-75 mx-auto">
+                            <h6 class="fw-bold text-muted mb-3">Emergency Access</h6>
+                            <div class="alert alert-warning py-2 small">
+                                <i class="fas fa-exclamation-triangle me-1"></i>
+                                Contact admin if you should have subject access.
+                            </div>
                             <a href="{{ route('teacher.grades.index', ['subject_id' => $directSubject->id]) }}"
-                               class="btn btn-warning">
+                            class="btn btn-warning btn-sm">
                                 <i class="fas fa-unlock-alt me-1"></i> Access {{ $directSubject->name }}
                             </a>
-                        @endif
-                    </div>
+                        </div>
+                    @endif
                 </div>
             @else
-                <form method="GET" action="{{ route('teacher.grades.index') }}" id="filterForm" class="row g-3" onsubmit="return validateFilterForm()">
+                <form method="GET" action="{{ route('teacher.grades.index') }}" id="filterForm" class="row g-3">
                     <!-- Subject Filter -->
                     <div class="col-md-3">
-                        <label for="subject_id" class="form-label fw-bold">
-                            <i class="fas fa-book me-1 text-primary"></i> Subject
+                        <label for="subject_id" class="form-label fw-semibold text-primary">
+                            <i class="fas fa-book me-1"></i> Subject
                         </label>
                         <select class="form-select shadow-sm" id="subject_id" name="subject_id">
                             @foreach($subjects as $subject)
                                 <option value="{{ $subject->id }}" {{ (isset($selectedSubject) && $selectedSubject->id == $subject->id) ? 'selected' : '' }}>
-                                    {{ $subject->name }} - {{ $subject->code }}
+                                    {{ $subject->name }} ({{ $subject->code }})
                                 </option>
                             @endforeach
                         </select>
-                        <small class="text-muted d-block mt-1">Select the subject to view grades for</small>
+                        <small class="text-muted mt-1 d-block">Select a subject</small>
                     </div>
-
                     <!-- Section Filter -->
                     <div class="col-md-3">
-                        <label for="section_id" class="form-label fw-bold">
-                            <i class="fas fa-users me-1 text-success"></i> Section
+                        <label for="section_id" class="form-label fw-semibold text-success">
+                            <i class="fas fa-users me-1"></i> Section
                         </label>
                         <select class="form-select shadow-sm" id="section_id" name="section_id">
                             @foreach($sections as $section)
                                 @php
-                                    // Get the subjects assigned to this section for this teacher
                                     $sectionSubjectIds = DB::table('section_subject')
                                         ->where('section_id', $section->id)
                                         ->where('teacher_id', Auth::id())
                                         ->pluck('subject_id')
                                         ->toArray();
-
-                                    // Add adviser's sections as well
                                     $isAdviser = $section->adviser_id == Auth::id();
-
-                                    // Create a data attribute with all subject IDs for this section
                                     $subjectDataAttr = implode(',', $sectionSubjectIds);
                                 @endphp
                                 <option value="{{ $section->id }}"
-                                    {{ $selectedSectionId == $section->id ? 'selected' : '' }}
-                                    data-subjects="{{ $subjectDataAttr }}"
-                                    data-is-adviser="{{ $isAdviser ? 'true' : 'false' }}">
+                                        {{ $selectedSectionId == $section->id ? 'selected' : '' }}
+                                        data-subjects="{{ $subjectDataAttr }}"
+                                        data-is-adviser="{{ $isAdviser ? 'true' : 'false' }}">
                                     {{ $section->name }} (Grade {{ $section->grade_level }})
                                 </option>
                             @endforeach
                         </select>
-                        <small class="text-muted d-block mt-1">Select the section to display</small>
+                        <small class="text-muted mt-1 d-block">Select a section</small>
                     </div>
-
                     <!-- Academic Term Filter -->
                     <div class="col-md-2">
-                        <label for="term" class="form-label fw-bold">
-                            <i class="fas fa-calendar-alt me-1 text-warning"></i> Term
+                        <label for="term" class="form-label fw-semibold text-warning">
+                            <i class="fas fa-calendar-alt me-1"></i> Term
                         </label>
                         <select class="form-select shadow-sm" id="term" name="term">
                             @foreach($terms as $key => $term)
@@ -686,86 +727,41 @@
                                 </option>
                             @endforeach
                         </select>
-                        <small class="text-muted d-block mt-1">Select grading period</small>
+                        <small class="text-muted mt-1 d-block">Select term</small>
                     </div>
-
                     <!-- Transmutation Table Filter -->
                     <div class="col-md-4">
-                        <label for="transmutation_table" class="form-label fw-bold d-flex justify-content-between align-items-center">
-                            <div>
-                                <i class="fas fa-table me-1 text-info"></i> Transmutation Table
-                            </div>
+                        <label for="transmutation_table" class="form-label fw-semibold text-info">
+                            <i class="fas fa-table me-1"></i> Transmutation Table
                         </label>
-                        <div class="d-flex align-items-center">
-                            <select class="form-select shadow-sm flex-grow-1" id="transmutation_table"
+                        <div class="input-group">
+                            <select class="form-select shadow-sm" id="transmutation_table" name="transmutation_table"
                                     {{ session('locked_transmutation_table') && session('locked_transmutation_table_id') ? 'disabled' : '' }}
                                     onchange="updateHiddenTransmutationInput(this.value)">
-                                <option value="1" {{ request('transmutation_table', session('locked_transmutation_table_id', $preferredTableId ?? 1)) == 1 ? 'selected' : '' }}>
-                                    Table 1: DepEd Transmutation Table
+                                <option value="1" {{ request('transmutation_table', session('locked_transmutation_table_id', 1)) == 1 ? 'selected' : '' }}>
+                                    DepEd Transmutation Table
                                 </option>
-                                <option value="2" {{ request('transmutation_table', session('locked_transmutation_table_id', $preferredTableId ?? 1)) == 2 ? 'selected' : '' }}>
-                                    Table 2: Grades 1-10 & Non-Core TVL
+                                <option value="2" {{ request('transmutation_table', session('locked_transmutation_table_id', 1)) == 2 ? 'selected' : '' }}>
+                                    Grades 1-10 & Non-Core TVL
                                 </option>
-                                <option value="3" {{ request('transmutation_table', session('locked_transmutation_table_id', $preferredTableId ?? 1)) == 3 ? 'selected' : '' }}>
-                                    Table 3: SHS Core & Work Immersion
+                                <option value="3" {{ request('transmutation_table', session('locked_transmutation_table_id', 1)) == 3 ? 'selected' : '' }}>
+                                    SHS Core & Work Immersion
                                 </option>
-                                <option value="4" {{ request('transmutation_table', session('locked_transmutation_table_id', $preferredTableId ?? 1)) == 4 ? 'selected' : '' }}>
-                                    Table 4: All other SHS Subjects
+                                <option value="4" {{ request('transmutation_table', session('locked_transmutation_table_id', 1)) == 4 ? 'selected' : '' }}>
+                                    All other SHS Subjects
                                 </option>
                             </select>
-                            <div class="ms-2">
-                                <div class="form-check form-switch mb-0">
-                                    <input class="form-check-input" type="checkbox" id="lock_table" name="locked_transmutation_table" value="true"
-                                        {{ session('locked_transmutation_table') ? 'checked' : '' }}
-                                        data-bs-toggle="tooltip" data-bs-placement="top"
-                                        title="Lock this transmutation table for consistent grading">
-                                    <label class="form-check-label" for="lock_table">
-                                        <i class="fas fa-lock text-secondary"></i><span class="visually-hidden">Lock</span>
-                                    </label>
-                                </div>
-                            </div>
                         </div>
-                        <!-- Always include a hidden input with the transmutation table value -->
-                        <input type="hidden" id="selected_transmutation_table" name="transmutation_table" value="{{ request('transmutation_table', session('locked_transmutation_table_id', $preferredTableId ?? 1)) }}">
-                        <div class="d-flex justify-content-between align-items-center mt-1">
-                            <small class="text-muted">Initial grade will be transmuted based on selected table</small>
+                        <input type="hidden" id="selected_transmutation_table" name="transmutation_table" value="{{ request('transmutation_table', session('locked_transmutation_table_id', 1)) }}">
+                        <small class="text-muted mt-1 d-block">
+                            Grades will be transmuted using the selected table
                             @if(session('locked_transmutation_table'))
-                                <span class="badge bg-secondary">
+                                <span class="badge bg-secondary ms-1">
                                     <i class="fas fa-lock me-1"></i> Locked
                                 </span>
                             @endif
-                        </div>
+                        </small>
                     </div>
-
-                    <!-- View Button -->
-                    <div class="col-md-12 text-end mt-4">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-search me-2"></i> View Grades
-                        </button>
-                    </div>
-                    <!--  Commented Out and will be used for debugging  -->
-                    <!-- Comprehensive Grade View Toggle -->
-                    <!-- <div class="col-12 mt-3">
-                        <div class="card border-0 shadow-sm {{ request('view_all') == 'true' ? 'bg-primary bg-opacity-10' : 'bg-light' }}">
-                            <div class="card-body d-flex align-items-center">
-                                <div class="form-check form-switch me-3">
-                                    <input class="form-check-input" type="checkbox" id="view_all" name="view_all" value="true"
-                                           {{ request('view_all') == 'true' ? 'checked' : '' }}
-                                           data-bs-toggle="tooltip" data-bs-placement="right"
-                                           title="Show comprehensive view of all subjects and grades for each student">
-                                    <label class="form-check-label fw-bold" for="view_all">
-                                        <i class="fas fa-table-columns me-1"></i> Comprehensive Grade View
-                                    </label>
-                                </div>
-                                <p class="text-muted small mb-0">
-                                    <i class="fas fa-info-circle me-1"></i>
-                                    {{ request('view_all') == 'true'
-                                        ? 'Currently showing all subjects and calculating overall averages. Each column represents a different subject.'
-                                        : 'Enable to view all subjects and calculate overall averages for students in this section.' }}
-                                </p>
-                            </div>
-                        </div>
-                    </div> -->
                 </form>
             @endif
         </div>
@@ -774,18 +770,45 @@
     @if(isset($selectedSubject) && $selectedSubject)
         <!-- Selected Subject Overview -->
         <div class="row mb-4">
-            <!-- Grade Weight Distribution -->
-            <div class="col-md-4 mb-4 mb-md-0">
+            <!-- Subject Information -->
+            <div class="col-12 mb-4">
+                <div class="card shadow-sm rounded-3 border-0">
+                    <div class="card-header py-3 bg-white">
+                        <h5 class="mb-0 fw-bold text-primary">
+                            <i class="fas fa-info-circle me-2"></i> Subject Information
+                        </h5>
+                    </div>
+                    <div class="card-body bg-light">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <span class="text-muted me-2">Subject Code:</span>
+                                <span class="fw-medium">{{ $selectedSubject->code }}</span>
+                            </div>
+                            <div class="col-md-4">
+                                <span class="text-muted me-2">Grade Level:</span>
+                                <span class="fw-medium">{{ $selectedSubject->grade_level ?? 'Not specified' }}</span>
+                            </div>
+                            <div class="col-md-4">
+                                <span class="text-muted me-2">Term:</span>
+                                <span class="fw-medium">{{ $terms[$selectedTerm] }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grade Components and Assessments -->
+            <div class="col-md-4 mb-4">
                 <div class="card shadow-sm rounded-3 border-0 h-100">
                     <div class="card-header py-3 bg-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0 fw-bold text-primary">
                             <i class="fas fa-chart-pie me-2"></i> Grade Components
                         </h5>
                         <a href="{{ route('teacher.grades.configure', ['subject_id' => $selectedSubject->id]) }}"
-                           class="btn btn-sm btn-outline-primary"
-                           data-bs-toggle="tooltip"
-                           data-bs-placement="left"
-                           title="Adjust how different assessment types contribute to the final grade">
+                        class="btn btn-sm btn-outline-primary"
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="left"
+                        title="Adjust how different assessment types contribute to the final grade">
                             <i class="fas fa-cog me-1"></i> Configure
                         </a>
                     </div>
@@ -802,11 +825,9 @@
                                 <span class="fw-bold">Written Works</span>
                                 <span class="badge bg-primary rounded-pill">{{ $writtenWorkPercentage }}%</span>
                             </div>
-                            <div class="position-relative">
-                                <div class="progress rounded-pill" style="height: 10px;">
-                                    <div class="progress-bar bg-primary" role="progressbar" style="width: {{ $writtenWorkPercentage }}%"
-                                        aria-valuenow="{{ $writtenWorkPercentage }}" aria-valuemin="0" aria-valuemax="100">
-                                    </div>
+                            <div class="progress rounded-pill" style="height: 10px;">
+                                <div class="progress-bar bg-primary" role="progressbar" style="width: {{ $writtenWorkPercentage }}%"
+                                    aria-valuenow="{{ $writtenWorkPercentage }}" aria-valuemin="0" aria-valuemax="100">
                                 </div>
                             </div>
                             <div class="mt-2 small text-muted">
@@ -820,11 +841,9 @@
                                 <span class="fw-bold">Performance Tasks</span>
                                 <span class="badge bg-success rounded-pill">{{ $performanceTaskPercentage }}%</span>
                             </div>
-                            <div class="position-relative">
-                                <div class="progress rounded-pill" style="height: 10px;">
-                                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ $performanceTaskPercentage }}%"
-                                        aria-valuenow="{{ $performanceTaskPercentage }}" aria-valuemin="0" aria-valuemax="100">
-                                    </div>
+                            <div class="progress rounded-pill" style="height: 10px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ $performanceTaskPercentage }}%"
+                                    aria-valuenow="{{ $performanceTaskPercentage }}" aria-valuemin="0" aria-valuemax="100">
                                 </div>
                             </div>
                             <div class="mt-2 small text-muted">
@@ -833,37 +852,18 @@
                         </div>
 
                         <!-- Quarterly Assessment -->
-                        <div class="mb-4">
+                        <div class="mb-0">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="fw-bold">Quarterly Assessment</span>
                                 <span class="badge bg-warning rounded-pill">{{ $quarterlyAssessmentPercentage }}%</span>
                             </div>
-                            <div class="position-relative">
-                                <div class="progress rounded-pill" style="height: 10px;">
-                                    <div class="progress-bar bg-warning" role="progressbar" style="width: {{ $quarterlyAssessmentPercentage }}%"
-                                        aria-valuenow="{{ $quarterlyAssessmentPercentage }}" aria-valuemin="0" aria-valuemax="100">
-                                    </div>
+                            <div class="progress rounded-pill" style="height: 10px;">
+                                <div class="progress-bar bg-warning" role="progressbar" style="width: {{ $quarterlyAssessmentPercentage }}%"
+                                    aria-valuenow="{{ $quarterlyAssessmentPercentage }}" aria-valuemin="0" aria-valuemax="100">
                                 </div>
                             </div>
                             <div class="mt-2 small text-muted">
                                 <i class="fas fa-info-circle me-1"></i> Final exams and quarterly tests
-                            </div>
-                        </div>
-
-                        <!-- Subject Details -->
-                        <div class="mt-4 pt-3 border-top">
-                            <h6 class="fw-bold mb-3">Subject Information</h6>
-                            <div class="mb-2">
-                                <span class="text-muted me-2">Subject Code:</span>
-                                <span class="fw-medium">{{ $selectedSubject->code }}</span>
-                            </div>
-                            <div class="mb-2">
-                                <span class="text-muted me-2">Grade Level:</span>
-                                <span class="fw-medium">{{ $selectedSubject->grade_level ?? 'Not specified' }}</span>
-                            </div>
-                            <div class="mb-2">
-                                <span class="text-muted me-2">Term:</span>
-                                <span class="fw-medium">{{ $terms[$selectedTerm] }}</span>
                             </div>
                         </div>
                     </div>
@@ -903,9 +903,9 @@
                                                 'grade_type' => 'written_work',
                                                 'section_id' => $selectedSectionId ?? 1
                                             ]) }}" class="btn btn-primary"
-                                               data-bs-toggle="tooltip"
-                                               data-bs-placement="bottom"
-                                               title="Create a new written assessment for the class">
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="bottom"
+                                            title="Create a new written assessment for the class">
                                                 <i class="fas fa-plus-circle me-1"></i> Add Assessment
                                             </a>
                                         </div>
@@ -934,9 +934,9 @@
                                                 'grade_type' => 'performance_task',
                                                 'section_id' => $selectedSectionId ?? 1
                                             ]) }}" class="btn btn-success"
-                                               data-bs-toggle="tooltip"
-                                               data-bs-placement="bottom"
-                                               title="Create a new performance task for the class">
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="bottom"
+                                            title="Create a new performance task for the class">
                                                 <i class="fas fa-plus-circle me-1"></i> Add Assessment
                                             </a>
                                         </div>
@@ -965,9 +965,9 @@
                                                 'grade_type' => 'quarterly',
                                                 'section_id' => $selectedSectionId ?? 1
                                             ]) }}" class="btn btn-warning"
-                                               data-bs-toggle="tooltip"
-                                               data-bs-placement="bottom"
-                                               title="Create a new quarterly assessment for the class">
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="bottom"
+                                            title="Create a new quarterly assessment for the class">
                                                 <i class="fas fa-plus-circle me-1"></i> Add Assessment
                                             </a>
                                         </div>

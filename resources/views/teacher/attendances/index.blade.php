@@ -1,45 +1,248 @@
 @extends('layouts.app')
 
+@push('styles')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+<style>
+    /* Global Design Tokens */
+    :root {
+        --border-radius: 12px;
+        --border-radius-pill: 50px;
+        --padding-sm: 1rem;
+        --padding-md: 1.5rem;
+        --margin-sm: 1rem;
+        --margin-md: 1.5rem;
+        --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --shadow-hover: 0 12px 24px rgba(0, 0, 0, 0.12);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --primary-color: #0d6efd;
+        --text-muted: #6c757d;
+        --bg-light: #f8f9fa;
+    }
+
+    /* Card Styles */
+    .card {
+        border: none !important;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+    }
+
+    .card-header {
+        background: var(--bg-light);
+        border-bottom: none;
+        padding: var(--padding-md);
+    }
+
+    .card-body {
+        padding: var(--padding-md);
+    }
+
+    /* Button Styles */
+    .btn {
+        border-radius: var(--border-radius-pill);
+        padding: 0.5rem 1.25rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: var(--transition);
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .btn-outline-primary {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+
+    /* Badge Styles */
+    .badge {
+        border-radius: var(--border-radius-pill);
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    /* Table Styles */
+    .table {
+        border-radius: var(--border-radius);
+        overflow: hidden;
+    }
+
+    .table th, .table td {
+        padding: var(--padding-sm);
+        vertical-align: middle;
+    }
+
+    .table thead {
+        background-color: var(--bg-light);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-sm);
+        padding: var(--padding-md);
+        background: #fff;
+    }
+
+    .form-floating > .form-select,
+    .form-floating > .form-control {
+        border-radius: 8px;
+        border-color: #e0e0e0;
+    }
+
+    .form-floating > .form-select:focus,
+    .form-floating > .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(108, 99, 255, 0.1);
+    }
+
+    /* Attendance Stats */
+    .attendance-stat {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 60px;
+    }
+
+    .attendance-stat .badge {
+        font-size: 0.9rem;
+        padding: 0.35rem 0.65rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Progress Circle */
+    .progress-circle {
+        transform: rotate(-90deg);
+        transform-origin: 50% 50%;
+        transition: stroke-dasharray 0.5s ease;
+    }
+
+    /* Calendar Modal */
+    .modal-content {
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .modal-header, .modal-footer {
+        background: #fff;
+        border: none;
+        padding: var(--padding-md);
+    }
+
+    .modal-body {
+        padding: var(--padding-md);
+        max-height: calc(100vh - 170px);
+        overflow-y: auto;
+    }
+
+    .modal-mobile-fixed-header .modal-header,
+    .modal-mobile-fixed-header .modal-footer {
+        position: sticky;
+        z-index: 1050;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-mobile-fixed-header .modal-header {
+        top: 0;
+    }
+
+    .modal-mobile-fixed-header .modal-footer {
+        bottom: 0;
+    }
+
+    /* Calendar Specific */
+    .calendar-container .card {
+        border-radius: var(--border-radius);
+    }
+
+    .calendar-container .card-header {
+        padding: var(--padding-sm);
+    }
+
+    .calendar-container .table {
+        margin-bottom: 0;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 767.98px) {
+        .container-fluid {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .card-body {
+            padding: var(--padding-sm);
+        }
+
+        .attendance-stat {
+            min-width: 45px;
+        }
+
+        .attendance-stat .badge {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+        }
+
+        .modal-mobile-fixed-header .modal-body {
+            max-height: calc(100vh - 200px);
+            padding-bottom: var(--padding-sm);
+        }
+
+        .btn {
+            padding: 0.4rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .filter-bar {
+            padding: var(--padding-sm) !important;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="container-fluid px-4">
-    <!-- Page Header - Professional Mobile Centered -->
+    <!-- Page Header -->
     <div class="d-flex flex-column d-sm-flex flex-sm-row align-items-center align-items-sm-center justify-content-sm-between mb-4">
         <div class="text-center text-sm-start mb-4 mb-sm-0 w-100 w-sm-auto">
-            <div class="d-inline-block bg-primary bg-opacity-10 rounded-3 p-2 mb-2 d-sm-none">
-                <i class="fas fa-calendar-check text-primary fa-lg"></i>
-            </div>
-            <h1 class="h3 mb-1 text-gray-800 fw-bold">
-                <i class="fas fa-calendar-check me-2 text-primary d-none d-sm-inline-block"></i> Attendance Records
-            </h1>
+            <h1 class="h3 mb-1 text-gray-800 fw-bold">Attendance Records</h1>
             <p class="text-muted mb-0">Track and manage student attendance across all sections</p>
         </div>
         <div class="d-flex flex-wrap justify-content-center justify-content-sm-end gap-2 w-100 w-sm-auto">
-            <a href="{{ route('teacher.dashboard') }}" class="btn btn-outline-secondary">
-                <i class="fas fa-home me-1"></i> Dashboard
-            </a>
-            <a href="{{ route('teacher.attendances.create') }}" class="btn btn-primary shadow-sm">
-                <i class="fas fa-plus-circle me-1"></i> Record Attendance
-            </a>
+            <a href="{{ route('teacher.dashboard') }}" class="btn btn-outline-secondary">Dashboard</a>
+            <a href="{{ route('teacher.attendances.create') }}" class="btn btn-primary shadow-sm">Record Attendance</a>
         </div>
     </div>
 
     <!-- Attendance Overview -->
-    <div class="card shadow-sm border-0 mb-4">
+    <div class="card shadow-sm mb-4 animate__animated animate__fadeIn">
         <div class="card-header bg-white p-0">
-            <div class="px-4 py-3 border-bottom">
+            <div class="px-4 py-3">
                 <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">
-                        <i class="fas fa-th-large me-2 text-primary"></i> Attendance Overview for S.Y. {{ $currentSchoolYear ?? 'Current School Year' }}
-                    </h5>
-                    <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-sm btn-outline-primary" id="showCalendarBtn">
-                            <i class="fas fa-calendar-alt me-1"></i> View Calendar
-                        </button>
-                    </div>
+                    <h5 class="mb-0 fw-semibold">Attendance Overview for S.Y. {{ $currentSchoolYear ?? 'Current School Year' }}</h5>
+                    <button type="button" class="btn btn-sm btn-outline-primary" id="showCalendarBtn">View Calendar</button>
                 </div>
             </div>
         </div>
-        <div class="card-body p-4">
+        <div class="card-body bg-white">
             <!-- School Days Information -->
             <div class="row mb-4">
                 <div class="col-md-6 mb-4 mb-md-0">
@@ -52,20 +255,16 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="card border bg-light">
-                        <div class="card-body">
-                            <h6 class="card-title"><i class="fas fa-info-circle me-2"></i>About School Days</h6>
+                    <div class="rounded  bg-light shadow-0">
+                        <div class="p-4">
+                            <h6 class="card-title">About School Days</h6>
                             <p class="card-text">School days are automatically recorded when attendance is taken. Each date is counted only once, regardless of how many students or sections have attendance records for that day.</p>
                         </div>
                     </div>
                     <div class="mt-3">
-                        <div class="d-flex flex-column flex-sm-row gap-2 justify-content-between">
-                            <a href="{{ route('teacher.attendances.monthly-summary') }}" class="btn btn-outline-primary w-100 w-sm-auto">
-                                <i class="fas fa-calendar-alt me-1"></i> Monthly Summary
-                            </a>
-                            <a href="{{ route('teacher.attendances.weekly-summary') }}" class="btn btn-outline-primary w-100 w-sm-auto">
-                                <i class="fas fa-chart-bar me-1"></i> Weekly Summary
-                            </a>
+                        <div class="d-flex flex-column flex-sm-row gap-2 justify-content-end">
+                            <a href="{{ route('teacher.attendances.monthly-summary') }}" class="btn btn-primary w-sm-auto">Monthly Summary</a>
+                            <a href="{{ route('teacher.attendances.weekly-summary') }}" class="btn btn-outline-primary w-sm-auto">Weekly Summary</a>
                         </div>
                     </div>
                 </div>
@@ -77,16 +276,13 @@
                         <div class="modal-header bg-white p-0 position-sticky top-0 start-0 end-0 z-index-1020">
                             <div class="px-4 py-3 w-100 border-bottom">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <h5 class="mb-0" id="calendarModalLabel">
-                                        <i class="fas fa-calendar-alt text-primary me-2"></i>
-                                        School Days Calendar
-                                    </h5>
+                                    <h5 class="mb-0">School Days Calendar</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                             </div>
                         </div>
                         <div class="modal-body overflow-auto">
-                            <div id="schoolDaysCalendar"></div>
+                            <div id="schoolDaysCalendar" class="calendar-container"></div>
                         </div>
                         <div class="modal-footer position-sticky bottom-0 start-0 end-0 z-index-1020 bg-white">
                             <div class="d-flex flex-column w-100">
@@ -106,9 +302,7 @@
                                         <span>Today (School Day)</span>
                                     </div>
                                 </div>
-                                <div class="small text-muted mb-3">
-                                    <i class="fas fa-info-circle me-1"></i> Only months with attendance records are displayed in the calendar.
-                                </div>
+                                <div class="small text-muted mb-3">Only months with attendance records are displayed in the calendar.</div>
                                 <div class="d-flex justify-content-end">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                 </div>
@@ -122,8 +316,7 @@
 
     <div class="row justify-content-center">
         <div class="col-md-12">
-            <div class="card shadow-sm border-0">
-
+            <div class="card border-0 bg-white">
                 <div class="card-body p-4">
                     @if (session('success'))
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -139,15 +332,13 @@
                         </div>
                     @endif
 
-
-
                     <!-- Compact Filter Form -->
-                    <div class="filter-bar bg-white p-3 rounded shadow-sm mb-4">
+                    <div class="mb-4">
                         <form method="GET" action="{{ route('teacher.attendances.index') }}" class="row g-3 align-items-end">
                             <!-- Mobile Filter Toggle -->
                             <div class="col-12 d-md-none mb-2">
                                 <button class="btn btn-outline-primary w-100" type="button" data-bs-toggle="collapse" data-bs-target="#mobileFilters" aria-expanded="false" aria-controls="mobileFilters">
-                                    <i class="fas fa-filter me-2"></i> Show/Hide Filters
+                                    Show/Hide Filters
                                 </button>
                             </div>
 
@@ -186,11 +377,11 @@
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-3 col-lg-2 d-flex gap-2">
-                                        <button type="submit" class="btn btn-primary flex-grow-1">
-                                            <i class="fas fa-filter me-1"></i> Filter
-                                        </button>
-                                        <a href="{{ route('teacher.attendances.index') }}" class="btn btn-outline-secondary" title="Reset Filters">
-                                            <i class="fas fa-redo"></i>
+                                        <button type="submit" class="btn btn-primary flex-grow-1">Filter</button>
+                                        <a href="{{ route('teacher.attendances.index') }}" 
+                                            class="btn btn-outline-secondary d-flex justify-content-center align-items-center" 
+                                            title="Reset Filters">
+                                                Reset
                                         </a>
                                     </div>
                                 </div>
@@ -198,18 +389,15 @@
                         </form>
                     </div>
 
-                    <!-- Monthly Summary Card (only shows when month filter is applied) -->
+                    <!-- Monthly Summary Card -->
                     @if(request('month'))
                     <div class="card border-0 shadow-sm mb-4">
                         <div class="card-header bg-white p-0">
                             <div class="px-4 py-3 border-bottom">
-                                <h5 class="mb-0">
-                                    <i class="fas fa-chart-bar text-primary me-2"></i>
-                                    Monthly Attendance Summary: {{ \Carbon\Carbon::createFromFormat('Y-m', request('month'))->format('F Y') }}
-                                </h5>
+                                <h5 class="mb-0">Monthly Attendance Summary: {{ \Carbon\Carbon::createFromFormat('Y-m', request('month'))->format('F Y') }}</h5>
                             </div>
                         </div>
-                        <div class="card-body p-4">
+                        <div class="card-body">
                             <div class="row g-4">
                                 @php
                                     $totalPresent = 0;
@@ -243,7 +431,7 @@
                                 <!-- Overall Attendance Rate -->
                                 <div class="col-md-6">
                                     <div class="card h-100 border-0 shadow-sm">
-                                        <div class="card-body p-4 text-center">
+                                        <div class="card-body text-center">
                                             <h6 class="text-muted mb-3">Overall Attendance Rate</h6>
                                             <div class="d-flex justify-content-center">
                                                 <div class="position-relative" style="width: 150px; height: 150px;">
@@ -252,7 +440,7 @@
                                                     </div>
                                                     <svg width="150" height="150" viewBox="0 0 36 36">
                                                         <circle cx="18" cy="18" r="15.9" fill="none" stroke="#f2f2f2" stroke-width="2.5"></circle>
-                                                        <circle cx="18" cy="18" r="15.9" fill="none" stroke="#0d6efd" stroke-width="2.5"
+                                                        <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--primary-color)" stroke-width="2.5"
                                                                 stroke-dasharray="{{ $attendanceRate * 0.01 * 100 }} 100"
                                                                 stroke-dashoffset="25" class="progress-circle"></circle>
                                                     </svg>
@@ -269,12 +457,12 @@
                                 <!-- Status Breakdown -->
                                 <div class="col-md-6">
                                     <div class="card h-100 border-0 shadow-sm">
-                                        <div class="card-body p-4">
+                                        <div class="card-body">
                                             <h6 class="text-muted mb-3 text-center">Attendance Breakdown</h6>
                                             <div class="d-flex flex-column gap-3 mt-4">
                                                 <div>
                                                     <div class="d-flex justify-content-between mb-1">
-                                                        <span><i class="fas fa-circle text-success me-2"></i> Present</span>
+                                                        <span>Present</span>
                                                         <span class="fw-medium">{{ $totalPresent }}</span>
                                                     </div>
                                                     <div class="progress" style="height: 8px;">
@@ -284,7 +472,7 @@
                                                 </div>
                                                 <div>
                                                     <div class="d-flex justify-content-between mb-1">
-                                                        <span><i class="fas fa-circle text-warning me-2"></i> Late</span>
+                                                        <span>Late</span>
                                                         <span class="fw-medium">{{ $totalLate }}</span>
                                                     </div>
                                                     <div class="progress" style="height: 8px;">
@@ -294,7 +482,7 @@
                                                 </div>
                                                 <div>
                                                     <div class="d-flex justify-content-between mb-1">
-                                                        <span><i class="fas fa-circle text-info me-2"></i> Half Day</span>
+                                                        <span>Half Day</span>
                                                         <span class="fw-medium">{{ $totalHalfDay }}</span>
                                                     </div>
                                                     <div class="progress" style="height: 8px;">
@@ -304,7 +492,7 @@
                                                 </div>
                                                 <div>
                                                     <div class="d-flex justify-content-between mb-1">
-                                                        <span><i class="fas fa-circle text-danger me-2"></i> Absent</span>
+                                                        <span>Absent</span>
                                                         <span class="fw-medium">{{ $totalAbsent }}</span>
                                                     </div>
                                                     <div class="progress" style="height: 8px;">
@@ -314,7 +502,7 @@
                                                 </div>
                                                 <div>
                                                     <div class="d-flex justify-content-between mb-1">
-                                                        <span><i class="fas fa-circle text-secondary me-2"></i> Excused</span>
+                                                        <span>Excused</span>
                                                         <span class="fw-medium">{{ $totalExcused }}</span>
                                                     </div>
                                                     <div class="progress" style="height: 8px;">
@@ -334,31 +522,32 @@
                     <!-- Streamlined Attendance Records -->
                     <div class="attendance-records mb-4">
                         <div class="card-header bg-white p-0 mb-3">
-                            <div class="px-4 py-3 border-bottom">
+                            <div class="py-3">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <h5 class="mb-0">
-                                        <i class="fas fa-clipboard-list text-primary me-2"></i>
-                                        School Day Attendance Records
-                                    </h5>
+                                    <div>
+                                        <h5 class="mb-0 fw-semibold">School Day Attendance Records</h5>
+                                        <small class="text-muted">A summary of attendance logs for each school day</small>
+                                    </div>
                                     <span class="badge bg-primary rounded-pill">
-                                        <i class="fas fa-calendar-check me-1"></i> {{ is_array($attendances) ? count(array_keys($attendances)) : 0 }} School Days
+                                        {{ is_array($attendances) ? count(array_keys($attendances)) : 0 }} School Days
                                     </span>
                                 </div>
                             </div>
                         </div>
 
+
                         <!-- Desktop Table View -->
                         <div class="table-responsive d-none d-md-block">
-                            <table class="table table-hover align-middle border-0">
+                            <table class="table table-hover align-middle">
                                 <thead>
                                     <tr class="bg-light">
-                                        <th class="ps-3 rounded-start"><i class="fas fa-calendar-day text-primary me-1"></i> School Day & Section</th>
+                                        <th class="ps-4">School Day & Section</th>
                                         <th class="text-center" width="40%">Attendance Summary</th>
                                         <th class="text-center">Rate</th>
-                                        <th class="text-end pe-3 rounded-end" width="100">Actions</th>
+                                        <th class="text-end pe-4" width="100">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody class="border-0">
+                                <tbody>
                                     @forelse (is_array($attendances) ? $attendances : [] as $date => $dateGroup)
                                         @foreach (is_array($dateGroup) ? $dateGroup : [] as $sectionId => $attendance)
                                             @php
@@ -373,7 +562,7 @@
                                                     round((($present_count + $late_count + ($half_day_count * 0.5)) / $totalStudents) * 100, 1) : 0;
                                             @endphp
                                             <tr class="border-bottom">
-                                                <td class="ps-3">
+                                                <td class="ps-4">
                                                     <div class="d-flex flex-column">
                                                         <span class="fw-medium">{{ \Carbon\Carbon::parse($date)->format('M d, Y') }}</span>
                                                         <span class="text-muted small">{{ isset($attendance['section_name']) ? $attendance['section_name'] : 'Unknown' }}</span>
@@ -416,13 +605,13 @@
                                                         <span class="fw-medium">{{ $attendanceRate }}%</span>
                                                     </div>
                                                 </td>
-                                                <td class="text-end pe-3">
+                                                <td class="text-end pe-4">
                                                     <div class="d-flex gap-1 justify-content-end">
                                                         <a href="{{ route('teacher.attendances.edit', ['attendance' => $sectionId, 'date' => $date]) }}"
                                                            class="btn btn-sm btn-primary rounded-pill px-2 py-1"
                                                            data-bs-toggle="tooltip"
                                                            title="Edit">
-                                                            <i class="fas fa-edit"></i>
+                                                            Edit
                                                         </a>
                                                     </div>
                                                 </td>
@@ -432,11 +621,8 @@
                                         <tr>
                                             <td colspan="4" class="text-center py-5 text-muted">
                                                 <div class="empty-state">
-                                                    <i class="fas fa-calendar-times fa-3x mb-3 text-muted opacity-50"></i>
                                                     <p class="mb-3">No attendance records found</p>
-                                                    <a href="{{ route('teacher.attendances.create') }}" class="btn btn-primary">
-                                                        <i class="fas fa-plus-circle me-1"></i> Record New Attendance
-                                                    </a>
+                                                    <a href="{{ route('teacher.attendances.create') }}" class="btn btn-primary">Record New Attendance</a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -470,7 +656,7 @@
                                                 <div>
                                                     <a href="{{ route('teacher.attendances.edit', ['attendance' => $sectionId, 'date' => $date]) }}"
                                                        class="btn btn-sm btn-primary rounded-pill px-3">
-                                                        <i class="fas fa-edit me-1"></i> Edit
+                                                       Edit
                                                     </a>
                                                 </div>
                                             </div>
@@ -512,12 +698,9 @@
                                 @endforeach
                             @empty
                                 <div class="text-center py-5">
-                                    <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
                                     <h5 class="fw-normal">No attendance records found</h5>
                                     <p class="text-muted">Try adjusting your filters or create a new attendance record.</p>
-                                    <a href="{{ route('teacher.attendances.create') }}" class="btn btn-primary mt-2">
-                                        <i class="fas fa-plus-circle me-1"></i> Record New Attendance
-                                    </a>
+                                    <a href="{{ route('teacher.attendances.create') }}" class="btn btn-primary mt-2">Record New Attendance</a>
                                 </div>
                             @endforelse
                         </div>
@@ -564,20 +747,18 @@
                 const currentMonth = currentDate.getMonth();
 
                 // Create calendar for the current school year
-                // Assuming school year spans from June to March (adjust as needed)
                 const startMonth = 5; // June (0-indexed)
                 const endMonth = 2;   // March (0-indexed)
 
                 // Create a container for all months
                 const calendarContainer = document.createElement('div');
-                calendarContainer.className = 'row g-4';
+                calendarContainer.className = 'row g-4 calendar-container';
 
                 // Only show months that have attendance records
                 let monthsToShow = [];
 
                 // Process available months from PHP
                 if (availableMonths && availableMonths.length > 0) {
-                    // Convert to array of objects with year and month (0-indexed)
                     monthsToShow = availableMonths.map(item => {
                         return {
                             year: parseInt(item.year),
@@ -585,30 +766,16 @@
                         };
                     });
 
-                    // Always ensure current month is included if it has records
-                    const currentMonthExists = monthsToShow.some(m =>
-                        m.year === currentYear && m.month === currentMonth
-                    );
-
-                    // If current month is not in the list but we want to show it anyway,
-                    // uncomment the following line:
-                    // if (!currentMonthExists) {
-                    //     monthsToShow.unshift({ year: currentYear, month: currentMonth });
-                    // }
-
-                    // Sort months chronologically
                     monthsToShow.sort((a, b) => {
                         if (a.year !== b.year) return a.year - b.year;
                         return a.month - b.month;
                     });
                 } else {
-                    // Fallback: If no months with records, just show current month
                     monthsToShow.push({ year: currentYear, month: currentMonth });
                 }
 
                 // Check if we have any months to show
                 if (monthsToShow.length > 0) {
-                    // Create calendar for each month
                     monthsToShow.forEach(({ year, month }) => {
                         const monthCalendar = createMonthCalendar(year, month);
                         calendarContainer.appendChild(monthCalendar);
@@ -616,16 +783,12 @@
 
                     schoolDaysCalendar.appendChild(calendarContainer);
                 } else {
-                    // Display a message if no months have attendance records
                     const noRecordsMessage = document.createElement('div');
                     noRecordsMessage.className = 'alert alert-info text-center my-4';
                     noRecordsMessage.innerHTML = `
-                        <i class="fas fa-info-circle fa-2x mb-3"></i>
                         <h5>No Attendance Records Found</h5>
                         <p class="mb-0">There are no months with attendance records to display.</p>
-                        <a href="{{ route('teacher.attendances.create') }}" class="btn btn-primary mt-3">
-                            <i class="fas fa-plus-circle me-1"></i> Record New Attendance
-                        </a>
+                        <a href="{{ route('teacher.attendances.create') }}" class="btn btn-primary mt-3">Record New Attendance</a>
                     `;
                     schoolDaysCalendar.appendChild(noRecordsMessage);
                 }
@@ -642,18 +805,14 @@
                 const monthContainer = document.createElement('div');
                 monthContainer.className = 'col-md-4 mb-4';
 
-                // Create month card with special styling for current month
+                // Create month card
                 const monthCard = document.createElement('div');
-                monthCard.className = isCurrentMonth
-                    ? 'card border-primary shadow h-100'
-                    : 'card border-0 shadow-sm h-100';
+                monthCard.className = isCurrentMonth ? 'card border-primary shadow h-100' : 'card border-0 shadow-sm h-100';
 
-                // Create month header with special styling for current month
+                // Create month header
                 const monthHeader = document.createElement('div');
-                monthHeader.className = isCurrentMonth
-                    ? 'card-header bg-primary text-white py-2'
-                    : 'card-header bg-white py-2';
-                monthHeader.innerHTML = `<h6 class="mb-0">${isCurrentMonth ? '<i class="fas fa-calendar-day me-1"></i>' : ''}${monthNames[month]} ${year}${isCurrentMonth ? ' (Current)' : ''}</h6>`;
+                monthHeader.className = isCurrentMonth ? 'card-header bg-primary text-white py-2' : 'card-header bg-white py-2';
+                monthHeader.innerHTML = `<h6 class="mb-0">${monthNames[month]} ${year}${isCurrentMonth ? ' (Current)' : ''}</h6>`;
 
                 // Create calendar body
                 const calendarBody = document.createElement('div');
@@ -684,30 +843,21 @@
 
                 // Create calendar rows
                 for (let i = 0; i < 6; i++) {
-                    // Break if we've gone past the days in the month
                     if (date > daysInMonth) break;
 
                     html += '<tr class="text-center">';
 
-                    // Create cells for each day of the week
                     for (let j = 0; j < 7; j++) {
                         if ((i === 0 && j < firstDay) || date > daysInMonth) {
-                            // Empty cell before the first day or after the last day
                             html += '<td></td>';
                         } else {
-                            // Format the date for comparison with school days
                             const formattedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
-
-                            // Check if this date is a school day
                             const isSchoolDay = schoolDayDates.includes(formattedDate);
-
-                            // Check if this is the current date
                             const currentDate = new Date();
                             const isCurrentDate = year === currentDate.getFullYear() &&
                                                 month === currentDate.getMonth() &&
                                                 date === currentDate.getDate();
 
-                            // Create cell with appropriate styling
                             if (isCurrentDate && isSchoolDay) {
                                 html += `<td class="bg-primary text-white position-relative"><strong>${date}</strong><span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">Today</span></td>`;
                             } else if (isCurrentDate) {
@@ -740,136 +890,7 @@
                 return monthContainer;
             }
         }
-
-        // No need for Monthly Attendance Chart anymore
     });
 </script>
-@endpush
-
-@push('styles')
-<style>
-/* Attendance Page Styles */
-.filter-bar {
-    border-radius: 10px;
-    transition: all 0.3s ease;
-}
-
-/* Calendar Modal Styles for Mobile */
-.modal-mobile-fixed-header .modal-body {
-    max-height: calc(100vh - 170px);
-    overflow-y: auto;
-}
-
-@media (max-width: 767.98px) {
-    .modal-mobile-fixed-header .modal-header,
-    .modal-mobile-fixed-header .modal-footer {
-        position: sticky;
-        z-index: 1050;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-
-    .modal-mobile-fixed-header .modal-header {
-        top: 0;
-    }
-
-    .modal-mobile-fixed-header .modal-footer {
-        bottom: 0;
-    }
-
-    .modal-mobile-fixed-header .modal-body {
-        max-height: calc(100vh - 200px);
-        padding-bottom: 20px;
-    }
-}
-
-.form-floating > .form-select,
-.form-floating > .form-control {
-    border-radius: 8px;
-    border-color: #e0e0e0;
-}
-
-.form-floating > .form-select:focus,
-.form-floating > .form-control:focus {
-    border-color: #6c63ff;
-    box-shadow: 0 0 0 0.25rem rgba(108, 99, 255, 0.1);
-}
-
-.attendance-stat {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 60px;
-}
-
-.attendance-stat .badge {
-    font-size: 0.9rem;
-    padding: 0.35rem 0.65rem;
-    margin-bottom: 0.25rem;
-}
-
-.stat-label {
-    font-size: 0.7rem;
-    color: #6c757d;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2rem;
-}
-
-/* Mobile Responsive Improvements */
-@media (max-width: 767.98px) {
-    .container-fluid {
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-
-    .card-body {
-        padding: 1rem;
-    }
-
-    .attendance-stat {
-        min-width: 45px;
-    }
-
-    .attendance-stat .badge {
-        font-size: 0.8rem;
-        padding: 0.25rem 0.5rem;
-    }
-
-    .stat-label {
-        font-size: 0.65rem;
-    }
-
-    .table > :not(caption) > * > * {
-        padding: 0.5rem;
-    }
-
-    .filter-bar {
-        padding: 1rem !important;
-    }
-
-    .form-floating > label {
-        padding: 0.75rem 0.75rem;
-    }
-
-    .tab-pane {
-        padding: 0.5rem;
-    }
-
-    .nav-tabs .nav-link {
-        padding: 0.75rem 1rem;
-    }
-}
-    .progress-circle {
-        transform: rotate(-90deg);
-        transform-origin: 50% 50%;
-        transition: stroke-dasharray 0.5s ease;
-    }
-</style>
 @endpush
 @endsection
