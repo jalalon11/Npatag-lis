@@ -992,7 +992,7 @@
                     @else
                         <i class="fas fa-graduation-cap"></i>
                     @endif
-                    <span class="logo-text">Grading System</span>
+                    <span class="logo-text">Patag LIS</span>
                 </h4>
                 <button type="button" id="sidebarCollapse" class="btn d-flex justify-content-center align-items-center">
                     <i class="fas fa-bars"></i>

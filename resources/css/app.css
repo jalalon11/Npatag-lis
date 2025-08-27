@@ -1,6 +1,62 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* After @tailwind utilities */
+
+/* Global Design Tokens */
+:root {
+    --border-radius: 12px;
+    --border-radius-pill: 50px;
+    --padding-sm: 1rem;
+    --padding-md: 1.5rem;
+    --margin-sm: 1rem;
+    --margin-md: 1.5rem;
+    --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 12px 24px rgba(0, 0, 0, 0.12);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --primary-color: #0d6efd;
+    --text-muted: #6c757d;
+    --bg-light: #f8f9fa;
+}
+
+/* Card Styles */
+.card {
+    border: none !important;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.card-header {
+    background: var(--bg-light);
+    border-bottom: none;
+    padding: var(--padding-md);
+}
+
+.card-body {
+    padding: var(--padding-md);
+}
+
+/* Button Styles */
+.btn {
+    border-radius: var(--border-radius-pill);
+    padding: 0.5rem 1.25rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: var(--transition);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-outline-primary {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';

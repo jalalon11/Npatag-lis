@@ -1,7 +1,7 @@
 <!-- Attendance Charts -->
 <div class="card border-0 shadow-sm h-100">
     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-        <h5 class="mb-0"><i class="fas fa-chart-line text-primary me-2"></i> Attendance Trends</h5>
+        <h5 class="mb-0 fw-bold">Attendance Trends</h5>
         <div class="btn-group" role="group" aria-label="Attendance period toggle">
             <button type="button" class="btn btn-sm btn-outline-primary active" id="weeklyViewBtn">Weekly</button>
             <button type="button" class="btn btn-sm btn-outline-primary" id="monthlyViewBtn">Monthly</button>
