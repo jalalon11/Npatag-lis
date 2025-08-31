@@ -18,7 +18,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <div>
-                            <h5 class="mb-1">{{ $section->name }} (Grade {{ $section->grade_level }})</h5>
+                            <h5 class="mb-1">{{ $section->name }} ({{ $section->grade_level }})</h5>
                             <p class="text-muted mb-0">{{ $quarter == 'Q1' ? '1st' : ($quarter == 'Q2' ? '2nd' : ($quarter == 'Q3' ? '3rd' : '4th')) }} Quarter</p>
                         </div>
                         <div>

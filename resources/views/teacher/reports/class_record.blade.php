@@ -289,6 +289,36 @@
                 }, false);
             });
         })();
+
+        // Sync quarter selection with admin's global quarter
+        function syncQuarterWithAdminQuarter() {
+            fetch('/api/get-global-quarter')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Admin quarter sync response:', data);
+                    const quarterSelect = document.getElementById('quarter');
+                    const currentQuarter = quarterSelect.value;
+                    const adminQuarter = data.quarter;
+                    
+                    console.log('Current quarter:', currentQuarter);
+                    console.log('Admin quarter:', adminQuarter);
+                    
+                    if (adminQuarter && adminQuarter !== currentQuarter) {
+                        console.log('Updating quarter selection to:', adminQuarter);
+                        quarterSelect.value = adminQuarter;
+                        console.log('Quarter selection updated');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error syncing quarter with admin:', error);
+                });
+        }
+
+        // Initial sync on page load
+        syncQuarterWithAdminQuarter();
+
+        // Sync every 5 seconds
+        setInterval(syncQuarterWithAdminQuarter, 5000);
     });
 </script>
 @endpush
