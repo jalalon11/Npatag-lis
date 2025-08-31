@@ -1,68 +1,203 @@
 @extends('layouts.app')
 
+@push('styles')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+<link href="{{ asset('css/dashboard.css') }}" rel="stylesheet">
+<style>
+    /* Shared design tokens from manage-subjects */
+    :root {
+        --border-radius: 12px;
+        --border-radius-pill: 50px;
+        --padding-sm: 1rem;
+        --padding-md: 1.5rem;
+        --margin-sm: 1rem;
+        --margin-md: 1.5rem;
+    }
+
+    .card {
+        border: none !important;
+        border-radius: var(--border-radius) !important;
+
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+        border-bottom: none !important;
+        padding: var(--padding-md) !important;
+    }
+
+    .badge {
+        border-radius: var(--border-radius-pill);
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .btn {
+        border-radius: var(--border-radius-pill);
+        padding: 0.5rem 1.25rem;
+        transition: var(--transition);
+    }
+
+    .action-btn {
+        padding: 0.4rem 0.8rem;
+        margin: 0 0.2rem;
+    }
+
+    .input-group .form-control, .input-group .btn, .input-group .input-group-text {
+        border-radius: var(--border-radius-pill);
+    }
+
+    .table {
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        font-size: 1rem;
+        color: #333;
+    }
+
+    .table thead {
+        background-color: #f8f9fa;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+    }
+
+    .table th, .table td {
+        padding: var(--padding-sm);
+        vertical-align: middle;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0,0,0,0.02);
+    }
+
+    .table a.text-decoration-none {
+        color: #0d6efd;
+        font-weight: 500;
+    }
+
+    .table a.text-decoration-none:hover {
+        text-decoration: underline !important;
+    }
+
+    .small {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+
+    .scrollable-table {
+        max-height: 500px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+        position: relative;
+    }
+
+    .scrollable-table::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .scrollable-table::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .scrollable-table::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+    }
+
+    .scrollable-table::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(0, 0, 0, 0.3);
+    }
+
+    .scrollable-table::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 20px;
+        background: linear-gradient(to top, rgba(255,255,255,0.9), rgba(255,255,255,0));
+        pointer-events: none;
+        border-bottom-left-radius: var(--border-radius);
+        border-bottom-right-radius: var(--border-radius);
+    }
+
+    .modal-content {
+        border-radius: var(--border-radius);
+    }
+
+    .modal-header, .modal-footer {
+        border: none;
+    }
+
+    .modal-footer .btn {
+        padding: 0.5rem 1.25rem;
+    }
+</style>
+@endpush
+
 @section('content')
-<div class="container-fluid p-4">
+<div class="container-fluid px-4">
     <!-- Main Header -->
-    <div class="d-flex justify-content-between align-items-center p-3 mb-4 bg-primary rounded-3 text-white shadow-sm">
-        <h4 class="mb-0">
-            <i class="fas fa-door-open me-2"></i> Manage Sections
-        </h4>
-        <button class="btn btn-light" onclick="window.location.href='{{ route('teacher-admin.sections.create') }}'">
-            <i class="fas fa-plus me-2"></i> Add New Section
-        </button>
+    <div class="d-flex justify-content-between align-items-center mb-4 animate__animated animate__fadeIn">
+        <h2 class="mb-0 fw-bold">
+            Manage Sections
+        </h2>
     </div>
 
+    <!-- Alerts -->
     @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
+        <div class="alert alert-success alert-dismissible fade show animate__animated animate__fadeIn" role="alert">
+            <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show animate__animated animate__fadeIn" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i> {{ session('error') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
 
     <!-- Stats Summary -->
-    <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body py-3">
-            <div class="row g-0">
-                <div class="col-md-4 d-flex align-items-center border-end">
-                    <div class="px-3">
-                        <i class="fas fa-door-open text-primary me-2"></i>
-                        <span class="text-muted">Sections:</span>
-                        <span class="fw-bold ms-1">{{ $sections->count() }}</span>
-                        <span class="text-muted ms-2">({{ $sections->where('is_active', true)->count() }} active)</span>
-                    </div>
+    <div class="card border-0 mb-4 animate__animated animate__fadeIn">
+        <div class="card-header bg-white d-flex align-items-center">
+            <h5 class="mb-0 fw-bold"><i class="fas fa-chart-pie text-primary me-2"></i> Section Summary</h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="d-flex flex-wrap gap-3 mb-3 border-bottom pb-3">
+                <div class="d-flex align-items-center">
+                    <span class="text-muted me-2"><i class="fas fa-list-alt text-primary me-2"></i> Sections:</span>
+                    <span class="fw-bold">{{ $sections->count() }}</span>
+                    <span class="text-muted ms-2">({{ $sections->where('is_active', true)->count() }} active)</span>
                 </div>
-                <div class="col-md-4 d-flex align-items-center border-end">
-                    <div class="px-3">
-                        <i class="fas fa-user-graduate text-info me-2"></i>
-                        <span class="text-muted">Students:</span>
-                        <span class="fw-bold ms-1">{{ $sections->sum('students_count') }}</span>
-                    </div>
+                <div class="d-flex align-items-center">
+                    <span class="text-muted me-2"><i class="fas fa-users text-info me-2"></i> Students:</span>
+                    <span class="fw-bold">{{ $sections->sum('students_count') }}</span>
                 </div>
-                <div class="col-md-4 d-flex align-items-center">
-                    <div class="px-3">
-                        <i class="fas fa-graduation-cap text-warning me-2"></i>
-                        <span class="text-muted">Grade Levels:</span>
-                        <span class="fw-bold ms-1">{{ $sections->pluck('grade_level')->unique()->count() }}</span>
-                    </div>
+                <div class="d-flex align-items-center">
+                    <span class="text-muted me-2"><i class="fas fa-graduation-cap text-warning me-2"></i> Grade Levels:</span>
+                    <span class="fw-bold">{{ $sections->pluck('grade_level')->unique()->count() }}</span>
+                </div>
+                <div class="ms-auto">
+                    <a href="{{ route('teacher-admin.sections.create') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i> Add New Section
+                    </a>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Simplified Search and Filters -->
-    <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body">
-            <div class="row g-2 align-items-center">
-                <div class="col-md-5">
-                    <div class="input-group">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-8">
+                    <div class="input-group" style="max-width: 400px;">
                         <span class="input-group-text bg-light border-end-0">
                             <i class="fas fa-search text-muted"></i>
                         </span>
                         <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Search sections...">
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <select id="gradeFilter" class="form-select">
+                <div class="col-md-2">
+                    <select id="gradeLevelFilter" class="form-select">
                         <option value="">All Grade Levels</option>
                         @php
                             $school = Auth::user()->school;
@@ -70,110 +205,48 @@
                             if ($school) {
                                 $gradeLevels = is_array($school->grade_levels) ? $school->grade_levels :
                                             (is_string($school->grade_levels) ? json_decode($school->grade_levels, true) : []);
-                                sort($gradeLevels, SORT_NUMERIC);
+                                sort($gradeLevels, SORT_NATURAL);
                             }
                         @endphp
                         @foreach($gradeLevels as $grade)
-                            <option value="Grade {{ $grade }}">Grade {{ $grade }}</option>
+                            <option value="{{ $grade }}">Grade {{ $grade }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <select id="statusFilter" class="form-select">
                         <option value="">All Status</option>
                         <option value="Active">Active</option>
                         <option value="Inactive">Inactive</option>
                     </select>
                 </div>
-                <div class="col-md-1">
-                    <button id="resetFilters" class="btn btn-outline-secondary w-100">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
-                </div>
             </div>
         </div>
     </div>
 
-    <!-- Enhanced CSS for better readability -->
-    <style>
-        /* Table styling for better readability */
-        .table {
-            font-size: 1rem;
-            color: #333;
-        }
-
-        .table thead th {
-            font-weight: 600;
-            font-size: 1.05rem;
-            color: #495057;
-        }
-
-        .table tbody td {
-            padding-top: 0.9rem;
-            padding-bottom: 0.9rem;
-            vertical-align: middle;
-        }
-
-        .table tbody tr:hover {
-            background-color: #f8f9fa;
-        }
-
-        /* Link styling */
-        .table a.text-decoration-none {
-            color: #0d6efd;
-            font-weight: 500;
-        }
-
-        .table a.text-decoration-none:hover {
-            text-decoration: underline !important;
-        }
-
-        /* Badge styling */
-        .badge {
-            font-weight: 500;
-            font-size: 0.85rem;
-            padding: 0.35rem 0.65rem;
-        }
-
-        /* Action buttons */
-        .action-btn {
-            padding: 0.4rem;
-            margin: 0 0.1rem;
-        }
-
-        /* Small text */
-        .small {
-            font-size: 0.85rem;
-            color: #6c757d;
-        }
-    </style>
-
-    <!-- Section List -->
-    <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white py-3">
-            <div class="d-flex align-items-center">
-                <i class="fas fa-list text-primary me-2"></i>
-                <span class="fw-medium">Section List</span>
-            </div>
+    <!-- Sections Table -->
+    <div class="card border-0 animate__animated animate__fadeIn">
+        <div class="card-header bg-white d-flex align-items-center">
+            <h5 class="mb-0 fw-bold"><i class="fas fa-list text-primary me-2"></i> Section List</h5>
         </div>
         <div class="card-body p-0">
-            <div class="table-responsive">
+            <div class="scrollable-table">
                 <table class="table table-hover mb-0" id="sectionsTable">
                     <thead>
-                        <tr class="bg-light">
-                            <th class="py-3">Section</th>
-                            <th class="py-3">Grade</th>
-                            <th class="py-3">Adviser</th>
-                            <th class="py-3 text-center">Students</th>
-                            <th class="py-3 text-center">Student Limit</th>
-                            <th class="py-3 text-center">Status</th>
-                            <th class="py-3 text-end">Actions</th>
+                        <tr>
+                            <th class="ps-4">Section</th>
+                            <th>Grade</th>
+                            <th>Adviser</th>
+                            <th class="text-center">Students</th>
+                            <th class="text-center">Student Limit</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-end pe-4">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($sections as $section)
                             <tr>
-                                <td>
+                                <td class="ps-4">
                                     <a href="{{ route('teacher-admin.sections.show', $section) }}"
                                        class="text-decoration-none">
                                         {{ $section->name }}
@@ -181,9 +254,7 @@
                                     <div class="small text-muted">{{ $section->school_year }}</div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-light text-dark">
-                                        {{ $section->grade_level }}
-                                    </span>
+                                    <span class="badge bg-light text-dark border">{{ $section->grade_level }}</span>
                                 </td>
                                 <td>
                                     @if($section->adviser)
@@ -208,25 +279,26 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    @if($section->is_active)
-                                        <span class="badge bg-success">Active</span>
-                                    @else
-                                        <span class="badge bg-danger">Inactive</span>
-                                    @endif
+                                    <span class="badge bg-{{ $section->is_active ? 'success' : 'danger' }}">
+                                        {{ $section->is_active ? 'Active' : 'Inactive' }}
+                                    </span>
                                 </td>
-                                <td class="text-end">
+                                <td class="text-end pe-4">
                                     <a href="{{ route('teacher-admin.sections.show', $section) }}"
-                                       class="btn btn-sm btn-outline-primary action-btn">
+                                       class="btn btn-sm btn-outline-primary action-btn"
+                                       data-bs-toggle="tooltip" title="View Section">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     <a href="{{ route('teacher-admin.sections.edit', $section) }}"
-                                       class="btn btn-sm btn-outline-secondary action-btn">
+                                       class="btn btn-sm btn-outline-secondary action-btn"
+                                       data-bs-toggle="tooltip" title="Edit Section">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <button type="button"
                                             class="btn btn-sm btn-outline-danger action-btn"
                                             data-bs-toggle="modal"
-                                            data-bs-target="#deleteModal{{ $section->id }}">
+                                            data-bs-target="#deleteModal{{ $section->id }}"
+                                            data-bs-toggle="tooltip" title="Delete Section">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
 
@@ -240,6 +312,12 @@
                                                 </div>
                                                 <div class="modal-body">
                                                     <p>Are you sure you want to delete <strong>{{ $section->name }}</strong>?</p>
+                                                    @if($section->students_count > 0)
+                                                        <div class="alert alert-warning small">
+                                                            <i class="fas fa-exclamation-circle me-1"></i>
+                                                            This section has {{ $section->students_count }} {{ Str::plural('student', $section->students_count) }} enrolled.
+                                                        </div>
+                                                    @endif
                                                     <p class="text-danger small">This action cannot be undone.</p>
                                                 </div>
                                                 <div class="modal-footer">
@@ -257,10 +335,13 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center py-4">
-                                    <i class="fas fa-folder-open text-muted mb-2" style="font-size: 1.5rem;"></i>
-                                    <p class="mb-0">No sections found</p>
-                                    <a href="{{ route('teacher-admin.sections.create') }}" class="btn btn-primary btn-sm mt-2">
+                                <td colspan="7" class="text-center py-5">
+                                    <div class="avatar bg-light p-3 mb-3">
+                                        <i class="fas fa-folder-open text-secondary fa-2x"></i>
+                                    </div>
+                                    <h5 class="text-muted">No Sections Found</h5>
+                                    <p class="text-muted">Add a new section to get started.</p>
+                                    <a href="{{ route('teacher-admin.sections.create') }}" class="btn btn-primary btn-sm">
                                         <i class="fas fa-plus me-1"></i> Add New Section
                                     </a>
                                 </td>
@@ -269,59 +350,84 @@
                     </tbody>
                 </table>
             </div>
+            @if($sections->count() > 10)
+                <div class="text-center py-2 border-top">
+                    <small class="text-muted"><i class="fas fa-info-circle me-1"></i> Scroll to see all {{ $sections->count() }} sections</small>
+                </div>
+            @endif
         </div>
+    </div>
+
+    <!-- No Results Message -->
+    <div id="noResultsMessage" class="text-center py-5 d-none">
+        <h5 class="text-muted">No Matching Sections</h5>
+        <p class="text-muted">Try adjusting your search or filters.</p>
     </div>
 </div>
 
 @push('scripts')
 <script>
-$(document).ready(function() {
-    // Simple table filtering function
-    function filterTable() {
-        const searchValue = $("#searchInput").val().toLowerCase();
-        const gradeValue = $("#gradeFilter").val();
-        const statusValue = $("#statusFilter").val();
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
 
-        $("#sectionsTable tbody tr").each(function() {
-            const $row = $(this);
+    // Table filtering function
+    function filterTable() {
+        const searchValue = document.getElementById('searchInput').value.toLowerCase();
+        const gradeValue = document.getElementById('gradeLevelFilter').value;
+        const statusValue = document.getElementById('statusFilter').value;
+        let hasResults = false;
+
+        document.querySelectorAll('#sectionsTable tbody tr').forEach(row => {
             let shouldShow = true;
 
             // Search filter
             if (searchValue) {
-                const textContent = $row.text().toLowerCase();
+                const textContent = row.textContent.toLowerCase();
                 shouldShow = textContent.includes(searchValue);
             }
 
             // Grade filter
             if (shouldShow && gradeValue) {
-                const gradeText = $row.find("td:nth-child(2)").text().trim();
+                const gradeText = row.querySelector('td:nth-child(2)').textContent.trim();
                 shouldShow = gradeText.includes(gradeValue);
             }
 
             // Status filter
             if (shouldShow && statusValue) {
-                const statusText = $row.find("td:nth-child(5)").text().trim();
+                const statusText = row.querySelector('td:nth-child(6)').textContent.trim();
                 shouldShow = statusText.includes(statusValue);
             }
 
-            $row.toggle(shouldShow);
+            row.style.display = shouldShow ? '' : 'none';
+            if (shouldShow) hasResults = true;
         });
+
+        // Show/hide no results message
+        const noResultsMessage = document.getElementById('noResultsMessage');
+        if (!hasResults && (searchValue || gradeValue || statusValue)) {
+            noResultsMessage.classList.remove('d-none');
+        } else {
+            noResultsMessage.classList.add('d-none');
+        }
     }
 
-    // Add input delay for search
+    // Debounce search input
     let searchTimeout;
-    $("#searchInput").on("input", function() {
+    document.getElementById('searchInput').addEventListener('input', function() {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(filterTable, 300);
     });
 
     // Apply filters on change
-    $("#gradeFilter, #statusFilter").on("change", filterTable);
+    document.getElementById('gradeLevelFilter').addEventListener('change', filterTable);
+    document.getElementById('statusFilter').addEventListener('change', filterTable);
 
-    // Reset all filters
-    $("#resetFilters").on("click", function() {
-        $("#searchInput").val("");
-        $("#gradeFilter, #statusFilter").val("");
+    // Reset filters
+    document.getElementById('resetFilters').addEventListener('click', function() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('gradeLevelFilter').value = '';
+        document.getElementById('statusFilter').value = '';
         filterTable();
     });
 });

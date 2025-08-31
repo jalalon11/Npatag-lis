@@ -94,21 +94,8 @@
         height: 100%;
         border: none !important;
     }
-    .assessment-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
-    }
     .bg-light-blue {
         background-color: rgba(78, 115, 223, 0.1) !important;
-        border-left: 4px solid #4e73df !important;
-    }
-    .bg-light-green {
-        background-color: rgba(28, 200, 138, 0.1) !important;
-        border-left: 4px solid #1cc88a !important;
-    }
-    .bg-light-yellow {
-        background-color: rgba(246, 194, 62, 0.1) !important;
-        border-left: 4px solid #f6c23e !important;
     }
     .avatar-circle {
         width: 38px;
@@ -124,9 +111,6 @@
     }
     .stat-card {
         transition: transform 0.2s;
-    }
-    .stat-card:hover {
-        transform: scale(1.03);
     }
     .progress {
         overflow: visible;
@@ -556,8 +540,8 @@
                             <div class="card assessment-option bg-light-green">
                                 <div class="card-body p-3">
                                     <div class="d-flex align-items-center">
-                                        <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
-                                            <i class="fas fa-project-diagram text-success"></i>
+                                        <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                            <i class="fas fa-project-diagram text-primary"></i>
                                         </div>
                                         <div>
                                             <h6 class="mb-0 fw-bold">Performance Tasks</h6>
@@ -575,8 +559,8 @@
                             <div class="card assessment-option bg-light-yellow">
                                 <div class="card-body p-3">
                                     <div class="d-flex align-items-center">
-                                        <div class="bg-warning bg-opacity-10 rounded-circle p-2 me-3">
-                                            <i class="fas fa-file-alt text-warning"></i>
+                                        <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                            <i class="fas fa-file-alt text-primary"></i>
                                         </div>
                                         <div>
                                             <h6 class="mb-0 fw-bold">Quarterly Assessment</h6>
@@ -640,7 +624,7 @@
                 <i class="fas fa-check me-1"></i> Apply Filter
             </button>
         </div>
-        <div class="card-body bg-light py-4">
+        <div class="card-body bg-white py-4">
             @if(empty($subjects) || $subjects->isEmpty())
                 <!-- No Subjects View -->
                 <div class="text-center py-4">
@@ -769,207 +753,204 @@
 
     @if(isset($selectedSubject) && $selectedSubject)
         <!-- Selected Subject Overview -->
-        <div class="row mb-4">
+        <div class="row ">
             <!-- Subject Information -->
-            <div class="col-12 mb-4">
+            <div class="mb-4">
                 <div class="card shadow-sm rounded-3 border-0">
-                    <div class="card-header py-3 bg-white">
-                        <h5 class="mb-0 fw-bold text-primary">
-                            <i class="fas fa-info-circle me-2"></i> Subject Information
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0 fw-bold d-flex align-items-center justify-content-between text-primary">
+                            <div class="d-flex">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <span >{{ $selectedSubject->name }}</span>
+                                <span >({{ $selectedSubject->code }})</span>
+                                <p class="px-2">|</p>
+                                <span >Grade Level : </span>
+                                <span >{{ $selectedSubject->grade_level ?? 'Not specified' }}</span>
+                            </div>
+                            <small class="col-md-4 text-end">
+                                <span class="fw-medium badge bg-primary bg-opacity-10 text-primary py-2 px-4 rounded-pill">{{ $terms[$selectedTerm] }}</span>
+                            </small>
                         </h5>
                     </div>
-                    <div class="card-body bg-light">
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <span class="text-muted me-2">Subject Code:</span>
-                                <span class="fw-medium">{{ $selectedSubject->code }}</span>
-                            </div>
-                            <div class="col-md-4">
-                                <span class="text-muted me-2">Grade Level:</span>
-                                <span class="fw-medium">{{ $selectedSubject->grade_level ?? 'Not specified' }}</span>
-                            </div>
-                            <div class="col-md-4">
-                                <span class="text-muted me-2">Term:</span>
-                                <span class="fw-medium">{{ $terms[$selectedTerm] }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Grade Components and Assessments -->
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-sm rounded-3 border-0 h-100">
-                    <div class="card-header py-3 bg-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 fw-bold text-primary">
-                            <i class="fas fa-chart-pie me-2"></i> Grade Components
-                        </h5>
-                        <a href="{{ route('teacher.grades.configure', ['subject_id' => $selectedSubject->id]) }}"
-                        class="btn btn-sm btn-outline-primary"
-                        data-bs-toggle="tooltip"
-                        data-bs-placement="left"
-                        title="Adjust how different assessment types contribute to the final grade">
-                            <i class="fas fa-cog me-1"></i> Configure
-                        </a>
-                    </div>
-                    <div class="card-body">
-                        @php
-                            $writtenWorkPercentage = $selectedSubject->gradeConfiguration->written_work_percentage ?? 30;
-                            $performanceTaskPercentage = $selectedSubject->gradeConfiguration->performance_task_percentage ?? 50;
-                            $quarterlyAssessmentPercentage = $selectedSubject->gradeConfiguration->quarterly_assessment_percentage ?? 20;
-                        @endphp
-
-                        <!-- Written Works -->
-                        <div class="mb-4">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="fw-bold">Written Works</span>
-                                <span class="badge bg-primary rounded-pill">{{ $writtenWorkPercentage }}%</span>
-                            </div>
-                            <div class="progress rounded-pill" style="height: 10px;">
-                                <div class="progress-bar bg-primary" role="progressbar" style="width: {{ $writtenWorkPercentage }}%"
-                                    aria-valuenow="{{ $writtenWorkPercentage }}" aria-valuemin="0" aria-valuemax="100">
-                                </div>
-                            </div>
-                            <div class="mt-2 small text-muted">
-                                <i class="fas fa-info-circle me-1"></i> Quizzes, seatwork, and written exercises
-                            </div>
-                        </div>
-
-                        <!-- Performance Tasks -->
-                        <div class="mb-4">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="fw-bold">Performance Tasks</span>
-                                <span class="badge bg-success rounded-pill">{{ $performanceTaskPercentage }}%</span>
-                            </div>
-                            <div class="progress rounded-pill" style="height: 10px;">
-                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ $performanceTaskPercentage }}%"
-                                    aria-valuenow="{{ $performanceTaskPercentage }}" aria-valuemin="0" aria-valuemax="100">
-                                </div>
-                            </div>
-                            <div class="mt-2 small text-muted">
-                                <i class="fas fa-info-circle me-1"></i> Projects, presentations, and activities
-                            </div>
-                        </div>
-
-                        <!-- Quarterly Assessment -->
-                        <div class="mb-0">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="fw-bold">Quarterly Assessment</span>
-                                <span class="badge bg-warning rounded-pill">{{ $quarterlyAssessmentPercentage }}%</span>
-                            </div>
-                            <div class="progress rounded-pill" style="height: 10px;">
-                                <div class="progress-bar bg-warning" role="progressbar" style="width: {{ $quarterlyAssessmentPercentage }}%"
-                                    aria-valuenow="{{ $quarterlyAssessmentPercentage }}" aria-valuemin="0" aria-valuemax="100">
-                                </div>
-                            </div>
-                            <div class="mt-2 small text-muted">
-                                <i class="fas fa-info-circle me-1"></i> Final exams and quarterly tests
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Assessment Options -->
-            <div class="col-md-8">
-                <div class="card shadow-sm rounded-3 border-0">
-                    <div class="card-header py-3 bg-white">
-                        <h5 class="mb-0 fw-bold text-primary">
-                            <i class="fas fa-clipboard-list me-2"></i>
-                            Record Assessments for {{ $selectedSubject->name }}
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row g-4">
-                            <!-- Written Works Card -->
-                            <div class="col-md-4">
-                                <div class="card assessment-card shadow-sm bg-light-blue">
-                                    <div class="card-body p-4">
-                                        <div class="text-center mb-3">
-                                            <div class="bg-primary bg-opacity-10 rounded-circle p-3 d-inline-block mb-2">
-                                                <i class="fas fa-pen text-primary fa-2x"></i>
-                                            </div>
-                                            <h5 class="fw-bold">Written Works</h5>
-                                        </div>
+                    <div class="card-body bg-white">
+                        <div class="row">
+                            <!-- Grade Components and Assessments -->
+                            <div class="col-md-4 mb-4">
+                                <div class="rounded-3 border-0">
+                                    <div class="py-3 d-flex justify-content-between">
+                                        <h5 class="mb-0 fw-bold">
+                                            <i class="fas fa-chart-pie me-2"></i> Grade Components
+                                        </h5>
+                                        <a href="{{ route('teacher.grades.configure', ['subject_id' => $selectedSubject->id]) }}"
+                                        class="btn btn-sm btn-outline-primary"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="left"
+                                        title="Adjust how different assessment types contribute to the final grade">
+                                            <i class="fas fa-cog me-1"></i> Configure
+                                        </a>
+                                    </div>
+                                    <div class="">
                                         @php
-                                            $config = App\Models\GradeConfiguration::where('subject_id', $selectedSubject->id)->first();
-                                            $writtenWorkPercentage = $config ? $config->written_work_percentage : 30;
+                                            $writtenWorkPercentage = $selectedSubject->gradeConfiguration->written_work_percentage ?? 30;
+                                            $performanceTaskPercentage = $selectedSubject->gradeConfiguration->performance_task_percentage ?? 50;
+                                            $quarterlyAssessmentPercentage = $selectedSubject->gradeConfiguration->quarterly_assessment_percentage ?? 20;
                                         @endphp
-                                        <p class="text-muted small">Record scores for quizzes, homework, and written assessments</p>
-                                        <div class="d-grid mt-3">
-                                            <a href="{{ route('teacher.grades.assessment-setup', [
-                                                'subject_id' => $selectedSubject->id,
-                                                'term' => $selectedTerm,
-                                                'grade_type' => 'written_work',
-                                                'section_id' => $selectedSectionId ?? 1
-                                            ]) }}" class="btn btn-primary"
-                                            data-bs-toggle="tooltip"
-                                            data-bs-placement="bottom"
-                                            title="Create a new written assessment for the class">
-                                                <i class="fas fa-plus-circle me-1"></i> Add Assessment
-                                            </a>
+
+                                        <!-- Written Works -->
+                                        <div class="mb-4">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="fw-bold">Written Works</span>
+                                                <span class="badge bg-primary rounded-pill">{{ $writtenWorkPercentage }}%</span>
+                                            </div>
+                                            <div class="progress rounded-pill" style="height: 10px;">
+                                                <div class="progress-bar bg-primary" role="progressbar" style="width: {{ $writtenWorkPercentage }}%"
+                                                    aria-valuenow="{{ $writtenWorkPercentage }}" aria-valuemin="0" aria-valuemax="100">
+                                                </div>
+                                            </div>
+                                            <div class="mt-2 small text-muted">
+                                                <i class="fas fa-info-circle me-1"></i> Quizzes, seatwork, and written exercises
+                                            </div>
+                                        </div>
+
+                                        <!-- Performance Tasks -->
+                                        <div class="mb-4">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="fw-bold">Performance Tasks</span>
+                                                <span class="badge bg-primary rounded-pill">{{ $performanceTaskPercentage }}%</span>
+                                            </div>
+                                            <div class="progress rounded-pill" style="height: 10px;">
+                                                <div class="progress-bar bg-primary" role="progressbar" style="width: {{ $performanceTaskPercentage }}%"
+                                                    aria-valuenow="{{ $performanceTaskPercentage }}" aria-valuemin="0" aria-valuemax="100">
+                                                </div>
+                                            </div>
+                                            <div class="mt-2 small text-muted">
+                                                <i class="fas fa-info-circle me-1"></i> Projects, presentations, and activities
+                                            </div>
+                                        </div>
+
+                                        <!-- Quarterly Assessment -->
+                                        <div class="mb-0">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="fw-bold">Quarterly Assessment</span>
+                                                <span class="badge bg-primary rounded-pill">{{ $quarterlyAssessmentPercentage }}%</span>
+                                            </div>
+                                            <div class="progress rounded-pill" style="height: 10px;">
+                                                <div class="progress-bar bg-primary" role="progressbar" style="width: {{ $quarterlyAssessmentPercentage }}%"
+                                                    aria-valuenow="{{ $quarterlyAssessmentPercentage }}" aria-valuemin="0" aria-valuemax="100">
+                                                </div>
+                                            </div>
+                                            <div class="mt-2 small text-muted">
+                                                <i class="fas fa-info-circle me-1"></i> Final exams and quarterly tests
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Performance Tasks Card -->
-                            <div class="col-md-4">
-                                <div class="card assessment-card shadow-sm bg-light-green">
-                                    <div class="card-body p-4">
-                                        <div class="text-center mb-3">
-                                            <div class="bg-success bg-opacity-10 rounded-circle p-3 d-inline-block mb-2">
-                                                <i class="fas fa-project-diagram text-success fa-2x"></i>
-                                            </div>
-                                            <h5 class="fw-bold">Performance Tasks</h5>
-                                        </div>
-                                        @php
-                                            $performanceTaskPercentage = $config ? $config->performance_task_percentage : 50;
-                                        @endphp
-                                        <p class="text-muted small">Record scores for projects, presentations, and practical activities</p>
-                                        <div class="d-grid mt-3">
-                                            <a href="{{ route('teacher.grades.assessment-setup', [
-                                                'subject_id' => $selectedSubject->id,
-                                                'term' => $selectedTerm,
-                                                'grade_type' => 'performance_task',
-                                                'section_id' => $selectedSectionId ?? 1
-                                            ]) }}" class="btn btn-success"
-                                            data-bs-toggle="tooltip"
-                                            data-bs-placement="bottom"
-                                            title="Create a new performance task for the class">
-                                                <i class="fas fa-plus-circle me-1"></i> Add Assessment
-                                            </a>
-                                        </div>
+                            <!-- Assessment Options -->
+                            <div class="col-md-8">
+                                <div class="rounded-3 px-4 border-0">
+                                    <div class="py-3">
+                                        <h5 class="mb-0 fw-bold">
+                                            <i class="fas fa-clipboard-list me-2"></i>
+                                            Record Assessments for {{ $selectedSubject->name }}
+                                        </h5>
                                     </div>
-                                </div>
-                            </div>
-
-                            <!-- Quarterly Assessment Card -->
-                            <div class="col-md-4">
-                                <div class="card assessment-card shadow-sm bg-light-yellow">
-                                    <div class="card-body p-4">
-                                        <div class="text-center mb-3">
-                                            <div class="bg-warning bg-opacity-10 rounded-circle p-3 d-inline-block mb-2">
-                                                <i class="fas fa-file-alt text-warning fa-2x"></i>
+                                    <div>
+                                        <div class="row g-4">
+                                            <!-- Written Works Card -->
+                                            <div class="col-md-4">
+                                                <div class="card assessment-card shadow-sm bg-light-blue">
+                                                    <div class="card-body p-4">
+                                                        <div class="text-center mb-3">
+                                                            <div class="bg-primary bg-opacity-10 rounded-circle p-3 d-inline-block mb-2">
+                                                                <i class="fas fa-pen text-primary fa-2x"></i>
+                                                            </div>
+                                                            <h5 class="fw-bold">Written Works</h5>
+                                                        </div>
+                                                        @php
+                                                            $config = App\Models\GradeConfiguration::where('subject_id', $selectedSubject->id)->first();
+                                                            $writtenWorkPercentage = $config ? $config->written_work_percentage : 30;
+                                                        @endphp
+                                                        <p class="text-muted small">Record scores for quizzes, homework, and written assessments</p>
+                                                        <div class="d-grid mt-3">
+                                                            <a href="{{ route('teacher.grades.assessment-setup', [
+                                                                'subject_id' => $selectedSubject->id,
+                                                                'term' => $selectedTerm,
+                                                                'grade_type' => 'written_work',
+                                                                'section_id' => $selectedSectionId ?? 1
+                                                            ]) }}" class="btn btn-primary"
+                                                            data-bs-toggle="tooltip"
+                                                            data-bs-placement="bottom"
+                                                            title="Create a new written assessment for the class">
+                                                                <i class="fas fa-plus-circle me-1"></i> Add Assessment
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <h5 class="fw-bold">Quarterly Exam</h5>
-                                        </div>
-                                        @php
-                                            $quarterlyAssessmentPercentage = $config ? $config->quarterly_assessment_percentage : 20;
-                                        @endphp
-                                        <p class="text-muted small">Record scores for final exams and quarterly assessments</p>
-                                        <div class="d-grid mt-3">
-                                            <a href="{{ route('teacher.grades.assessment-setup', [
-                                                'subject_id' => $selectedSubject->id,
-                                                'term' => $selectedTerm,
-                                                'grade_type' => 'quarterly',
-                                                'section_id' => $selectedSectionId ?? 1
-                                            ]) }}" class="btn btn-warning"
-                                            data-bs-toggle="tooltip"
-                                            data-bs-placement="bottom"
-                                            title="Create a new quarterly assessment for the class">
-                                                <i class="fas fa-plus-circle me-1"></i> Add Assessment
-                                            </a>
+
+                                            <!-- Performance Tasks Card -->
+                                            <div class="col-md-4">
+                                                <div class="card assessment-card shadow-sm bg-light-blue">
+                                                    <div class="card-body p-4">
+                                                        <div class="text-center mb-3">
+                                                            <div class="bg-primary bg-opacity-10 rounded-circle p-3 d-inline-block mb-2">
+                                                                <i class="fas fa-project-diagram text-primary fa-2x"></i>
+                                                            </div>
+                                                            <h5 class="fw-bold">Performance Tasks</h5>
+                                                        </div>
+                                                        @php
+                                                            $performanceTaskPercentage = $config ? $config->performance_task_percentage : 50;
+                                                        @endphp
+                                                        <p class="text-muted small">Record scores for projects, presentations, and practical activities</p>
+                                                        <div class="d-grid mt-3">
+                                                            <a href="{{ route('teacher.grades.assessment-setup', [
+                                                                'subject_id' => $selectedSubject->id,
+                                                                'term' => $selectedTerm,
+                                                                'grade_type' => 'performance_task',
+                                                                'section_id' => $selectedSectionId ?? 1
+                                                            ]) }}" class="btn btn-primary"
+                                                            data-bs-toggle="tooltip"
+                                                            data-bs-placement="bottom"
+                                                            title="Create a new performance task for the class">
+                                                                <i class="fas fa-plus-circle me-1"></i> Add Assessment
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Quarterly Assessment Card -->
+                                            <div class="col-md-4">
+                                                <div class="card assessment-card shadow-sm bg-light-blue">
+                                                    <div class="card-body p-4">
+                                                        <div class="text-center mb-3">
+                                                            <div class="bg-primary bg-opacity-10 rounded-circle p-3 d-inline-block mb-2">
+                                                                <i class="fas fa-file-alt text-primary fa-2x"></i>
+                                                            </div>
+                                                            <h5 class="fw-bold">Quarterly Exam</h5>
+                                                        </div>
+                                                        @php
+                                                            $quarterlyAssessmentPercentage = $config ? $config->quarterly_assessment_percentage : 20;
+                                                        @endphp
+                                                        <p class="text-muted small">Record scores for final exams and quarterly assessments</p>
+                                                        <div class="d-grid mt-3">
+                                                            <a href="{{ route('teacher.grades.assessment-setup', [
+                                                                'subject_id' => $selectedSubject->id,
+                                                                'term' => $selectedTerm,
+                                                                'grade_type' => 'quarterly',
+                                                                'section_id' => $selectedSectionId ?? 1
+                                                            ]) }}" class="btn btn-primary"
+                                                            data-bs-toggle="tooltip"
+                                                            data-bs-placement="bottom"
+                                                            title="Create a new quarterly assessment for the class">
+                                                                <i class="fas fa-plus-circle me-1"></i> Add Assessment
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -984,36 +965,11 @@
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-header py-3 bg-white">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-2 mb-md-0">
-                    <h5 class="mb-2 mb-md-0 fw-bold text-primary">
+                    <h5 class="mb-2 mb-md-0 fw-bold text-primary d-flex">
                         <i class="fas fa-user-graduate me-2"></i> Student Grades
+                        <p class="px-2">|</p>
+                        <span >Section : {{ isset($sections) ? $sections->where('id', $selectedSectionId)->first()->name ?? 'N/A' : 'N/A' }}</span>
                     </h5>
-                </div>
-
-                <div class="selected-info mt-2">
-                    <div class="d-flex flex-column flex-sm-row gap-2 shadow-sm rounded-3 border bg-white p-2">
-                        <div class="d-flex align-items-center flex-grow-1 p-1">
-                            <div class="bg-success bg-opacity-10 rounded-circle p-2 me-2 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                                <i class="fas fa-users text-success"></i>
-                            </div>
-                            <div>
-                                <small class="text-muted d-block">Section</small>
-                                <span class="fw-bold">{{ isset($sections) ? $sections->where('id', $selectedSectionId)->first()->name ?? 'N/A' : 'N/A' }}</span>
-                            </div>
-                        </div>
-
-                        <div class="d-none d-sm-block vr mx-1"></div>
-                        <div class="border-top border-sm-0 pt-2 pt-sm-0 mt-1 mt-sm-0 d-sm-none"></div>
-
-                        <div class="d-flex align-items-center flex-grow-1 p-1">
-                            <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-2 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                                <i class="fas fa-book text-primary"></i>
-                            </div>
-                            <div class="text-truncate">
-                                <small class="text-muted d-block">Subject</small>
-                                <span class="fw-bold">{{ $selectedSubject->name ?? 'N/A' }}</span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div class="card-body p-0">
