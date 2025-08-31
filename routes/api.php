@@ -21,6 +21,15 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Subject API routes
 Route::get('/subjects/{id}/components', [\App\Http\Controllers\Api\SubjectController::class, 'getComponents']);
 
+// Global quarter API route
+Route::get('/get-global-quarter', function () {
+    $quarter = \App\Models\SystemSetting::getSetting('global_quarter', 'Q1');
+    return response()->json([
+        'success' => true,
+        'quarter' => $quarter
+    ]);
+});
+
 // Teacher API routes
 Route::prefix('teacher')->group(function () {
     // Grade API routes

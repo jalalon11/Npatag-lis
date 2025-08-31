@@ -6,6 +6,7 @@
 <style>
     /* Import shared design tokens and styles from teacher dashboard */
     :root {
+
         --border-radius: 12px;
         --border-radius-pill: 50px;
         --padding-sm: 1rem;
@@ -58,6 +59,7 @@
         border-radius: var(--border-radius);
         position: relative;
         overflow: hidden;
+
     }
 
     .welcome-header::before {
@@ -80,7 +82,6 @@
         background-color: rgba(0,0,0,0.02);
         transform: translateX(5px);
     }
-
     .table {
         border-radius: var(--border-radius);
         overflow: hidden;
@@ -111,8 +112,10 @@
         padding: 0.5rem 1.25rem;
     }
 
+
     .avatar {
         border-radius: var(--border-radius);
+
     }
 
     /* Custom Scrollbar */
@@ -144,7 +147,7 @@
     .sticky-header th {
         position: sticky;
         top: 0;
-        background-color: #f8f9fa;
+        background-color: var(--light-bg);
         z-index: 1;
         box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
     }
@@ -348,10 +351,10 @@
                     <h4 class="fw-bold mb-0">{{ $enrollmentStats['total'] ?? 0 }}</h4>
                     <p class="small text-muted mb-0 mt-1">All Time</p>
                     <a href="{{ route('teacher-admin.enrollments.index') }}" class="btn btn-sm btn-outline-info mt-2">Manage</a>
+
                 </div>
             </div>
         </div>
-    </div>
 
     <!-- Analytics Section -->
     <div class="row g-4 mb-4">
@@ -365,8 +368,17 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="attendance-chart-container" style="height: 300px;">
-                        <canvas id="attendanceChart"></canvas>
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="attendance-chart-container" style="height: 300px;">
+                                <canvas id="attendanceChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="grade-chart-container d-flex justify-content-center align-items-center" style="height: 300px;">
+                                <canvas id="gradeDistributionChart"></canvas>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -376,9 +388,56 @@
                 <div class="p-4 bg-white">
                     <h5 class="mb-0 fw-bold">School Grade Distribution</h5>
                 </div>
-                <div class="card-body">
-                    <div class="grade-chart-container d-flex justify-content-center align-items-center" style="height: 300px;">
-                        <canvas id="gradeDistributionChart"></canvas>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <!-- Pending Applications -->
+                        <div class="col-3">
+                            <div class="card stat-card">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <h6 class="text-uppercase fw-semibold mb-0 small">Pending Applications</h6>
+                                    </div>
+                                    <h4 class="fw-bold mb-0">{{ $enrollmentStats['pending'] ?? 0 }}</h4>
+                                    <p class="small text-muted mb-0 mt-1">Needs Review</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Approved Applications -->
+                        <div class="col-3">
+                            <div class="card stat-card">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <h6 class="text-uppercase fw-semibold mb-0 small">Approved Applications</h6>
+                                    </div>
+                                    <h4 class="fw-bold mb-0">{{ $enrollmentStats['approved'] ?? 0 }}</h4>
+                                    <p class="small text-muted mb-0 mt-1">Ready for Enrollment</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Enrolled Students -->
+                        <div class="col-3">
+                            <div class="card stat-card">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <h6 class="text-uppercase fw-semibold mb-0 small">Enrolled Students</h6>
+                                    </div>
+                                    <h4 class="fw-bold mb-0">{{ $enrollmentStats['enrolled'] ?? 0 }}</h4>
+                                    <p class="small text-muted mb-0 mt-1">Active Students</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Total Applications -->
+                        <div class="col-3">
+                            <div class="card stat-card">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <h6 class="text-uppercase fw-semibold mb-0 small">Total Applications</h6>
+                                    </div>
+                                    <h4 class="fw-bold mb-0">{{ $enrollmentStats['total'] ?? 0 }}</h4>
+                                    <p class="small text-muted mb-0 mt-1">All Time</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -437,15 +496,25 @@
                                                     <i class="fas fa-book"></i>
                                                 </button>
                                             </div>
+
                                         </td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
+                    @if(!$teacherPerformance->count())
+                        <div class="text-center py-5">
+                            <div class="mb-3">
+                                <i class="fas fa-user-check text-muted fa-3x"></i>
+                            </div>
+                            <h6 class="text-muted">No teacher performance data available</h6>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
+
         <div class="col-lg-5">
             <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeIn">
                 <div class="p-4 bg-white d-flex justify-content-between align-items-center">
@@ -469,11 +538,20 @@
                                         </h6>
                                         <small class="text-muted">{{ $activity['date']->diffForHumans() }}</small>
                                     </div>
+
                                 </div>
                                 <p class="ms-5 mb-0 text-dark">{{ $activity['description'] }}</p>
                             </div>
                         @endforeach
                     </div>
+                    @if(!count($recentActivity))
+                        <div class="text-center py-5">
+                            <div class="mb-3">
+                                <i class="fas fa-history text-muted fa-3x"></i>
+                            </div>
+                            <h6 class="text-muted">No recent activity</h6>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -715,18 +793,18 @@
                         gradeDistributionData.needsImprovement
                     ],
                     backgroundColor: [
-                        'rgba(25, 135, 84, 0.7)',
-                        'rgba(13, 110, 253, 0.7)',
-                        'rgba(0, 195, 220, 0.7)',
-                        'rgba(255, 193, 7, 0.7)',
-                        'rgba(220, 53, 69, 0.7)'
+                        '#28a745',
+                        '#0d6efd',
+                        '#00c3dc',
+                        '#ffc107',
+                        '#dc3545'
                     ],
                     borderColor: [
-                        'rgba(25, 135, 84, 1)',
-                        'rgba(13, 110, 253, 1)',
-                        'rgba(0, 195, 220, 1)',
-                        'rgba(255, 193, 7, 1)',
-                        'rgba(220, 53, 69, 1)'
+                        '#28a745',
+                        '#0d6efd',
+                        '#00c3dc',
+                        '#ffc107',
+                        '#dc3545'
                     ],
                     borderWidth: 1
                 }]
@@ -757,8 +835,10 @@
 
         // Toggle for top performers
         document.getElementById('topPerformersOnly').addEventListener('change', function() {
+
             console.log('Show top performers only:', this.checked);
             // TODO: Filter table rows via AJAX or client-side logic
+
         });
     });
 </script>

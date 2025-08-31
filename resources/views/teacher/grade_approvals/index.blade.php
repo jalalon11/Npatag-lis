@@ -202,6 +202,11 @@
         </div>
     @endif
 
+    <!-- Debug Status -->
+    <div id="sync-status" class="alert alert-secondary mb-3" style="display: none;">
+        <small><strong>Quarter Sync Status:</strong> <span id="sync-message">Initializing...</span></small>
+    </div>
+
     <!-- Info Alert -->
     <div class="alert alert-info mb-4">
         <div class="d-flex">
@@ -224,6 +229,7 @@
             You are not assigned to teach any subjects in any sections.
         </div>
     @else
+
         <!-- Quarter Tabs -->
         <ul class="nav nav-tabs mb-4" id="quarterTabs" role="tablist">
             @foreach($quarters as $quarterKey => $quarterName)
@@ -265,7 +271,7 @@
                             <div class="col section-group">
                                 <div class="card h-100 shadow-sm">
                                     <div class="card-header bg-light">
-                                        <h5 class="card-title mb-0">{{ $sectionName }} (Grade {{ $gradeLevel }})</h5>
+                                        <h5 class="card-title mb-0">{{ $sectionName }} ({{ $gradeLevel }})</h5>
                                     </div>
                                     <div class="card-body p-0">
                                         <ul class="list-group list-group-flush subject-list">
@@ -373,7 +379,6 @@
 @section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('Grade approvals page loaded');
 
         // Ensure Bootstrap modals are properly initialized
         if (typeof bootstrap !== 'undefined') {
@@ -563,6 +568,83 @@
                 button.setAttribute('title', 'Hide Grades');
             }
         });
+
+        // Update status message
+        function updateSyncStatus(message, isError = false) {
+            const statusDiv = document.getElementById('sync-status');
+            const messageSpan = document.getElementById('sync-message');
+            if (statusDiv && messageSpan) {
+                statusDiv.style.display = 'block';
+                statusDiv.className = `alert mb-3 ${isError ? 'alert-danger' : 'alert-success'}`;
+                messageSpan.textContent = message;
+                console.log('Sync Status:', message);
+            }
+        }
+
+        // Sync quarter tabs with admin's global quarter
+        function syncQuarterWithAdminQuarter() {
+            updateSyncStatus('Fetching admin quarter setting...');
+            fetch('/api/get-global-quarter')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.quarter) {
+                        const adminQuarter = data.quarter;
+                        const targetTabButton = document.querySelector(`#${adminQuarter}-tab`);
+                        
+                        if (targetTabButton) {
+                            const isActive = targetTabButton.classList.contains('active');
+                            
+                            if (!isActive) {
+                                updateSyncStatus(`Switching to ${adminQuarter} (${data.quarter})...`);
+                                // Try multiple methods to ensure tab switching works
+                                try {
+                                    // Method 1: Direct click
+                                    targetTabButton.click();
+                                    updateSyncStatus(`Successfully synced to ${adminQuarter}`);
+                                } catch (error1) {
+                                    try {
+                                        // Method 2: Bootstrap Tab API
+                                        if (typeof bootstrap !== 'undefined' && bootstrap.Tab) {
+                                            const tabInstance = new bootstrap.Tab(targetTabButton);
+                                            tabInstance.show();
+                                            updateSyncStatus(`Successfully synced to ${adminQuarter} (Bootstrap API)`);
+                                        } else {
+                                            // Method 3: Manual activation
+                                            document.querySelectorAll('.nav-link').forEach(tab => tab.classList.remove('active'));
+                                            document.querySelectorAll('.tab-pane').forEach(pane => {
+                                                pane.classList.remove('show', 'active');
+                                            });
+                                            targetTabButton.classList.add('active');
+                                            const targetContent = document.querySelector(`#${adminQuarter}-content`);
+                                            if (targetContent) {
+                                                targetContent.classList.add('show', 'active');
+                                            }
+                                            updateSyncStatus(`Successfully synced to ${adminQuarter} (Manual)`);
+                                        }
+                                    } catch (error2) {
+                                        updateSyncStatus(`Failed to switch to ${adminQuarter}`, true);
+                                    }
+                                }
+                            } else {
+                                updateSyncStatus(`Already on ${adminQuarter} - no change needed`);
+                            }
+                        } else {
+                            updateSyncStatus(`Tab not found for quarter: ${adminQuarter}`, true);
+                        }
+                    } else {
+                        updateSyncStatus('Invalid API response', true);
+                    }
+                })
+                .catch(error => {
+                    updateSyncStatus('Error fetching admin quarter', true);
+                });
+        }
+
+        // Initial sync on page load with delay to ensure DOM is ready
+        setTimeout(syncQuarterWithAdminQuarter, 2000);
+
+        // Sync every 5 seconds
+        setInterval(syncQuarterWithAdminQuarter, 5000);
     });
 </script>
 @endsection

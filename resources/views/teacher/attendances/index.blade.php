@@ -233,7 +233,7 @@
     </div>
 
     <!-- Attendance Overview -->
-    <div class="card shadow-sm mb-4 animate__animated animate__fadeIn">
+    <div class="card shadow-sm mb-4">
         <div class="card-header bg-white p-0">
             <div class="px-4 py-3">
                 <div class="d-flex justify-content-between align-items-center">

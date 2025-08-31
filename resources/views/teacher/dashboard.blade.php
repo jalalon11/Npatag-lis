@@ -157,6 +157,33 @@
     .avatar {
         border-radius: var(--border-radius);
     }
+
+    /* Quarter Indicator Styles */
+    .quarter-indicator {
+        cursor: default;
+        transition: var(--transition);
+    }
+
+    .quarter-circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        transition: var(--transition);
+        border: 2px solid transparent;
+    }
+
+    .quarter-indicator.active .quarter-circle {
+        border-color: #0dcaf0;
+        box-shadow: 0 0 0 3px rgba(13, 202, 240, 0.2);
+    }
+
+    .quarter-indicator:not(.active) .quarter-circle {
+        border-color: #e9ecef;
+    }
 </style>
 @endpush
 
@@ -172,7 +199,7 @@
     <div class="row g-4 mb-4">
         <!-- Welcome Header (Left Side) -->
         <div class="col-lg-8">
-            <div class="card border-0 shadow-sm welcome-header text-white position-relative overflow-hidden animate__animated animate__fadeIn h-100">
+            <div class="card border-0 shadow-sm welcome-header text-white position-relative overflow-hidden h-100">
                 <div class="position-absolute top-0 end-0 w-60 h-100 z-0 d-none d-lg-block bg-primary" style="opacity: 0.10; clip-path: polygon(20% 0, 100% 0%, 100% 100%, 0% 100%);"></div>
                 <div class="position-absolute top-0 end-0 w-50 h-100 z-0 d-none d-lg-block bg-primary" style="opacity: 0.45; clip-path: polygon(25% 0, 100% 0%, 100% 100%, 5% 100%);"></div>
                 <div class="position-absolute top-0 end-0 w-40 h-100 z-0 d-none d-lg-block bg-primary" style="opacity: 0.60; clip-path: polygon(30% 0, 100% 0%, 100% 100%, 10% 100%);"></div>
@@ -207,7 +234,7 @@
 
         <!-- System Status (Right Side) -->
         <div class="col-lg-4">
-            <div class="card border-0 shadow-sm position-relative overflow-hidden animate__animated animate__fadeIn h-100" style="animation-delay: 0.3s;">
+            <div class="card border-0 shadow-sm position-relative overflow-hidden h-100">
                 <div class="bg-white p-4 d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center">
                         <div>
@@ -257,6 +284,74 @@
                         @endif
                     </div>
                     @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Current Quarter Display -->
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <div class="p-3 rounded-circle bg-info bg-opacity-10 me-3">
+                                <i class="fas fa-calendar-alt text-info fa-lg"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-1 fw-bold">Current Active Quarter</h5>
+                                <p class="text-muted mb-0 small">System-wide quarter selection set by administrator</p>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            @php
+                                $currentQuarter = \App\Models\SystemSetting::getSetting('global_quarter', 'Q1');
+                                $quarterNames = [
+                                    'Q1' => '1st Quarter',
+                                    'Q2' => '2nd Quarter', 
+                                    'Q3' => '3rd Quarter',
+                                    'Q4' => '4th Quarter'
+                                ];
+                            @endphp
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-3 border-top">
+                        <div class="row text-center">
+                            <div class="col-3">
+                                <div class="quarter-indicator {{ $currentQuarter == 'Q1' ? 'active' : '' }}" data-quarter="Q1">
+                                    <div class="quarter-circle {{ $currentQuarter == 'Q1' ? 'bg-info' : 'bg-light' }} text-{{ $currentQuarter == 'Q1' ? 'white' : 'muted' }}">
+                                        <span class="fw-bold">Q1</span>
+                                    </div>
+                                    <small class="text-muted d-block mt-1">1st Quarter</small>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="quarter-indicator {{ $currentQuarter == 'Q2' ? 'active' : '' }}" data-quarter="Q2">
+                                    <div class="quarter-circle {{ $currentQuarter == 'Q2' ? 'bg-info' : 'bg-light' }} text-{{ $currentQuarter == 'Q2' ? 'white' : 'muted' }}">
+                                        <span class="fw-bold">Q2</span>
+                                    </div>
+                                    <small class="text-muted d-block mt-1">2nd Quarter</small>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="quarter-indicator {{ $currentQuarter == 'Q3' ? 'active' : '' }}" data-quarter="Q3">
+                                    <div class="quarter-circle {{ $currentQuarter == 'Q3' ? 'bg-info' : 'bg-light' }} text-{{ $currentQuarter == 'Q3' ? 'white' : 'muted' }}">
+                                        <span class="fw-bold">Q3</span>
+                                    </div>
+                                    <small class="text-muted d-block mt-1">3rd Quarter</small>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="quarter-indicator {{ $currentQuarter == 'Q4' ? 'active' : '' }}" data-quarter="Q4">
+                                    <div class="quarter-circle {{ $currentQuarter == 'Q4' ? 'bg-info' : 'bg-light' }} text-{{ $currentQuarter == 'Q4' ? 'white' : 'muted' }}">
+                                        <span class="fw-bold">Q4</span>
+                                    </div>
+                                    <small class="text-muted d-block mt-1">4th Quarter</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -323,7 +418,7 @@
     <div class="row g-4 mb-4">
         <!-- Quick Actions -->
         <div class="col-lg-4">
-            <div class="card border-0 shadow-sm mb-4 position-relative overflow-hidden animate__animated animate__fadeIn" style="animation-delay: 0.2s;">
+            <div class="card border-0 shadow-sm mb-4 position-relative overflow-hidden">
                 <div class="p-4 bg-white d-flex justify-content-between align-items-center">
                     <div class="d-flex">
                         <div>
@@ -385,6 +480,22 @@
                                 </div>
                             </a>
                         </div>
+                        <div class="col-md-12">
+                            <a href="{{ route('teacher.grade-approvals.index') }}" class="quick-action-item d-flex py-2 px-4 text-decoration-none transition-all hover-bg position-relative">
+                                <div class="d-flex me-4 rounded">
+                                    <i class="fas fa-check-circle text-primary fa-md"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="mb-2 fw-bold text-dark">Grade Approvals</h5>
+                                    <p class="text-muted mb-2">Approve or hide subject grades</p>
+                                </div>
+                                <div class="ms-3">
+                                    <div class="transition-all hover-bg-primary">
+                                        <i class="fas fa-arrow-right text-primary fa-lg"></i>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -400,15 +511,12 @@
     <div class="row g-4">
         <!-- Recent Sections -->
         <div class="col-md-6">
-            <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeIn" style="animation-delay: 0.4s;">
+            <div class="card border-0 shadow-sm h-100">
                 <div class="p-4 bg-white d-flex justify-content-between align-items-center">
                     <div>
                         <h5 class="mb-1 fw-bold">Assigned Sections</h5>
                         <p class="text-muted mb-0 small">Your assigned sections</p>
                     </div>
-                    <a href="{{ route('teacher-admin.sections.create') }}" class="btn btn-md btn-primary fw-semibold">
-                        Add Section
-                    </a>
                 </div>
                 <div class="card-body p-0">
                     @if($recentSections->count() > 0)
@@ -453,15 +561,12 @@
 
         <!-- Recent Subjects -->
         <div class="col-md-6">
-            <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeIn" style="animation-delay: 0.4s;">
+            <div class="card border-0 shadow-sm h-100">
                 <div class="p-4 bg-white d-flex justify-content-between align-items-center">
                     <div>
                         <h5 class="mb-1 fw-bold">Assigned Subjects</h5>
                         <p class="text-muted mb-0 small">Your assigned subjects</p>
                     </div>
-                    <a href="{{ route('teacher-admin.subjects.create') }}" class="btn btn-md btn-primary fw-semibold">
-                        Add Subject
-                    </a>
                 </div>
                 <div class="card-body p-0">
                     @if($recentSubjects->count() > 0)
@@ -745,6 +850,85 @@
                         }
                     });
             });
+        }
+    });
+
+    // Quarter Synchronization Functionality
+    function syncQuarterSelections() {
+        const currentQuarter = '{{ $currentQuarter }}';
+        
+        // Auto-select quarter in all quarter dropdowns on the page
+        const quarterSelects = document.querySelectorAll('select[name="quarter"], select#quarter, select#quarterFilter');
+        quarterSelects.forEach(select => {
+            // Map quarter values to match different formats used across the system
+            const quarterValue = currentQuarter; // Q1, Q2, Q3, Q4
+            const quarterNumber = currentQuarter.replace('Q', ''); // 1, 2, 3, 4
+            
+            // Try to find matching option by value
+            let optionFound = false;
+            Array.from(select.options).forEach(option => {
+                if (option.value === quarterValue || option.value === quarterNumber) {
+                    option.selected = true;
+                    optionFound = true;
+                }
+            });
+            
+            // If no exact match found, try partial matching for text content
+            if (!optionFound) {
+                Array.from(select.options).forEach(option => {
+                    const optionText = option.textContent.toLowerCase();
+                    const quarterText = (quarterNumber === '1' ? 'first' : 
+                                       quarterNumber === '2' ? 'second' : 
+                                       quarterNumber === '3' ? 'third' : 'fourth');
+                    if (optionText.includes(quarterText) || optionText.includes(quarterNumber)) {
+                        option.selected = true;
+                    }
+                });
+            }
+            
+            // Trigger change event to update any dependent functionality
+            select.dispatchEvent(new Event('change'));
+        });
+    }
+
+    // Function to check for quarter updates from admin
+    function checkQuarterUpdates() {
+        fetch('{{ route("teacher.dashboard") }}', {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            // Parse the response to extract current quarter
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const quarterDisplay = doc.querySelector('#currentQuarterDisplay');
+            
+            if (quarterDisplay) {
+                const currentDisplayQuarter = document.querySelector('#currentQuarterDisplay');
+                if (currentDisplayQuarter && quarterDisplay.textContent !== currentDisplayQuarter.textContent) {
+                    // Quarter has changed, reload the page to sync
+                    location.reload();
+                }
+            }
+        })
+        .catch(error => console.log('Quarter sync check failed:', error));
+    }
+
+    // Initialize quarter synchronization when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        syncQuarterSelections();
+        
+        // Check for quarter updates every 30 seconds
+        setInterval(checkQuarterUpdates, 30000);
+    });
+
+    // Also sync when page becomes visible (user switches back to tab)
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            setTimeout(checkQuarterUpdates, 1000);
         }
     });
 </script>

@@ -135,6 +135,7 @@ Route::middleware(['auth', CheckSchoolStatus::class])->group(function () {
     // Admin Routes - explicitly excluded from maintenance mode
     Route::prefix('admin')->middleware(['auth', 'check.role:admin'])->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::post('/update-quarter', [AdminDashboardController::class, 'updateQuarter'])->name('update-quarter');
         Route::get('/profile', function() {
             return view('admin.profile');
         })->name('profile');

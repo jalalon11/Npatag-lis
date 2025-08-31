@@ -693,7 +693,7 @@
                                         {{ $selectedSectionId == $section->id ? 'selected' : '' }}
                                         data-subjects="{{ $subjectDataAttr }}"
                                         data-is-adviser="{{ $isAdviser ? 'true' : 'false' }}">
-                                    {{ $section->name }} (Grade {{ $section->grade_level }})
+                                    {{ $section->name }} ({{ $section->grade_level }})
                                 </option>
                             @endforeach
                         </select>
@@ -704,7 +704,7 @@
                         <label for="term" class="form-label fw-semibold text-warning">
                             <i class="fas fa-calendar-alt me-1"></i> Term
                         </label>
-                        <select class="form-select shadow-sm" id="term" name="term">
+                        <select class="form-select shadow-sm" id="term" name="term" onchange="this.form.submit()">
                             @foreach($terms as $key => $term)
                                 <option value="{{ $key }}" {{ $selectedTerm == $key ? 'selected' : '' }}>
                                     {{ $term }}
@@ -2700,6 +2700,39 @@
             $('#printGradesBtn').on('click', function() {
                 window.print();
             });
+
+            // Function to sync term selection with admin's quarter selection
+            function syncTermWithAdminQuarter() {
+                console.log('Checking for quarter sync...');
+                fetch('/api/get-global-quarter')
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Global quarter API response:', data);
+                        if (data.success && data.quarter) {
+                            const termSelect = document.getElementById('term');
+                            console.log('Current term select value:', termSelect ? termSelect.value : 'null');
+                            console.log('Admin quarter:', data.quarter);
+                            if (termSelect && termSelect.value !== data.quarter) {
+                                console.log('Updating term selection from', termSelect.value, 'to', data.quarter);
+                                termSelect.value = data.quarter;
+                                // Auto-submit the form to update the view
+                                console.log('Submitting filter form...');
+                                document.getElementById('filterForm').submit();
+                            } else {
+                                console.log('Term already matches admin quarter or term select not found');
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching global quarter:', error);
+                    });
+            }
+
+            // Check for quarter updates every 5 seconds
+            setInterval(syncTermWithAdminQuarter, 5000);
+
+            // Initial sync on page load
+            syncTermWithAdminQuarter();
     });
     </script>
     @endpush

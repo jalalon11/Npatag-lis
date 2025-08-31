@@ -7,6 +7,7 @@ use App\Models\School;
 // Removed SchoolDivision dependency for single school system
 use App\Models\Student;
 use App\Models\User;
+use App\Models\SystemSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -39,6 +40,31 @@ class DashboardController extends Controller
             'monthlySales',
             'yearlySales'
         ));
+    }
+
+    /**
+     * Update the global quarter selection
+     */
+    public function updateQuarter(Request $request)
+    {
+        $request->validate([
+            'quarter' => 'required|in:Q1,Q2,Q3,Q4'
+        ]);
+
+        try {
+            SystemSetting::setSetting('global_quarter', $request->quarter);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Quarter updated successfully',
+                'quarter' => $request->quarter
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update quarter: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

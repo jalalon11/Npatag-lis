@@ -161,7 +161,7 @@
                                 @if($enrollment->assigned_section_id && $enrollment->assignedSection)
                                     <div class="col-md-6">
                                         <label class="form-label text-muted small">Assigned Section</label>
-                                        <p class="h6">{{ $enrollment->assignedSection->name }} (Grade {{ $enrollment->assignedSection->grade_level }})</p>
+                                        <p class="h6">{{ $enrollment->assignedSection->name }} ({{ $enrollment->assignedSection->grade_level }})</p>
                                     </div>
                                 @endif
                             </div>
