@@ -1,33 +1,146 @@
 @extends('layouts.app')
 
-@section('content')
+@push('styles')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+<link href="{{ asset('css/dashboard.css') }}" rel="stylesheet">
 <style>
-    /* Custom scrollbar styling */
-    .activity-scroll {
-        max-height: 400px;
-        overflow-y: auto;
-        scrollbar-width: thin; /* Firefox */
-        scrollbar-color: rgba(0, 0, 0, 0.2) transparent; /* Firefox */
+    /* Import shared design tokens and styles from teacher dashboard */
+    :root {
+        --border-radius: 12px;
+        --border-radius-pill: 50px;
+        --padding-sm: 1rem;
+        --padding-md: 1.5rem;
+        --margin-sm: 1rem;
+        --margin-md: 1.5rem;
+        --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --shadow-hover: 0 12px 24px rgba(0, 0, 0, 0.12);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    
+
+    .resource-card {
+        transition: var(--transition);
+        box-shadow: var(--shadow-sm);
+        border: none !important;
+        border-radius: var(--border-radius) !important;
+    }
+
+    .resource-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .resource-header {
+        padding: var(--padding-md) !important;
+        border-bottom: none !important;
+        background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+    }
+
+    .resource-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-sm);
+        margin-right: var(--margin-sm);
+    }
+
+    .resource-count {
+        padding: 0.5rem 1rem;
+        border-radius: var(--border-radius-pill);
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .welcome-header {
+        background: linear-gradient(135deg, #1e2c38 0%, #2d3e4f 100%);
+        border-radius: var(--border-radius);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .welcome-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at top right, rgba(52, 152, 219, 0.1) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .hover-bg:hover {
+        background-color: rgba(0,0,0,0.02);
+        transform: translateX(5px);
+    }
+
+    .table {
+        border-radius: var(--border-radius);
+        overflow: hidden;
+    }
+
+    .table th, .table td {
+        padding: var(--padding-sm);
+        vertical-align: middle;
+    }
+
+    .table thead {
+        background-color: #f8f9fa;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0,0,0,0.02);
+    }
+
+    .badge {
+        border-radius: var(--border-radius-pill);
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .btn {
+        border-radius: var(--border-radius-pill);
+        padding: 0.5rem 1.25rem;
+    }
+
+    .avatar {
+        border-radius: var(--border-radius);
+    }
+
+    /* Custom Scrollbar */
+    .activity-scroll {
+        max-height: 300px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+    }
+
     .activity-scroll::-webkit-scrollbar {
         width: 6px;
     }
-    
+
     .activity-scroll::-webkit-scrollbar-track {
         background: transparent;
     }
-    
+
     .activity-scroll::-webkit-scrollbar-thumb {
         background-color: rgba(0, 0, 0, 0.2);
         border-radius: 10px;
     }
-    
+
     .activity-scroll::-webkit-scrollbar-thumb:hover {
         background-color: rgba(0, 0, 0, 0.3);
     }
-    
-    /* Sticky header for tables */
+
+    /* Sticky Header */
     .sticky-header th {
         position: sticky;
         top: 0;
@@ -36,293 +149,219 @@
         box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
     }
 </style>
-<div class="container-fluid">
-    <!-- Welcome Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card border-0 shadow-sm bg-primary bg-gradient text-white">
-                <div class="card-body p-4">
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
-                        <div class="d-flex flex-column flex-md-row align-items-center mb-3 mb-md-0">
-                            @if($school->logo_path)
-                            <div class="me-md-3 mb-3 mb-md-0 text-center">
-                                <img src="{{ $school->logo_url }}" 
-                                     alt="{{ $school->name }} Logo" 
-                                     class="rounded" 
-                                     style="max-height: 60px;">
+@endpush
+
+@php
+    $maintenanceMode = \App\Models\SystemSetting::isMaintenanceMode();
+    $maintenanceMessage = \App\Models\SystemSetting::getMaintenanceMessage();
+    $maintenanceDuration = \App\Models\SystemSetting::getMaintenanceDuration();
+@endphp
+
+@section('content')
+<div class="container-fluid px-4">
+    <!-- Welcome Header and System Status -->
+    <div class="row g-4 mb-4">
+        <!-- Welcome Header -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm welcome-header text-white animate__animated animate__fadeIn h-100">
+                <div class="position-absolute top-0 end-0 w-60 h-100 z-0 d-none d-lg-block bg-primary" style="opacity: 0.10; clip-path: polygon(20% 0, 100% 0%, 100% 100%, 0% 100%);"></div>
+                <div class="position-absolute top-0 end-0 w-50 h-100 z-0 d-none d-lg-block bg-primary" style="opacity: 0.45; clip-path: polygon(25% 0, 100% 0%, 100% 100%, 5% 100%);"></div>
+                <div class="position-absolute top-0 end-0 w-40 h-100 z-0 d-none d-lg-block bg-primary" style="opacity: 0.60; clip-path: polygon(30% 0, 100% 0%, 100% 100%, 10% 100%);"></div>
+                <div class="position-absolute top-0 end-0 w-30 h-100 z-0 d-none d-lg-block bg-primary" style="clip-path: polygon(35% 0, 100% 0%, 100% 100%, 15% 100%);"></div>
+                <div class="card-body p-4 position-relative z-1 d-flex flex-column h-100">
+                    <div class="d-flex flex-column align-items-start">
+                        @if($school->logo_path)
+                            <div class="mb-3">
+                                <img src="{{ $school->logo_url }}" alt="{{ $school->name }} Logo" class="rounded" style="max-height: 50px;">
                             </div>
-                            @else
-                            <div class="avatar bg-white bg-opacity-25 rounded-circle p-3 me-md-3 mb-3 mb-md-0 mx-auto">
-                                <i class="fas fa-user-shield fa-2x"></i>
+                        @else
+                            <div class="avatar bg-white bg-opacity-25 rounded p-2 mb-3">
+                                <i class="fas fa-chalkboard-teacher fa-lg"></i>
                             </div>
-                            @endif
-                            <div class="text-center text-md-start">
-                                <h3 class="fw-bold mb-1">Welcome, {{ Auth::user()->name }}</h3>
-                                <p class="mb-0 opacity-75">Teacher Admin Dashboard - {{ $school->name }}</p>
-                                <p class="mb-0 opacity-75">{{ now()->format('l, F d, Y') }}</p>
+                        @endif
+                        <h3 class="fw-bold mb-2 text-white display-6">Admin Dashboard</h3>
+                        <p class="text-white mb-0 lead opacity-90">Welcome, {{ Auth::user()->name }}!</p>
+                        <div class="d-flex align-items-center mt-3">
+                            <span class="badge bg-primary bg-opacity-10 text-white border border-primary border-opacity-20 px-3 py-2">
+                                <i class="fas fa-school me-1"></i> {{ $school->name }}
+                            </span>
+                            <div class="ms-3 d-flex align-items-center text-white text-opacity-70">
+                                <i class="far fa-calendar-alt text-info me-2"></i>
+                                <span>{{ now()->format('F d, Y') }}</span>
                             </div>
-                        </div>
-                        <div class="text-center mt-2 mt-md-0">
-                            <a href="{{ route('teacher-admin.sections.create') }}" class="btn btn-light">
-                                <i class="fas fa-plus-circle me-2"></i> Create New Section
-                            </a>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Status -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm animate__animated animate__fadeIn h-100" style="animation-delay: 0.3s;">
+                <div class="p-4 bg-white d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-1 fw-bold">System Status</h5>
+                        <p class="text-muted mb-0 small">Current system state</p>
+                    </div>
+                    <span class="badge {{ $maintenanceMode ? 'bg-danger bg-opacity-10 text-danger' : 'bg-primary bg-opacity-10 text-primary' }} px-3 py-2 fw-semibold">
+                        <i class="fas fa-{{ $maintenanceMode ? 'exclamation-circle' : 'check-circle' }} me-1"></i>
+                        {{ $maintenanceMode ? 'Maintenance' : 'Online' }}
+                    </span>
+                </div>
+                <div class="card-body bg-white p-4 d-flex flex-column justify-content-center h-100">
+                    <div class="text-center mb-4">
+                        <div class="mx-auto mb-3">
+                            <div class="p-4 rounded-circle {{ $maintenanceMode ? 'bg-danger' : 'bg-primary' }} bg-opacity-10 d-inline-block position-relative">
+                                <i class="fas fa-{{ $maintenanceMode ? 'tools' : 'shield-alt' }} {{ $maintenanceMode ? 'text-danger' : 'text-primary' }} fa-3x"></i>
+                                @if(!$maintenanceMode)
+                                    <div class="position-absolute top-0 end-0">
+                                        <span class="badge bg-primary rounded-circle p-2">
+                                            <i class="fas fa-check text-white"></i>
+                                        </span>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-2">{{ $maintenanceMode ? 'Maintenance Active' : 'All Systems Operational' }}</h5>
+                        <p class="text-muted mb-0">
+                            {{ $maintenanceMode
+                                ? 'System is in maintenance mode. Only administrators have access.'
+                                : 'All systems are running smoothly and accessible to users.'
+                            }}
+                        </p>
+                    </div>
+                    @if($maintenanceMode)
+                        <div class="maintenance-details bg-danger bg-opacity-5 border border-danger border-opacity-20 rounded-3 p-3 mb-0">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-clock text-danger me-2"></i>
+                                <span class="text-danger fw-semibold">Duration: {{ $maintenanceDuration }} minutes</span>
+                            </div>
+                            @if($maintenanceMessage)
+                                <div class="d-flex align-items-start">
+                                    <i class="fas fa-info-circle text-danger me-2 mt-1"></i>
+                                    <span class="text-danger">{{ $maintenanceMessage }}</span>
+                                </div>
+                            @endif
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Stats Overview -->
-    <div class="row mb-4">
-        <div class="col-md-3 mb-3 mb-md-0">
-            <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                <div class="card-body position-relative p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div>
-                            <p class="text-muted mb-1 small text-uppercase">Sections</p>
-                            <h2 class="display-5 fw-bold mb-0">{{ $stats['sectionsCount'] }}</h2>
-                        </div>
-                        <div class="rounded-circle bg-primary bg-opacity-10 p-3">
-                            <i class="fas fa-users fa-2x text-primary"></i>
-                        </div>
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card bg-white resource-card hover-lift">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <h6 class="text-uppercase fw-semibold mb-0 small">Sections</h6>
                     </div>
-                    <div class="progress" style="height: 4px;">
-                        <div class="progress-bar bg-primary" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                </div>
-                <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-success small">
-                            <i class="fas fa-check-circle me-1"></i> All Active
-                        </span>
-                        <a href="{{ route('teacher-admin.sections.index') }}" class="btn btn-sm btn-outline-primary rounded-pill">
-                            <i class="fas fa-external-link-alt me-1"></i> Manage
-                        </a>
-                    </div>
+                    <h4 class="fw-bold mb-0">{{ $stats['sectionsCount'] }}</h4>
+                    <p class="small text-muted mb-0 mt-1">Active Sections</p>
+                    <a href="{{ route('teacher-admin.sections.index') }}" class="btn btn-sm btn-outline-primary mt-2">Manage</a>
                 </div>
             </div>
         </div>
-        
-        <div class="col-md-3 mb-3 mb-md-0">
-            <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                <div class="card-body position-relative p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div>
-                            <p class="text-muted mb-1 small text-uppercase">Subjects</p>
-                            <h2 class="display-5 fw-bold mb-0">{{ $stats['subjectsCount'] }}</h2>
-                        </div>
-                        <div class="rounded-circle bg-success bg-opacity-10 p-3">
-                            <i class="fas fa-book fa-2x text-success"></i>
-                        </div>
+        <div class="col-md-3">
+            <div class="card bg-white resource-card hover-lift">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <h6 class="text-uppercase fw-semibold mb-0 small">Subjects</h6>
                     </div>
-                    <div class="progress" style="height: 4px;">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                </div>
-                <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-success small">
-                            <i class="fas fa-check-circle me-1"></i> Active Subjects
-                        </span>
-                        <a href="{{ route('teacher-admin.subjects.index') }}" class="btn btn-sm btn-outline-success rounded-pill">
-                            <i class="fas fa-external-link-alt me-1"></i> Manage
-                        </a>
-                    </div>
+                    <h4 class="fw-bold mb-0">{{ $stats['subjectsCount'] }}</h4>
+                    <p class="small text-muted mb-0 mt-1">Active Subjects</p>
+                    <a href="{{ route('teacher-admin.subjects.index') }}" class="btn btn-sm btn-outline-success mt-2">Manage</a>
                 </div>
             </div>
         </div>
-        
-        <div class="col-md-3 mb-3 mb-md-0">
-            <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                <div class="card-body position-relative p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div>
-                            <p class="text-muted mb-1 small text-uppercase">Teachers</p>
-                            <h2 class="display-5 fw-bold mb-0">{{ $stats['teachersCount'] }}</h2>
-                        </div>
-                        <div class="rounded-circle bg-info bg-opacity-10 p-3">
-                            <i class="fas fa-chalkboard-teacher fa-2x text-info"></i>
-                        </div>
+        <div class="col-md-3">
+            <div class="card bg-white resource-card hover-lift">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <h6 class="text-uppercase fw-semibold mb-0 small">Teachers</h6>
                     </div>
-                    <div class="progress" style="height: 4px;">
-                        <div class="progress-bar bg-info" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                </div>
-                <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-success small">
-                            <i class="fas fa-check-circle me-1"></i> Active Staff
-                        </span>
-                        <a href="#" class="btn btn-sm btn-outline-info rounded-pill disabled">
-                            <i class="fas fa-external-link-alt me-1"></i> View All
-                        </a>
-                    </div>
+                    <h4 class="fw-bold mb-0">{{ $stats['teachersCount'] }}</h4>
+                    <p class="small text-muted mb-0 mt-1">Active Staff</p>
+                    <a href="#" class="btn btn-sm btn-outline-info mt-2 disabled">View All</a>
                 </div>
             </div>
         </div>
-        
-        <div class="col-md-3 mb-3 mb-md-0">
-            <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                <div class="card-body position-relative p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div>
-                            <p class="text-muted mb-1 small text-uppercase">Students</p>
-                            <h2 class="display-5 fw-bold mb-0">{{ $stats['studentsCount'] }}</h2>
-                        </div>
-                        <div class="rounded-circle bg-warning bg-opacity-10 p-3">
-                            <i class="fas fa-user-graduate fa-2x text-warning"></i>
-                        </div>
+        <div class="col-md-3">
+            <div class="card bg-white resource-card hover-lift">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <h6 class="text-uppercase fw-semibold mb-0 small">Students</h6>
                     </div>
-                    <div class="progress" style="height: 4px;">
-                        <div class="progress-bar bg-warning" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                </div>
-                <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-success small">
-                            <i class="fas fa-check-circle me-1"></i> All Enrolled
-                        </span>
-                        <a href="#" class="btn btn-sm btn-outline-warning rounded-pill disabled">
-                            <i class="fas fa-external-link-alt me-1"></i> View All
-                        </a>
-                    </div>
+                    <h4 class="fw-bold mb-0">{{ $stats['studentsCount'] }}</h4>
+                    <p class="small text-muted mb-0 mt-1">Enrolled Students</p>
+                    <a href="#" class="btn btn-sm btn-outline-warning mt-2 disabled">View All</a>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Enrollment Statistics -->
-    <div class="row mb-4">
-        <div class="col-md-3 mb-3 mb-md-0">
-            <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                <div class="card-body position-relative p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div>
-                            <p class="text-muted mb-1 small text-uppercase">Pending Applications</p>
-                            <h2 class="display-5 fw-bold mb-0">{{ $enrollmentStats['pending'] ?? 0 }}</h2>
-                        </div>
-                        <div class="rounded-circle bg-danger bg-opacity-10 p-3">
-                            <i class="fas fa-clock fa-2x text-danger"></i>
-                        </div>
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card bg-white resource-card hover-lift">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <h6 class="text-uppercase fw-semibold mb-0 small">Pending Applications</h6>
                     </div>
-                    <div class="progress" style="height: 4px;">
-                        <div class="progress-bar bg-danger" role="progressbar" style="width: {{ $enrollmentStats['pending'] > 0 ? '100' : '0' }}%"></div>
-                    </div>
-                </div>
-                <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-{{ $enrollmentStats['pending'] > 0 ? 'warning' : 'success' }} small">
-                            <i class="fas fa-{{ $enrollmentStats['pending'] > 0 ? 'exclamation-triangle' : 'check-circle' }} me-1"></i> 
-                            {{ $enrollmentStats['pending'] > 0 ? 'Needs Review' : 'All Reviewed' }}
-                        </span>
-                        <a href="{{ route('teacher-admin.enrollments.index') }}?status=pending" class="btn btn-sm btn-outline-danger rounded-pill">
-                            <i class="fas fa-external-link-alt me-1"></i> Review
-                        </a>
-                    </div>
+                    <h4 class="fw-bold mb-0">{{ $enrollmentStats['pending'] ?? 0 }}</h4>
+                    <p class="small text-muted mb-0 mt-1">{{ $enrollmentStats['pending'] > 0 ? 'Needs Review' : 'All Reviewed' }}</p>
+                    <a href="{{ route('teacher-admin.enrollments.index') }}?status=pending" class="btn btn-sm btn-outline-danger mt-2">Review</a>
                 </div>
             </div>
         </div>
-        
-        <div class="col-md-3 mb-3 mb-md-0">
-            <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                <div class="card-body position-relative p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div>
-                            <p class="text-muted mb-1 small text-uppercase">Approved Applications</p>
-                            <h2 class="display-5 fw-bold mb-0">{{ $enrollmentStats['approved'] ?? 0 }}</h2>
-                        </div>
-                        <div class="rounded-circle bg-success bg-opacity-10 p-3">
-                            <i class="fas fa-check-circle fa-2x text-success"></i>
-                        </div>
+        <div class="col-md-3">
+            <div class="card bg-white resource-card hover-lift">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <h6 class="text-uppercase fw-semibold mb-0 small">Approved Applications</h6>
                     </div>
-                    <div class="progress" style="height: 4px;">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ $enrollmentStats['approved'] > 0 ? '100' : '0' }}%"></div>
-                    </div>
-                </div>
-                <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-success small">
-                            <i class="fas fa-thumbs-up me-1"></i> Ready for Enrollment
-                        </span>
-                        <a href="{{ route('teacher-admin.enrollments.index') }}?status=approved" class="btn btn-sm btn-outline-success rounded-pill">
-                            <i class="fas fa-external-link-alt me-1"></i> View
-                        </a>
-                    </div>
+                    <h4 class="fw-bold mb-0">{{ $enrollmentStats['approved'] ?? 0 }}</h4>
+                    <p class="small text-muted mb-0 mt-1">Ready for Enrollment</p>
+                    <a href="{{ route('teacher-admin.enrollments.index') }}?status=approved" class="btn btn-sm btn-outline-success mt-2">View</a>
                 </div>
             </div>
         </div>
-        
-        <div class="col-md-3 mb-3 mb-md-0">
-            <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                <div class="card-body position-relative p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div>
-                            <p class="text-muted mb-1 small text-uppercase">Enrolled Students</p>
-                            <h2 class="display-5 fw-bold mb-0">{{ $enrollmentStats['enrolled'] ?? 0 }}</h2>
-                        </div>
-                        <div class="rounded-circle bg-primary bg-opacity-10 p-3">
-                            <i class="fas fa-user-check fa-2x text-primary"></i>
-                        </div>
+        <div class="col-md-3">
+            <div class="card bg-white resource-card hover-lift">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <h6 class="text-uppercase fw-semibold mb-0 small">Enrolled Students</h6>
                     </div>
-                    <div class="progress" style="height: 4px;">
-                        <div class="progress-bar bg-primary" role="progressbar" style="width: {{ $enrollmentStats['enrolled'] > 0 ? '100' : '0' }}%"></div>
-                    </div>
-                </div>
-                <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-success small">
-                            <i class="fas fa-graduation-cap me-1"></i> Active Students
-                        </span>
-                        <a href="{{ route('teacher-admin.enrollments.index') }}?status=enrolled" class="btn btn-sm btn-outline-primary rounded-pill">
-                            <i class="fas fa-external-link-alt me-1"></i> View
-                        </a>
-                    </div>
+                    <h4 class="fw-bold mb-0">{{ $enrollmentStats['enrolled'] ?? 0 }}</h4>
+                    <p class="small text-muted mb-0 mt-1">Active Students</p>
+                    <a href="{{ route('teacher-admin.enrollments.index') }}?status=enrolled" class="btn btn-sm btn-outline-primary mt-2">View</a>
                 </div>
             </div>
         </div>
-        
-        <div class="col-md-3 mb-3 mb-md-0">
-            <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                <div class="card-body position-relative p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div>
-                            <p class="text-muted mb-1 small text-uppercase">Total Applications</p>
-                            <h2 class="display-5 fw-bold mb-0">{{ $enrollmentStats['total'] ?? 0 }}</h2>
-                        </div>
-                        <div class="rounded-circle bg-info bg-opacity-10 p-3">
-                            <i class="fas fa-file-alt fa-2x text-info"></i>
-                        </div>
+        <div class="col-md-3">
+            <div class="card bg-white resource-card hover-lift">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <h6 class="text-uppercase fw-semibold mb-0 small">Total Applications</h6>
                     </div>
-                    <div class="progress" style="height: 4px;">
-                        <div class="progress-bar bg-info" role="progressbar" style="width: {{ $enrollmentStats['total'] > 0 ? '100' : '0' }}%"></div>
-                    </div>
-                </div>
-                <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-info small">
-                            <i class="fas fa-chart-line me-1"></i> All Time
-                        </span>
-                        <a href="{{ route('teacher-admin.enrollments.index') }}" class="btn btn-sm btn-outline-info rounded-pill">
-                            <i class="fas fa-external-link-alt me-1"></i> Manage
-                        </a>
-                    </div>
+                    <h4 class="fw-bold mb-0">{{ $enrollmentStats['total'] ?? 0 }}</h4>
+                    <p class="small text-muted mb-0 mt-1">All Time</p>
+                    <a href="{{ route('teacher-admin.enrollments.index') }}" class="btn btn-sm btn-outline-info mt-2">Manage</a>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Analytics Section -->
-    <div class="row mb-4">
-        <!-- Attendance Trends -->
-        <div class="col-lg-8 mb-4 mb-lg-0">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="fas fa-chart-line text-primary me-2"></i> School Attendance Trends</h5>
+    <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeIn">
+                <div class="p-4 bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold">School Attendance Trends</h5>
                     <div class="btn-group">
                         <button type="button" class="btn btn-sm btn-outline-secondary active attendance-period-btn" data-period="week">Week</button>
                         <button type="button" class="btn btn-sm btn-outline-secondary attendance-period-btn" data-period="month">Month</button>
-                        <!-- <button type="button" class="btn btn-sm btn-outline-secondary attendance-period-btn" data-period="semester">Semester</button> -->
                     </div>
                 </div>
                 <div class="card-body">
@@ -332,12 +371,10 @@
                 </div>
             </div>
         </div>
-        
-        <!-- Grade Distribution -->
         <div class="col-lg-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white py-3">
-                    <h5 class="mb-0"><i class="fas fa-chart-pie text-success me-2"></i> School Grade Distribution</h5>
+            <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeIn">
+                <div class="p-4 bg-white">
+                    <h5 class="mb-0 fw-bold">School Grade Distribution</h5>
                 </div>
                 <div class="card-body">
                     <div class="grade-chart-container d-flex justify-content-center align-items-center" style="height: 300px;">
@@ -349,62 +386,59 @@
     </div>
 
     <!-- Teacher Performance & Recent Activity -->
-    <div class="row mb-4">
-        <!-- Teacher Performance Metrics -->
-        <div class="col-lg-7 mb-4 mb-lg-0">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="fas fa-user-check text-info me-2"></i> Teacher Performance</h5>
+    <div class="row g-4 mb-4">
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeIn">
+                <div class="p-4 bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold">Teacher Performance</h5>
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" id="topPerformersOnly">
-                        <label class="form-check-label text-muted small" for="topPerformersOnly">Show Top Performers Only</label>
+                        <label class="form-check-label text-muted small" for="topPerformersOnly">Top Performers Only</label>
                     </div>
                 </div>
                 <div class="card-body p-0">
-                    <div class="table-responsive activity-scroll" style="max-height: 300px;">
+                    <div class="table-responsive activity-scroll">
                         <table class="table table-hover align-middle mb-0">
-                            <thead class="sticky-header bg-light">
+                            <thead class="sticky-header">
                                 <tr>
-                                    <th class="border-0">Teacher</th>
-                                    <th class="border-0 text-center">Subjects</th>
-                                    <th class="border-0 text-center">Sections</th>
-                                    <th class="border-0 text-center">Avg. Grade</th>
-                                    <th class="border-0 text-center">Attendance</th>
-                                    <th class="border-0 text-center">Actions</th>
+                                    <th class="ps-4">Teacher</th>
+                                    <th class="text-center">Subjects</th>
+                                    <th class="text-center">Sections</th>
+                                    <th class="text-center">Avg. Grade</th>
+                                    <th class="text-center">Attendance</th>
+                                    <th class="text-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($teacherPerformance as $teacher)
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="avatar bg-info bg-opacity-10 text-info rounded-circle p-2 me-3">
-                                                <i class="fas fa-user"></i>
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar bg-info bg-opacity-10 text-info rounded p-2 me-3">
+                                                    <i class="fas fa-user"></i>
+                                                </div>
+                                                <h6 class="mb-0 fw-bold">{{ $teacher['name'] }}</h6>
                                             </div>
-                                            <div>
-                                                <h6 class="mb-0">{{ $teacher['name'] }}</h6>
+                                        </td>
+                                        <td class="text-center">{{ $teacher['subjectsCount'] }}</td>
+                                        <td class="text-center">{{ $teacher['sectionsCount'] }}</td>
+                                        <td class="text-center">
+                                            <span class="badge {{ $teacher['averageGrade'] >= 85 ? 'bg-success' : ($teacher['averageGrade'] >= 75 ? 'bg-warning' : 'bg-danger') }}">
+                                                {{ $teacher['averageGrade'] }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">{{ $teacher['attendanceCount'] }}</td>
+                                        <td class="text-center">
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-sm btn-outline-primary" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-outline-success" title="Assign Subject">
+                                                    <i class="fas fa-book"></i>
+                                                </button>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td class="text-center">{{ $teacher['subjectsCount'] }}</td>
-                                    <td class="text-center">{{ $teacher['sectionsCount'] }}</td>
-                                    <td class="text-center">
-                                        <span class="badge {{ $teacher['averageGrade'] >= 85 ? 'bg-success' : ($teacher['averageGrade'] >= 75 ? 'bg-warning' : 'bg-danger') }}">
-                                            {{ $teacher['averageGrade'] }}
-                                        </span>
-                                    </td>
-                                    <td class="text-center">{{ $teacher['attendanceCount'] }}</td>
-                                    <td class="text-center">
-                                        <div class="btn-group">
-                                            <button type="button" class="btn btn-sm btn-outline-primary" title="View Details">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-outline-success" title="Assign Subject">
-                                                <i class="fas fa-book"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                        </td>
+                                    </tr>
                                 @endforeach
                             </tbody>
                         </table>
@@ -412,34 +446,32 @@
                 </div>
             </div>
         </div>
-        
-        <!-- Recent Activity -->
         <div class="col-lg-5">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="fas fa-history text-warning me-2"></i> Recent School Activity</h5>
+            <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeIn">
+                <div class="p-4 bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold">Recent School Activity</h5>
                     <span class="badge bg-primary rounded-pill">{{ count($recentActivity) }}</span>
                 </div>
                 <div class="card-body p-0">
                     <div class="list-group list-group-flush activity-scroll">
                         @foreach($recentActivity as $activity)
-                        <div class="list-group-item border-0 py-3 px-3 {{ $loop->even ? 'bg-light bg-opacity-50' : '' }}">
-                            <div class="d-flex align-items-center mb-2">
-                                <div class="avatar rounded-circle {{ $activity['type'] == 'grade' ? 'bg-success bg-opacity-10 text-success' : 'bg-info bg-opacity-10 text-info' }} p-2 me-3">
-                                    <i class="fas {{ $activity['type'] == 'grade' ? 'fa-star' : 'fa-clipboard-check' }}"></i>
+                            <div class="list-group-item border-0 py-3 px-3 {{ $loop->even ? 'bg-light bg-opacity-50' : '' }}">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="avatar rounded {{ $activity['type'] == 'grade' ? 'bg-success bg-opacity-10 text-success' : 'bg-info bg-opacity-10 text-info' }} p-2 me-3">
+                                        <i class="fas {{ $activity['type'] == 'grade' ? 'fa-star' : 'fa-clipboard-check' }}"></i>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center w-100">
+                                        <h6 class="mb-0 fw-bold">
+                                            <span class="badge {{ $activity['type'] == 'grade' ? 'bg-success' : 'bg-info' }} rounded-pill me-2">
+                                                {{ ucfirst($activity['type']) }}
+                                            </span>
+                                            {{ $activity['user'] }}
+                                        </h6>
+                                        <small class="text-muted">{{ $activity['date']->diffForHumans() }}</small>
+                                    </div>
                                 </div>
-                                <div class="d-flex justify-content-between align-items-center w-100">
-                                    <h6 class="mb-0 fw-bold">
-                                        <span class="badge {{ $activity['type'] == 'grade' ? 'bg-success' : 'bg-info' }} rounded-pill me-2">
-                                            {{ ucfirst($activity['type']) }}
-                                        </span>
-                                        {{ $activity['user'] }}
-                                    </h6>
-                                    <small class="text-muted">{{ $activity['date']->diffForHumans() }}</small>
-                                </div>
+                                <p class="ms-5 mb-0 text-dark">{{ $activity['description'] }}</p>
                             </div>
-                            <p class="ms-5 mb-0 text-dark">{{ $activity['description'] }}</p>
-                        </div>
                         @endforeach
                     </div>
                 </div>
@@ -448,91 +480,86 @@
     </div>
 
     <!-- Recent Sections and Subjects -->
-    <div class="row">
-        <!-- Recent Sections -->
-        <div class="col-md-6 mb-4">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white py-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0"><i class="fas fa-door-open-class text-primary me-2"></i> Recent Sections</h5>
-                        <a href="{{ route('teacher-admin.sections.create') }}" class="btn btn-sm btn-primary">
-                            <i class="fas fa-plus-circle me-1"></i> New Section
-                        </a>
-                    </div>
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeIn">
+                <div class="p-4 bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold">Recent Sections</h5>
+                    <a href="{{ route('teacher-admin.sections.create') }}" class="btn btn-sm btn-primary">Add Section</a>
                 </div>
                 <div class="card-body p-0">
                     @if($recentSections->count() > 0)
-                        <div class="list-group list-group-flush activity-scroll">
-                            @foreach($recentSections as $section)
-                                <a href="{{ route('teacher-admin.sections.show', $section) }}" class="list-group-item list-group-item-action">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h6 class="mb-1">{{ $section->name }}</h6>
-                                            <small class="text-muted">Grade {{ $section->grade_level }}</small>
-                                        </div>
-                                        <div class="text-end">
-                                            <span class="badge bg-primary">{{ $section->subjects->count() }} Subjects</span>
-                                            @if($section->adviser)
-                                                <small class="d-block text-muted">Adviser: {{ $section->adviser->name }}</small>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </a>
-                            @endforeach
+                        <div class="table-responsive activity-scroll">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-4">Section</th>
+                                        <th>Grade Level</th>
+                                        <th>Subjects</th>
+                                        <th>Adviser</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($recentSections as $section)
+                                        <tr>
+                                            <td class="ps-4 fw-bold">
+                                                <a href="{{ route('teacher-admin.sections.show', $section) }}">{{ $section->name }}</a>
+                                            </td>
+                                            <td>Grade {{ $section->grade_level }}</td>
+                                            <td><span class="badge bg-primary">{{ $section->subjects->count() }}</span></td>
+                                            <td>{{ $section->adviser ? $section->adviser->name : 'Unassigned' }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     @else
-                        <div class="text-center py-4">
-                            <div class="mb-2">
-                                <i class="fas fa-users-class text-muted" style="font-size: 2rem;"></i>
-                            </div>
-                            <p class="text-muted mb-0">No sections have been created yet.</p>
-                            <a href="{{ route('teacher-admin.sections.create') }}" class="btn btn-sm btn-primary mt-3">
-                                <i class="fas fa-plus-circle me-1"></i> Create Section
-                            </a>
+                        <div class="text-center py-5">
+                            <i class="fas fa-users text-muted fa-3x mb-3"></i>
+                            <h6 class="text-muted">No sections found</h6>
+                            <a href="{{ route('teacher-admin.sections.create') }}" class="btn btn-sm btn-primary mt-2">Create Section</a>
                         </div>
                     @endif
                 </div>
             </div>
         </div>
-
-        <!-- Recent Subjects -->
-        <div class="col-md-6 mb-4">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white py-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0"><i class="fas fa-book text-success me-2"></i> Recent Subjects</h5>
-                        <a href="{{ route('teacher-admin.subjects.create') }}" class="btn btn-sm btn-success">
-                            <i class="fas fa-plus-circle me-1"></i> New Subject
-                        </a>
-                    </div>
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeIn">
+                <div class="p-4 bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold">Recent Subjects</h5>
+                    <a href="{{ route('teacher-admin.subjects.create') }}" class="btn btn-sm btn-primary">Add Subject</a>
                 </div>
                 <div class="card-body p-0">
                     @if($recentSubjects->count() > 0)
-                        <div class="list-group list-group-flush activity-scroll">
-                            @foreach($recentSubjects as $subject)
-                                <a href="{{ route('teacher-admin.subjects.show', $subject) }}" class="list-group-item list-group-item-action">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h6 class="mb-1">{{ $subject->name }}</h6>
-                                            <small class="text-muted">Code: {{ $subject->code }}</small>
-                                        </div>
-                                        <div>
-                                            <span class="badge bg-success">{{ $subject->sections_count }} Sections</span>
-                                            <small class="d-block text-muted">{{ $subject->teachers ? $subject->teachers->count() : 0 }} Teachers</small>
-                                        </div>
-                                    </div>
-                                </a>
-                            @endforeach
+                        <div class="table-responsive activity-scroll">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-4">Subject</th>
+                                        <th>Code</th>
+                                        <th>Sections</th>
+                                        <th>Teachers</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($recentSubjects as $subject)
+                                        <tr>
+                                            <td class="ps-4 fw-bold">
+                                                <a href="{{ route('teacher-admin.subjects.show', $subject) }}">{{ $subject->name }}</a>
+                                            </td>
+                                            <td><code>{{ $subject->code }}</code></td>
+                                            <td><span class="badge bg-primary">{{ $subject->sections_count }}</span></td>
+                                            <td>{{ $subject->teachers ? $subject->teachers->count() : 0 }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     @else
-                        <div class="text-center py-4">
-                            <div class="mb-2">
-                                <i class="fas fa-book text-muted" style="font-size: 2rem;"></i>
-                            </div>
-                            <p class="text-muted mb-0">No subjects have been created yet.</p>
-                            <a href="{{ route('teacher-admin.subjects.create') }}" class="btn btn-sm btn-success mt-3">
-                                <i class="fas fa-plus-circle me-1"></i> Create Subject
-                            </a>
+                        <div class="text-center py-5">
+                            <i class="fas fa-book text-muted fa-3x mb-3"></i>
+                            <h6 class="text-muted">No subjects found</h6>
+                            <a href="{{ route('teacher-admin.subjects.create') }}" class="btn btn-sm btn-primary mt-2">Create Subject</a>
                         </div>
                     @endif
                 </div>
@@ -541,66 +568,56 @@
     </div>
 
     <!-- Recent Enrollments -->
-    <div class="row">
-        <div class="col-12 mb-4">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white py-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0"><i class="fas fa-user-plus text-info me-2"></i> Recent Enrollment Applications</h5>
-                        <div>
-                            @if($pendingEnrollmentsCount > 0)
-                                <span class="badge bg-danger me-2">{{ $pendingEnrollmentsCount }} Pending</span>
-                            @endif
-                            <a href="{{ route('teacher-admin.enrollments.index') }}" class="btn btn-sm btn-info">
-                                <i class="fas fa-list me-1"></i> View All
-                            </a>
-                        </div>
+    <div class="row g-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm animate__animated animate__fadeIn">
+                <div class="p-4 bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold">Recent Enrollment Applications</h5>
+                    <div>
+                        @if($pendingEnrollmentsCount > 0)
+                            <span class="badge bg-danger bg-opacity-10 text-danger me-2">{{ $pendingEnrollmentsCount }} Pending</span>
+                        @endif
+                        <a href="{{ route('teacher-admin.enrollments.index') }}" class="btn btn-sm btn-primary">View All</a>
                     </div>
                 </div>
                 <div class="card-body p-0">
                     @if($recentEnrollments->count() > 0)
-                        <div class="table-responsive">
+                        <div class="table-responsive activity-scroll">
                             <table class="table table-hover mb-0">
                                 <thead class="sticky-header">
                                     <tr>
-                                        <th>Student Name</th>
+                                        <th class="ps-4">Student Name</th>
                                         <th>Grade Level</th>
                                         <th>Preferred Section</th>
                                         <th>Status</th>
                                         <th>Applied</th>
-                                        <th>Actions</th>
+                                        <th class="text-end pe-4">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach($recentEnrollments as $enrollment)
                                         <tr>
-                                            <td>
+                                            <td class="ps-4">
                                                 <div class="d-flex align-items-center">
-                                                    <div class="avatar bg-{{ $enrollment->status == 'pending' ? 'warning' : ($enrollment->status == 'approved' ? 'success' : ($enrollment->status == 'enrolled' ? 'primary' : 'danger')) }} bg-opacity-10 text-{{ $enrollment->status == 'pending' ? 'warning' : ($enrollment->status == 'approved' ? 'success' : ($enrollment->status == 'enrolled' ? 'primary' : 'danger')) }} rounded-circle p-2 me-3">
+                                                    <div class="avatar bg-{{ $enrollment->status == 'pending' ? 'warning' : ($enrollment->status == 'approved' ? 'success' : ($enrollment->status == 'enrolled' ? 'primary' : 'danger')) }} bg-opacity-10 text-{{ $enrollment->status == 'pending' ? 'warning' : ($enrollment->status == 'approved' ? 'success' : ($enrollment->status == 'enrolled' ? 'primary' : 'danger')) }} rounded p-2 me-3">
                                                         <i class="fas fa-user"></i>
                                                     </div>
                                                     <div>
-                                                        <h6 class="mb-0">{{ $enrollment->getFullNameAttribute() }}</h6>
+                                                        <h6 class="mb-0 fw-bold">{{ $enrollment->getFullNameAttribute() }}</h6>
                                                         <small class="text-muted">{{ $enrollment->guardian_name }}</small>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td>
-                                                <span class="badge bg-secondary">Grade {{ $enrollment->preferred_grade_level }}</span>
-                                            </td>
-                                            <td>
-                                                {{ $enrollment->preferredSection ? $enrollment->preferredSection->name : 'Any Section' }}
-                                            </td>
+                                            <td><span class="badge bg-secondary">Grade {{ $enrollment->preferred_grade_level }}</span></td>
+                                            <td>{{ $enrollment->preferredSection ? $enrollment->preferredSection->name : 'Any Section' }}</td>
                                             <td>
                                                 <span class="badge bg-{{ $enrollment->status == 'pending' ? 'warning' : ($enrollment->status == 'approved' ? 'success' : ($enrollment->status == 'enrolled' ? 'primary' : 'danger')) }}">
                                                     {{ ucfirst($enrollment->status) }}
                                                 </span>
                                             </td>
-                                            <td>
-                                                <small class="text-muted">{{ $enrollment->created_at->diffForHumans() }}</small>
-                                            </td>
-                                            <td>
-                                                <div class="btn-group" role="group">
+                                            <td><small class="text-muted">{{ $enrollment->created_at->diffForHumans() }}</small></td>
+                                            <td class="text-end pe-4">
+                                                <div class="btn-group">
                                                     <a href="{{ route('teacher-admin.enrollments.show', $enrollment) }}" class="btn btn-sm btn-outline-primary" title="View Details">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
@@ -622,14 +639,10 @@
                         </div>
                     @else
                         <div class="text-center py-5">
-                            <div class="mb-3">
-                                <i class="fas fa-user-plus text-muted" style="font-size: 3rem;"></i>
-                            </div>
-                            <h5 class="text-muted mb-2">No Enrollment Applications Yet</h5>
-                            <p class="text-muted mb-3">When students submit enrollment applications, they will appear here.</p>
-                            <a href="{{ route('enrollment.create') }}" class="btn btn-info" target="_blank">
-                                <i class="fas fa-external-link-alt me-1"></i> View Application Form
-                            </a>
+                            <i class="fas fa-user-plus text-muted fa-3x mb-3"></i>
+                            <h6 class="text-muted">No Enrollment Applications Yet</h6>
+                            <p class="text-muted mb-3">When students submit applications, they will appear here.</p>
+                            <a href="{{ route('enrollment.create') }}" class="btn btn-sm btn-primary">View Application Form</a>
                         </div>
                     @endif
                 </div>
@@ -642,39 +655,34 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Get data from data attributes for charts
+        // Chart data
         const weeklyAttendanceData = JSON.parse(document.getElementById('weekly-attendance-data').getAttribute('data-attendance'));
         const gradeDistributionData = JSON.parse(document.getElementById('grade-distribution-data').getAttribute('data-grades'));
-        
+
         // Attendance Chart
         const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
-        const attendanceDates = weeklyAttendanceData.map(item => item.date);
-        const presentData = weeklyAttendanceData.map(item => item.present);
-        const absentData = weeklyAttendanceData.map(item => item.absent);
-        const lateData = weeklyAttendanceData.map(item => item.late);
-        
         const attendanceChart = new Chart(attendanceCtx, {
             type: 'bar',
             data: {
-                labels: attendanceDates,
+                labels: weeklyAttendanceData.map(item => item.date),
                 datasets: [
                     {
                         label: 'Present',
-                        data: presentData,
+                        data: weeklyAttendanceData.map(item => item.present),
                         backgroundColor: 'rgba(40, 167, 69, 0.7)',
                         borderColor: 'rgba(40, 167, 69, 1)',
                         borderWidth: 1
                     },
                     {
                         label: 'Absent',
-                        data: absentData,
+                        data: weeklyAttendanceData.map(item => item.absent),
                         backgroundColor: 'rgba(220, 53, 69, 0.7)',
                         borderColor: 'rgba(220, 53, 69, 1)',
                         borderWidth: 1
                     },
                     {
                         label: 'Late',
-                        data: lateData,
+                        data: weeklyAttendanceData.map(item => item.late),
                         backgroundColor: 'rgba(255, 193, 7, 0.7)',
                         borderColor: 'rgba(255, 193, 7, 1)',
                         borderWidth: 1
@@ -685,23 +693,10 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.05)'
-                        }
-                    }
+                    x: { grid: { display: false } },
+                    y: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.05)' } }
                 },
-                plugins: {
-                    legend: {
-                        position: 'top'
-                    }
-                }
+                plugins: { legend: { position: 'top' } }
             }
         });
 
@@ -743,47 +738,27 @@
                 plugins: {
                     legend: {
                         position: 'right',
-                        labels: {
-                            boxWidth: 12,
-                            font: {
-                                size: 11
-                            }
-                        }
+                        labels: { boxWidth: 12, font: { size: 11 } }
                     }
                 }
             }
         });
 
         // Period Selection for Attendance Chart
-        document.querySelectorAll('.attendance-period-btn').forEach(function(button) {
+        document.querySelectorAll('.attendance-period-btn').forEach(button => {
             button.addEventListener('click', function() {
-                // Remove active class from all buttons
-                document.querySelectorAll('.attendance-period-btn').forEach(function(btn) {
-                    btn.classList.remove('active');
-                });
-                
-                // Add active class to clicked button
+                document.querySelectorAll('.attendance-period-btn').forEach(btn => btn.classList.remove('active'));
                 this.classList.add('active');
-                
-                // TODO: Update chart data based on selected period
-                // This would typically involve an AJAX call to get data for the selected period
-                // For now, we'll just simulate a data change
-                var period = this.getAttribute('data-period');
-                
-                // Simulate data change
-                var data = attendanceChart.data.datasets[0].data;
-                attendanceChart.data.datasets[0].data = data.map(function() { return Math.floor(Math.random() * 50) + 20; });
-                attendanceChart.data.datasets[1].data = data.map(function() { return Math.floor(Math.random() * 10); });
-                attendanceChart.data.datasets[2].data = data.map(function() { return Math.floor(Math.random() * 5); });
-                attendanceChart.update();
+                const period = this.getAttribute('data-period');
+                // TODO: Fetch new data via AJAX for the selected period
+                console.log(`Switch to ${period} view`);
             });
         });
 
         // Toggle for top performers
         document.getElementById('topPerformersOnly').addEventListener('change', function() {
-            // This would typically filter the table rows
-            // For now, we'll just log the change
             console.log('Show top performers only:', this.checked);
+            // TODO: Filter table rows via AJAX or client-side logic
         });
     });
 </script>

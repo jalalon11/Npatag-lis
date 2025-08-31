@@ -109,8 +109,8 @@
 <div class="container-fluid p-4">
     <!-- Main Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0 fw-bold text-primary">
-            <i class="fas fa-school me-2"></i> School Overview
+        <h2 class="mb-0 fw-bold">
+            School Overview
         </h2>
     </div>
 
@@ -130,17 +130,17 @@
 
     <!-- School Information -->
     <div class="row mb-4">
-        <div class="col-lg-8">
+        <div class="col-lg-12">
             <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <div class=" p-4 bg-white py-3 d-flex justify-content-between align-items-center">
                     <h5 class="mb-0 fw-bold">
-                        <i class="fas fa-school text-primary me-2"></i> School Information
+                        School Information
                     </h5>
                     <a href="{{ route('teacher-admin.school.edit') }}" class="btn btn-sm btn-primary">
                         <i class="fas fa-edit me-1"></i> Edit School Info
                     </a>
                 </div>
-                <div class="card-body p-4">
+                <div class="card-body bg-white p-4">
                     <div class="d-flex flex-column flex-md-row align-items-center align-items-md-start mb-4">
                         <div class="school-logo-container me-md-4 mb-3 mb-md-0 text-center">
                             @if($school->logo_path)
@@ -199,23 +199,19 @@
                 </div>
             </div>
         </div>
-
-
-
-
     </div>
 
     <!-- Registration Keys -->
     <div class="card border-0 shadow-sm mb-4">
-        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <div class="p-4 bg-white py-3 d-flex justify-content-between align-items-center">
             <h5 class="mb-0 fw-bold">
-                <i class="fas fa-key text-primary me-2"></i> Teacher Registration Keys
+                Teacher Registration Keys
             </h5>
             <div class="d-flex">
                 <span class="badge bg-primary">{{ $registrationKeys->count() }} Available</span>
             </div>
         </div>
-        <div class="card-body">
+        <div class="p-4 bg-white">
             <p class="text-muted mb-3">
                 <i class="fas fa-info-circle me-1"></i> These registration keys can be provided to teachers to create accounts for your school. Each key can only be used once.
             </p>
@@ -313,20 +309,20 @@
 
     <!-- Teachers List -->
     <div class="card border-0 shadow-sm mb-4">
-        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <div class="p-4 bg-white py-3 d-flex justify-content-between align-items-center">
             <h5 class="mb-0 fw-bold">
-                <i class="fas fa-chalkboard-teacher text-primary me-2"></i> Teachers
+                Teachers
             </h5>
             <div class="d-flex">
                 <div class="input-group">
                     <input type="text" class="form-control" id="teacherSearch" placeholder="Search teachers...">
-                    <button class="btn btn-outline-secondary" type="button">
+                    <button class="btn btn-primary" type="button">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
             </div>
         </div>
-        <div class="card-body p-0">
+        <div class="card-body bg-white p-0">
             <div class="scrollable-table position-relative" style="max-height: 500px; overflow-y: auto;">
                 <table class="table table-hover align-middle mb-0" id="teachersTable">
                     <thead class="table-light sticky-top">
@@ -416,74 +412,59 @@
 
     <!-- Sections and Students -->
     <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <div class="p-4 bg-white py-3 d-flex justify-content-between align-items-center">
             <h5 class="mb-0 fw-bold">
-                <i class="fas fa-door-open text-primary me-2"></i> Sections and Students
+                Sections and Students
             </h5>
-            <div class="d-flex">
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0">
-                        <i class="fas fa-search text-muted"></i>
+            <div class="d-flex gap-2">
+                @php
+                    // Group sections by grade level
+                    $sectionsByGradeLevel = [];
+                    foreach($sections as $section) {
+                        $gradeLevel = $section->grade_level;
+                        if(!isset($sectionsByGradeLevel[$gradeLevel])) {
+                            $sectionsByGradeLevel[$gradeLevel] = [];
+                        }
+                        $sectionsByGradeLevel[$gradeLevel][] = $section;
+                    }
+
+                    // Sort grade levels
+                    uksort($sectionsByGradeLevel, function($a, $b) {
+                        // Extract numeric part from grade level
+                        $aNum = (int) preg_replace('/[^0-9]/', '', $a);
+                        $bNum = (int) preg_replace('/[^0-9]/', '', $b);
+
+                        // Handle special case for Kindergarten
+                        if($a === 'K' || $a === 'Kindergarten') return -1;
+                        if($b === 'K' || $b === 'Kindergarten') return 1;
+
+                        return $aNum - $bNum;
+                    });
+                @endphp
+
+                <!-- Grade Level Navigation -->
+                <div class="input-group" style="max-width: 500px;">
+                    <select class="form-select" id="gradeLevelSelect" onchange="switchGradeLevel(this.value)" onclick="switchGradeLevel(this.value)">
+                        @foreach($sectionsByGradeLevel as $gradeLevel => $gradeSections)
+                            <option value="{{ $gradeLevel }}" {{ $loop->first ? 'selected' : '' }}>
+                                {{ $gradeLevel }} ({{ count($gradeSections) }}) Section/s
+                            </option>
+                        @endforeach
+                    </select>
+                    <span class="input-group-text bg-primary text-white">
+                        <i class="fas fa-door-open"></i>
                     </span>
-                    <input type="text" class="form-control border-start-0 ps-0" id="sectionSearch" placeholder="Search sections or students...">
+                </div>
+
+                <div class="input-group">
+                    <input type="text" class="form-control" id="sectionSearch" placeholder="Search sections">
+                    <button class="btn btn-primary" type="button">
+                        <i class="fas fa-search"></i>
+                    </button>
                 </div>
             </div>
         </div>
-        <div class="card-body p-0">
-            @php
-                // Group sections by grade level
-                $sectionsByGradeLevel = [];
-                foreach($sections as $section) {
-                    $gradeLevel = $section->grade_level;
-                    if(!isset($sectionsByGradeLevel[$gradeLevel])) {
-                        $sectionsByGradeLevel[$gradeLevel] = [];
-                    }
-                    $sectionsByGradeLevel[$gradeLevel][] = $section;
-                }
-
-                // Sort grade levels
-                uksort($sectionsByGradeLevel, function($a, $b) {
-                    // Extract numeric part from grade level
-                    $aNum = (int) preg_replace('/[^0-9]/', '', $a);
-                    $bNum = (int) preg_replace('/[^0-9]/', '', $b);
-
-                    // Handle special case for Kindergarten
-                    if($a === 'K' || $a === 'Kindergarten') return -1;
-                    if($b === 'K' || $b === 'Kindergarten') return 1;
-
-                    return $aNum - $bNum;
-                });
-            @endphp
-
-            <!-- Grade Level Navigation -->
-            <div class="bg-light border-top border-bottom py-3">
-                <div class="container-fluid">
-                    <div class="row align-items-center">
-                        <div class="col-md-4">
-                            <!-- <h5 class="mb-0 text-primary">
-                                <i class="fas fa-door-open me-2"></i> Sections by Grade Level
-                            </h5> -->
-                        </div>
-                        <div class="col-md-8">
-                            <div class="d-flex flex-wrap justify-content-md-end" style="gap: 8px;">
-                                <div class="input-group" style="max-width: 250px;">
-                                    <span class="input-group-text bg-primary text-white">
-                                        <i class="fas fa-door-open"></i>
-                                    </span>
-                                    <select class="form-select" id="gradeLevelSelect" onchange="switchGradeLevel(this.value)" onclick="switchGradeLevel(this.value)">
-                                        @foreach($sectionsByGradeLevel as $gradeLevel => $gradeSections)
-                                            <option value="{{ $gradeLevel }}" {{ $loop->first ? 'selected' : '' }}>
-                                                {{ $gradeLevel }} ({{ count($gradeSections) }}) Section/s
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+        <div class=" bg-white">
             <!-- Grade Level Content -->
             <div class="p-4">
                 @foreach($sectionsByGradeLevel as $gradeLevel => $gradeSections)
