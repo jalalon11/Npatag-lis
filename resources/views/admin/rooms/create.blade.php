@@ -105,7 +105,7 @@
                                                 <label for="grade_level" class="form-label">Grade Level <span class="text-danger">*</span></label>
                                                 <select class="form-select @error('grade_level') is-invalid @enderror" id="grade_level" name="grade_level" required>
                                                     <option value="" selected disabled>Select Grade Level</option>
-                                                    @for($i = 1; $i <= 12; $i++)
+                                                    @for($i = 1; $i <= 6; $i++)
                                                         <option value="{{ $i }}" {{ old('grade_level') == $i ? 'selected' : '' }}>Grade {{ $i }}</option>
                                                     @endfor
                                                 </select>
@@ -122,19 +122,16 @@
                                                 @enderror
                                             </div>
 
+                                            <!-- Hidden school field since there's only one school -->
+                                            <input type="hidden" name="school_id" value="{{ $defaultSchool->id }}">
+                                            
                                             <div class="mb-3">
-                                                <label for="school_id" class="form-label">School <span class="text-danger">*</span></label>
-                                                <select class="form-select @error('school_id') is-invalid @enderror" id="school_id" name="school_id" required>
-                                                    <option value="" selected disabled>Select School</option>
-                                                    @foreach($schools as $school)
-                                                        <option value="{{ $school->id }}" {{ old('school_id') == $school->id ? 'selected' : '' }}>
-                                                            {{ $school->name }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                                @error('school_id')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
+                                                <label class="form-label">School</label>
+                                                <div class="form-control-plaintext bg-light p-2 rounded border">
+                                                    <i class="fas fa-school me-2 text-primary"></i>
+                                                    {{ $defaultSchool->name }}
+                                                </div>
+                                                <small class="form-text text-muted">Default school automatically selected</small>
                                             </div>
                                         </div>
                                     </div>

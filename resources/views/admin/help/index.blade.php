@@ -63,41 +63,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-4 mb-4">
-                            <div class="card h-100 shadow-sm hover-card">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <div class="icon-circle bg-info text-white">
-                                            <i class="fas fa-users"></i>
-                                        </div>
-                                        <h5 class="ms-3 mb-0">Students</h5>
-                                    </div>
-                                    <p class="card-text">Learn how to manage student records and monitor student data across schools.</p>
-                                    <div class="mt-3">
-                                        <span class="badge bg-light text-dark">12 min read</span>
-                                    </div>
-                                    <a href="{{ route('admin.help.tutorial', 'students') }}" class="btn btn-info w-100 mt-3 text-white">
-                                        <i class="fas fa-book-open me-2"></i> View Tutorial
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="col-md-4 mb-4">
-                            <div class="card h-100 shadow-sm hover-card">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <div class="icon-circle bg-warning text-white">
-                                            <i class="fas fa-user-plus"></i>
-                                        </div>
-                                        <h5 class="ms-3 mb-0">Admissions</h5>
-                    </div>
-                    <p class="card-text">Learn how to manage student admissions and process admission applications.</p>
-                    <div class="mt-3">
-                        <span class="badge bg-light text-dark">10 min read</span>
-                    </div>
-                    <a href="{{ route('admin.help.tutorial', 'enrollments') }}" class="btn btn-warning w-100 mt-3 text-white">
-                                        <i class="fas fa-book-open me-2"></i> View Tutorial
                                     </a>
                                 </div>
                             </div>

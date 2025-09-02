@@ -59,8 +59,8 @@ class SectionController extends Controller
             // Get all teachers (will be filtered by school in frontend)
             $teachers = User::where('role', 'teacher')->get();
 
-            // Default grade levels
-            $gradeLevels = range(7, 12);
+            // Default grade levels for elementary (K-Grade 6)
+            $gradeLevels = array_merge(['K'], range(1, 6));
 
             return view('admin.sections.create', compact('teachers', 'gradeLevels', 'schools'));
         } catch (\Exception $e) {
@@ -432,8 +432,8 @@ class SectionController extends Controller
                 ->where('role', 'teacher')
                 ->get();
 
-            // Default grade levels
-            $gradeLevels = range(7, 12);
+            // Default grade levels for elementary (K-Grade 6)
+            $gradeLevels = array_merge(['K'], range(1, 6));
 
             return view('admin.sections.edit', compact('section', 'teachers', 'gradeLevels', 'schools'));
         } catch (\Exception $e) {

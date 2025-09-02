@@ -268,6 +268,8 @@ Route::middleware(['auth', CheckSchoolStatus::class])->group(function () {
             ->name('rooms.toggle-status');
         Route::patch('rooms/{room}/update-adviser', [\App\Http\Controllers\Admin\RoomController::class, 'updateAdviser'])
             ->name('rooms.update-adviser');
+        Route::patch('rooms/{room}/change-adviser', [\App\Http\Controllers\Admin\RoomController::class, 'updateAdviser'])
+            ->name('rooms.change-adviser');
 
         // Homeroom Advising Management
         Route::get('/homeroom', [\App\Http\Controllers\Admin\HomeroomController::class, 'index'])
@@ -307,23 +309,8 @@ Route::middleware(['auth', CheckSchoolStatus::class])->group(function () {
         // School Overview (formerly teacher admin)
         Route::get('/school', [AdminSchoolController::class, 'index'])->name('school.index');
 
-        // Student Management Routes
-        Route::resource('students', \App\Http\Controllers\Admin\StudentController::class);
-        Route::get('/students/by-section/{section}', [\App\Http\Controllers\Admin\StudentController::class, 'getBySection'])->name('students.by-section');
-        Route::get('/students/statistics', [\App\Http\Controllers\Admin\StudentController::class, 'statistics'])->name('students.statistics');
-        Route::post('/students/{student}/toggle-status', [\App\Http\Controllers\Admin\StudentController::class, 'toggleStatus'])->name('students.toggle-status');
 
-        // Enrollment Management Routes
-        Route::get('/admissions', [\App\Http\Controllers\Admin\EnrollmentController::class, 'index'])->name('admissions.index');
-        Route::get('/admissions/{enrollment}', [\App\Http\Controllers\Admin\EnrollmentController::class, 'show'])->name('admissions.show');
-        Route::post('/admissions/{enrollment}/verify', [\App\Http\Controllers\Admin\EnrollmentController::class, 'verify'])->name('admissions.verify');
-        Route::post('/admissions/{enrollment}/approve', [\App\Http\Controllers\Admin\EnrollmentController::class, 'approve'])->name('admissions.approve');
-        Route::post('/admissions/{enrollment}/reject', [\App\Http\Controllers\Admin\EnrollmentController::class, 'reject'])->name('admissions.reject');
-        Route::post('/admissions/{enrollment}/assign-section', [\App\Http\Controllers\Admin\EnrollmentController::class, 'assignSection'])->name('admissions.assign-section');
-        Route::get('/admissions/sections/{school}', [\App\Http\Controllers\Admin\EnrollmentController::class, 'getSections'])->name('admissions.sections');
-        Route::post('/admissions/quick-assign', [\App\Http\Controllers\Admin\EnrollmentController::class, 'quickAssign'])->name('admissions.quick-assign');
-        Route::post('/admissions/bulk-approve', [\App\Http\Controllers\Admin\EnrollmentController::class, 'bulkApprove'])->name('admissions.bulk-approve');
-        Route::get('/admissions/statistics', [\App\Http\Controllers\Admin\EnrollmentController::class, 'statistics'])->name('admissions.statistics');
+
 
         // Help Routes (formerly teacher admin)
         Route::get('/help', [HelpController::class, 'index'])->name('help.index');

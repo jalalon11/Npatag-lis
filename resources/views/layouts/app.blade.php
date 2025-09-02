@@ -1127,25 +1127,7 @@
                     </a>
                 </li>
                 
-                <!-- Admission / Learner Records Dropdown -->
-                <li class="{{ Request::is('admin/students*') || Request::is('admin/admissions*') ? 'active' : '' }}">
-                    <a href="#admissionSubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
-                        <i class="fas fa-graduation-cap"></i> <span>Admission / Learner Records</span>
-                    </a>
-                    <ul class="collapse list-unstyled sidebar-submenu {{ Request::is('admin/students*') || Request::is('admin/admissions*') ? 'show' : '' }}" id="admissionSubmenu">
-                        <li class="{{ Request::is('admin/students*') ? 'active' : '' }}">
-                            <a href="{{ route('admin.students.index') }}">
-                                <i class="fas fa-user-graduate"></i> <span>Students</span>
-                            </a>
-                        </li>
-                        <li class="{{ Request::is('admin/admissions*') ? 'active' : '' }}">
-                            <a href="{{ route('admin.admissions.index') }}">
-                                <i class="fas fa-user-plus"></i> <span>Admissions</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                
+
                 <li class="{{ Request::is('admin/subjects*') ? 'active' : '' }}">
                     <a href="{{ route('admin.subjects.index') }}">
                         <i class="fas fa-book"></i> <span>Subjects</span>

@@ -71,6 +71,31 @@
                         @csrf
                         <input type="hidden" name="is_batch" value="0" id="is_batch_input">
                         
+                        <!-- Hidden school field since there's only one school -->
+                        <input type="hidden" name="school_id" value="{{ $defaultSchool->id }}">
+                        
+                        <!-- School Information Display -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary text-white rounded-circle p-2 me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                <i class="fas fa-school"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0">School</h6>
+                                                <p class="mb-0 text-muted">{{ $defaultSchool->name }}</p>
+                                            </div>
+                                            <div class="ms-auto">
+                                                <span class="badge bg-success">Default School</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div id="single_entry_form">
                             <div class="row">
                                 <div class="col-md-6">

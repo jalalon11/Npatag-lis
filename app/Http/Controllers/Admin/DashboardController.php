@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\School;
 // Removed SchoolDivision dependency for single school system
-use App\Models\Student;
 use App\Models\User;
 use App\Models\SystemSetting;
 use Illuminate\Http\Request;
@@ -18,8 +17,7 @@ class DashboardController extends Controller
     {
         $stats = [
             'teachersCount' => User::where('role', 'teacher')->count(),
-            'schoolsCount' => 1, // Hardcoded single school system
-            'studentsCount' => Student::count()
+            'schoolsCount' => 1 // Hardcoded single school system
         ];
 
         // Get pending support tickets count

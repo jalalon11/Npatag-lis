@@ -59,11 +59,11 @@
                                             <label for="grade_level" class="form-label">Grade Level <span class="text-danger">*</span></label>
                                             <select class="form-select @error('grade_level') is-invalid @enderror" id="grade_level" name="grade_level" required>
                                                 <option value="" disabled>Select Grade Level</option>
-                                                @for($i = 1; $i <= 12; $i++)
-                                                    <option value="Grade {{ $i }}" {{ (old('grade_level', $section->grade_level) == "Grade {$i}") ? 'selected' : '' }}>
-                                                        Grade {{ $i }}
+                                                @foreach($gradeLevels ?? ['K', '1', '2', '3', '4', '5', '6'] as $grade)
+                                                    <option value="Grade {{ $grade }}" {{ (old('grade_level', $section->grade_level) == "Grade {$grade}") ? 'selected' : '' }}>
+                                                        Grade {{ $grade }}
                                                     </option>
-                                                @endfor
+                                                @endforeach
                                             </select>
                                             @error('grade_level')
                                                 <div class="invalid-feedback">{{ $message }}</div>

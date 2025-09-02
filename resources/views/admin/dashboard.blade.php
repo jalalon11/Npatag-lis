@@ -73,33 +73,7 @@
                     </div>
                 </div>
 
-                <!-- Students Card -->
-                <div class="col-12">
-                    <div class="stat-card bg-white rounded-4 shadow-sm h-100 position-relative overflow-hidden transition-all hover-lift p-4">
-                        <div class="position-absolute top-0 start-0 h-100 w-1 bg-success"></div>
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div class="w-100">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="stat-icon-sm bg-primary bg-opacity-10 rounded-circle p-2 me-2">
-                                            <i class="fas fa-user-graduate text-primary"></i>
-                                        </div>
-                                        <h6 class="text-uppercase fw-semibold mb-0 small">Students</h6>
-                                    </div>
-                                    <h3 class="fw-bold mb-0 display-6">{{ $stats['studentsCount'] }}</h3>
-                                    <p class="small text-muted mb-0 mt-2">
-                                        Enrolled Learners
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer bg-white border-0 mt-2">
-                            <a href="{{ route('admin.students.index') }}" class="btn btn-md btn-primary w-100 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-eye me-2"></i> View All Students
-                            </a>
-                        </div>
-                    </div>
-                </div>
+
             </div>
         </div>
     </div>

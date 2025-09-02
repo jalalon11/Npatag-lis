@@ -424,13 +424,13 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('gradeLevelFilter').addEventListener('change', filterTable);
     document.getElementById('statusFilter').addEventListener('change', filterTable);
 
-    // Reset filters
-    document.getElementById('resetFilters').addEventListener('click', function() {
+    // Reset filters function (can be called programmatically if needed)
+    window.resetSubjectFilters = function() {
         document.getElementById('searchInput').value = '';
         document.getElementById('gradeLevelFilter').value = '';
         document.getElementById('statusFilter').value = '';
         filterTable();
-    });
+    };
 });
 </script>
 @endpush

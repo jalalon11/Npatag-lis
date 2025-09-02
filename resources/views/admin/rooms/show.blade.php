@@ -116,7 +116,7 @@
                                 <div class="bg-info text-white rounded-circle mx-auto mb-2 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
                                     <i class="fas fa-book fa-2x"></i>
                                 </div>
-                                <h3 class="mb-1">{{ $room->subjects_count ?? 0 }}</h3>
+                                <h3 class="mb-1">{{ $room->subjects->count() }}</h3>
                                 <p class="text-muted mb-0">subjects assigned</p>
                             </div>
                         </div>
@@ -487,6 +487,9 @@
             }
         });
     });
+</script>
+@endpush
+@endsection});
 </script>
 @endpush
 @endsection

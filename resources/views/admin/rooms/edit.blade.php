@@ -81,19 +81,16 @@
                         
                         <div class="row">
                             <div class="col-md-6">
+                                <!-- Hidden school field since there's only one school -->
+                                <input type="hidden" name="school_id" value="{{ $defaultSchool->id }}">
+                                
                                 <div class="form-group">
-                                    <label for="school_id">School <span class="text-danger">*</span></label>
-                                    <select class="form-control @error('school_id') is-invalid @enderror" id="school_id" name="school_id" required>
-                                        <option value="" disabled>Select School</option>
-                                        @foreach($schools as $school)
-                                            <option value="{{ $school->id }}" {{ old('school_id', $room->school_id) == $school->id ? 'selected' : '' }}>
-                                                {{ $school->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('school_id')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                    <label class="form-label">School</label>
+                                    <div class="form-control bg-light p-2 rounded border">
+                                        <i class="fas fa-school me-2 text-primary"></i>
+                                        {{ $defaultSchool->name }}
+                                    </div>
+                                    <small class="form-text text-muted">Default school automatically selected</small>
                                 </div>
                             </div>
                         </div>

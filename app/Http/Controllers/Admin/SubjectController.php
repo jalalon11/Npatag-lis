@@ -50,13 +50,18 @@ class SubjectController extends Controller
     public function create()
     {
         try {
-            // Get all schools for admin to select from
-            $schools = \App\Models\School::all();
+            // Get the default school (since there's only one school in the system)
+            $defaultSchool = \App\Models\School::first();
             
-            // Default grade levels
-            $gradeLevels = range(7, 12);
+            if (!$defaultSchool) {
+                return redirect()->route('admin.subjects.index')
+                    ->with('error', 'No school found in the system.');
+            }
             
-            return view('admin.subjects.create', compact('gradeLevels', 'schools'));
+            // Default grade levels for elementary (K-Grade 6)
+            $gradeLevels = array_merge(['K'], range(1, 6));
+            
+            return view('admin.subjects.create', compact('gradeLevels', 'defaultSchool'));
         } catch (\Exception $e) {
             Log::error('Error loading subject creation form: ' . $e->getMessage(), [
                 'file' => $e->getFile(),
@@ -326,13 +331,18 @@ class SubjectController extends Controller
     public function edit(Subject $subject)
     {
         try {
-            // Get all schools for admin to select from
-            $schools = \App\Models\School::all();
+            // Get the default school (since there's only one school in the system)
+            $defaultSchool = \App\Models\School::first();
             
-            // Default grade levels
-            $gradeLevels = range(7, 12);
+            if (!$defaultSchool) {
+                return redirect()->route('admin.subjects.index')
+                    ->with('error', 'No school found in the system.');
+            }
+            
+            // Default grade levels for elementary (K-Grade 6)
+            $gradeLevels = array_merge(['K'], range(1, 6));
     
-            return view('admin.subjects.edit', compact('subject', 'gradeLevels', 'schools'));
+            return view('admin.subjects.edit', compact('subject', 'gradeLevels', 'defaultSchool'));
         } catch (\Exception $e) {
             Log::error('Error loading subject edit form: ' . $e->getMessage(), [
                 'file' => $e->getFile(),

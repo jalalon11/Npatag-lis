@@ -103,7 +103,7 @@
                                                 <label for="grade_level" class="form-label">Grade Level <span class="text-danger">*</span></label>
                                                 <select class="form-select @error('grade_level') is-invalid @enderror" id="grade_level" name="grade_level" required>
                                                     <option value="" selected disabled>Select Grade Level</option>
-                                                    @foreach($gradeLevels ?? ['K', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'] as $grade)
+                                                    @foreach($gradeLevels ?? ['K', '1', '2', '3', '4', '5', '6'] as $grade)
                                                         <option value="Grade {{ $grade }}" {{ old('grade_level') == "Grade {$grade}" ? 'selected' : '' }}>
                                                             Grade {{ $grade }}
                                                         </option>
