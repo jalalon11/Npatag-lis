@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
+use App\Models\Teacher;
+use App\Models\Subject;
 
 class RoomController extends Controller
 {
@@ -166,8 +168,9 @@ class RoomController extends Controller
     {
         try {
             $room->load(['adviser', 'school', 'students', 'subjects', 'building']);
-            return view('admin.rooms.show', compact('room'));
-            
+            $availableSubjects = Subject::all();
+            $teachers = User::where('role', 'teacher')->with('school')->get();
+            return view('admin.rooms.show', compact('room', 'availableSubjects', 'teachers'));
         } catch (\Exception $e) {
             Log::error('Error loading room details: ' . $e->getMessage());
             return redirect()->route('admin.rooms.index')
