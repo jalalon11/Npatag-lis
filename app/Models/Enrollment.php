@@ -8,6 +8,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Enrollment extends Model
 {
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'admissions';
     protected $fillable = [
         'first_name',
         'middle_name',
@@ -115,7 +121,7 @@ class Enrollment extends Model
         return $this->status === 'rejected';
     }
 
-    public function isEnrolled(): bool
+    public function isAdmitted(): bool
     {
         return $this->status === 'enrolled';
     }

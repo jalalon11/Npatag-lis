@@ -267,12 +267,12 @@ class EnrollmentApplicationController extends Controller
     public function status(Request $request)
     {
         $validated = $request->validate([
-            'enrollment_id' => 'required|exists:enrollments,id',
+            'admission_id' => 'required|exists:admissions,id',
             'last_name' => 'required|string',
             'birth_date' => 'required|date',
         ]);
         
-        $enrollment = Enrollment::where('id', $validated['enrollment_id'])
+        $enrollment = Enrollment::where('id', $validated['admission_id'])
             ->where('last_name', $validated['last_name'])
             ->where('birth_date', $validated['birth_date'])
             ->with('school')

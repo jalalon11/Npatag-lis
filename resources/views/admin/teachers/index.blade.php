@@ -144,15 +144,9 @@
                                     </span>
                                 </td>
                                 <td>
-                                    @if($teacher->is_teacher_admin)
-                                        <span class="badge bg-warning">
-                                            <i class="fas fa-user-shield me-1"></i> Teacher Admin
-                                        </span>
-                                    @else
-                                        <span class="badge bg-primary">
-                                            <i class="fas fa-chalkboard-teacher me-1"></i> Teacher
-                                        </span>
-                                    @endif
+                                    <span class="badge bg-primary">
+                                        <i class="fas fa-chalkboard-teacher me-1"></i> Teacher
+                                    </span>
                                 </td>
                                 <td class="text-end">
                                     <div class="btn-group btn-group-sm" role="group">

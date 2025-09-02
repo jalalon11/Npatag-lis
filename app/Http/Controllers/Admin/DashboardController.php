@@ -18,8 +18,7 @@ class DashboardController extends Controller
     {
         $stats = [
             'teachersCount' => User::where('role', 'teacher')->count(),
-            'teacherAdminsCount' => User::where('role', 'teacher_admin')->count(),
-            'schoolsCount' => School::count(),
+            'schoolsCount' => 1, // Hardcoded single school system
             'studentsCount' => Student::count()
         ];
 

@@ -173,7 +173,7 @@ return [
         App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        App\Providers\TeacherAdminServiceProvider::class,
+        // TeacherAdminServiceProvider removed - functionality merged into admin panel
         App\Providers\ViewComposerServiceProvider::class,
     ],
 

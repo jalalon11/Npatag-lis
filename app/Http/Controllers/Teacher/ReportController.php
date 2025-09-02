@@ -104,7 +104,6 @@ class ReportController extends Controller
         // Get only active students from the database to ensure they're loaded
         $students = Student::where('section_id', $section->id)
             ->where('is_active', true)
-            ->enrolled() // Only students created from enrollments
             ->orderBy('last_name')
             ->orderBy('first_name')
             ->get();
@@ -237,7 +236,6 @@ class ReportController extends Controller
         // Get only active students
         $students = Student::where('section_id', $section->id)
             ->where('is_active', true)
-            ->enrolled() // Only students created from enrollments
             ->orderBy('last_name')
             ->orderBy('first_name')
             ->get();

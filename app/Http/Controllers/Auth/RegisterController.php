@@ -63,15 +63,13 @@ class RegisterController extends Controller
     {
         $this->validator($request->all())->validate();
 
-        event(new Registered($user = $this->create($request->all())));
+        $user = $this->create($request->all());
+        
+        event(new Registered($user));
 
-        $this->guard()->login($user);
-
-        // Clear the registration key session data after successful registration
-        $request->session()->forget(['valid_registration_key', 'registration_key_info']);
-
-        return $this->registered($request, $user)
-                        ?: redirect($this->redirectPath());
+        // Don't login the created user - admin stays logged in
+        return redirect()->route('admin.teachers.index')
+                        ->with('success', 'Teacher account created successfully.');
     }
 
     /**
@@ -81,7 +79,7 @@ class RegisterController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest');
+        // Remove guest middleware - now requires admin authentication
     }
 
     /**
@@ -96,7 +94,7 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'registration_key' => ['sometimes'],
+
         ]);
     }
 
@@ -108,44 +106,17 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        // Get registration key info from session
-        $keyInfo = session('registration_key_info', []);
-
-        // Set default role and values
-        $role = 'teacher';
-        $schoolId = null;
-        $isTeacherAdmin = false;
-
-        // If we have key info, use it to set role, school_id, and teacher admin status
-        if (!empty($keyInfo)) {
-            // Check if this is a master key registration
-            if (isset($keyInfo['is_master']) && $keyInfo['is_master'] === true) {
-                // If it's a master key, set role to admin
-                $role = 'admin';
-            }
-            // Otherwise, handle regular teacher/teacher_admin keys
-            else if (isset($keyInfo['key_type']) && $keyInfo['key_type']) {
-                if ($keyInfo['key_type'] === 'teacher_admin') {
-                    $role = 'teacher';
-                    $isTeacherAdmin = true;
-                } else {
-                    $role = 'teacher';
-                }
-            }
-
-            // Set school_id if provided
-            if (isset($keyInfo['school_id']) && $keyInfo['school_id']) {
-                $schoolId = $keyInfo['school_id'];
-            }
-        }
-
+        // Admin-only teacher account creation
+        // All accounts created are teachers in the single hardcoded school
+        $school = \App\Models\School::first();
+        
         return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'role' => $role,
-            'school_id' => $schoolId,
-            'is_teacher_admin' => $isTeacherAdmin,
+            'role' => 'teacher',
+            'school_id' => $school->id,
+
         ]);
     }
 }

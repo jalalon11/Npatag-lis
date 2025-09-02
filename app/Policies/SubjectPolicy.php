@@ -13,7 +13,7 @@ class SubjectPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->is_teacher_admin && $user->role === 'teacher';
+        return $user->role === 'admin';
     }
 
     /**
@@ -21,9 +21,8 @@ class SubjectPolicy
      */
     public function view(User $user, Subject $subject): bool
     {
-        // Only allow teacher admins to view subjects from their school
-        return $user->is_teacher_admin && 
-               $user->role === 'teacher' && 
+        // Only allow admins to view subjects from their school
+        return $user->role === 'admin' && 
                $user->school_id === $subject->school_id;
     }
 
@@ -32,7 +31,7 @@ class SubjectPolicy
      */
     public function create(User $user): bool
     {
-        return $user->is_teacher_admin && $user->role === 'teacher';
+        return $user->role === 'admin';
     }
 
     /**
@@ -40,9 +39,8 @@ class SubjectPolicy
      */
     public function update(User $user, Subject $subject): bool
     {
-        // Only allow teacher admins to update subjects from their school
-        return $user->is_teacher_admin && 
-               $user->role === 'teacher' && 
+        // Only allow admins to update subjects from their school
+        return $user->role === 'admin' && 
                $user->school_id === $subject->school_id;
     }
 
@@ -51,9 +49,8 @@ class SubjectPolicy
      */
     public function delete(User $user, Subject $subject): bool
     {
-        // Only allow teacher admins to delete subjects from their school
-        return $user->is_teacher_admin && 
-               $user->role === 'teacher' && 
+        // Only allow admins to delete subjects from their school
+        return $user->role === 'admin' && 
                $user->school_id === $subject->school_id;
     }
-} 
+}

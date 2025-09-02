@@ -47,7 +47,7 @@ class NewEnrollmentApplication extends Notification implements ShouldQueue
                     ->line('Grade Level: ' . $this->enrollment->grade_level)
                     ->line('Preferred Section: ' . ($this->enrollment->preferredSection?->name ?? 'Not specified'))
                     ->line('Application Date: ' . $this->enrollment->created_at->format('M d, Y h:i A'))
-                    ->action('Review Application', route('teacher-admin.enrollments.show', $this->enrollment->id))
+                    ->action('Review Application', route('admin.admissions.show', $this->enrollment->id))
                     ->line('Please review and process this application at your earliest convenience.');
     }
 
@@ -59,7 +59,7 @@ class NewEnrollmentApplication extends Notification implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         return [
-            'enrollment_id' => $this->enrollment->id,
+            'admission_id' => $this->enrollment->id,
             'student_name' => $this->enrollment->first_name . ' ' . $this->enrollment->last_name,
             'school_name' => $this->enrollment->school->name,
             'grade_level' => $this->enrollment->grade_level,

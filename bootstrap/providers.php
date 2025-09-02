@@ -2,5 +2,5 @@
 
 return [
     App\Providers\AppServiceProvider::class,
-    App\Providers\TeacherAdminServiceProvider::class,
+    // TeacherAdminServiceProvider removed - functionality merged into admin panel
 ];

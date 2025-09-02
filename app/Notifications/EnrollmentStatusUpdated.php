@@ -81,7 +81,7 @@ class EnrollmentStatusUpdated extends Notification implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         return [
-            'enrollment_id' => $this->enrollment->id,
+            'admission_id' => $this->enrollment->id,
             'student_name' => $this->enrollment->first_name . ' ' . $this->enrollment->last_name,
             'school_name' => $this->enrollment->school->name,
             'status' => $this->enrollment->status,

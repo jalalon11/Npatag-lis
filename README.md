@@ -1,6 +1,6 @@
-# Grading System
+# PATAG LIS
 
-A comprehensive web-based grading system built with Laravel for managing student grades, attendance, and academic records.
+A comprehensive web-based LIS with agrading system built with Laravel for managing student grades, attendance, and academic records.
 
 ## Features
 

@@ -30,7 +30,7 @@ class Student extends Model
         'guardian_email',
         'section_id',
         'school_id',
-        'enrollment_id',
+        'admission_id',
         'school_year',
         'is_active',
     ];
@@ -89,19 +89,19 @@ class Student extends Model
     }
 
     /**
-     * Get the enrollment record that created this student
+     * Get the admission record that created this student
      */
-    public function enrollment(): BelongsTo
+    public function admission(): BelongsTo
     {
-        return $this->belongsTo(Enrollment::class);
+        return $this->belongsTo(Enrollment::class, 'admission_id');
     }
 
     /**
-     * Scope to get only enrolled students (created from approved enrollments)
+     * Scope to get only admitted students (created from approved admissions)
      */
-    public function scopeEnrolled($query)
+    public function scopeAdmitted($query)
     {
-        return $query->whereNotNull('enrollment_id');
+        return $query->whereNotNull('admission_id');
     }
 
     /**

@@ -25,7 +25,7 @@ class ViewComposerServiceProvider extends ServiceProvider
         // Share counts with the app layout
         View::composer('layouts.app', function ($view) {
             $pendingSupportCount = 0;
-            $teacherAdminSupportCount = 0;
+            $adminSupportCount = 0;
 
             if (Auth::check()) {
                 // For admin users
@@ -39,22 +39,12 @@ class ViewComposerServiceProvider extends ServiceProvider
                     ->count();
                 }
 
-                // For teacher admin users
-                if (Auth::user()->is_teacher_admin) {
-                    // Count unread support messages for teacher admin
-                    $teacherAdminSupportCount = SupportMessage::whereHas('ticket', function($query) {
-                        $query->where('school_id', Auth::user()->school_id)
-                              ->where('status', '!=', 'closed');
-                    })
-                    ->where('user_id', '!=', Auth::id())
-                    ->where('is_read', false)
-                    ->count();
-                }
+
             }
 
             $view->with([
                 'pendingSupportCount' => $pendingSupportCount,
-                'teacherAdminSupportCount' => $teacherAdminSupportCount
+                'adminSupportCount' => $adminSupportCount
             ]);
         });
     }

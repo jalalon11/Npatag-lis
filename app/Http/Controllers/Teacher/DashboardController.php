@@ -3,34 +3,38 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
-use App\Models\Attendance;
 use App\Models\Section;
-use App\Models\Student;
 use App\Models\Subject;
-use App\Models\ResourceMaterial;
+use App\Models\Student;
+use App\Models\Attendance;
+use App\Models\Grade;
 use App\Models\ResourceCategory;
-
 use App\Services\AttendanceSummaryService;
+use App\Services\RoleSwitchService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
     public function index()
     {
         $user = Auth::user();
+        
+        // Check if admin is acting as teacher - they should still use their admin ID
+        // to find sections and subjects they're assigned to
+        $effectiveUserId = $user->id;
 
         try {
             // Get sections where the user is the adviser
-            $advisedSections = Section::where('adviser_id', $user->id)->get();
+            $advisedSections = Section::where('adviser_id', $effectiveUserId)->get();
             $sectionIds = $advisedSections->pluck('id')->toArray();
 
             // Get sections where user teaches subjects
             $taughtSectionIds = DB::table('section_subject')
-                ->where('teacher_id', $user->id)
+                ->where('teacher_id', $effectiveUserId)
                 ->pluck('section_id')
                 ->unique()
                 ->toArray();
@@ -39,19 +43,18 @@ class DashboardController extends Controller
             $allSectionIds = array_unique(array_merge($sectionIds, $taughtSectionIds));
 
             // Get only the sections where user is adviser for the dashboard dropdown
-            $recentSections = Section::where('adviser_id', $user->id)
+            $recentSections = Section::where('adviser_id', $effectiveUserId)
                 ->with('students') // Eager load students
                 ->latest()
                 ->get();
 
             // Get all subjects taught by the user (through the pivot table)
-            $taughtSubjects = Subject::whereHas('teachers', function($query) use ($user) {
-                $query->where('users.id', $user->id);
+            $taughtSubjects = Subject::whereHas('teachers', function($query) use ($effectiveUserId) {
+                $query->where('users.id', $effectiveUserId);
             })->get();
 
             // Get students in the advised sections
             $studentsInSections = Student::whereIn('section_id', $allSectionIds)
-                ->enrolled() // Only students created from enrollments
                 ->get();
             $studentIds = $studentsInSections->pluck('id')->toArray();
 
@@ -59,8 +62,8 @@ class DashboardController extends Controller
                 'sectionsCount' => count($allSectionIds),
                 'subjectsCount' => $taughtSubjects->count(),
                 'studentsCount' => $studentsInSections->count(),
-                'todayAttendance' => Attendance::where(function($query) use ($user, $allSectionIds) {
-                                            $query->where('teacher_id', $user->id)
+                'todayAttendance' => Attendance::where(function($query) use ($effectiveUserId, $allSectionIds) {
+                                            $query->where('teacher_id', $effectiveUserId)
                                                   ->orWhereIn('section_id', $allSectionIds);
                                         })
                                         ->whereDate('date', now()->toDateString())
@@ -68,8 +71,8 @@ class DashboardController extends Controller
             ];
 
             // Get recent subjects using the teachers relationship with eager loading
-            $recentSubjects = Subject::whereHas('teachers', function($query) use ($user) {
-                $query->where('users.id', $user->id);
+            $recentSubjects = Subject::whereHas('teachers', function($query) use ($effectiveUserId) {
+                $query->where('users.id', $effectiveUserId);
             })
             ->with(['teachers', 'sections' => function($query) {
                 $query->select('sections.id', 'sections.name', 'sections.grade_level');
@@ -81,11 +84,11 @@ class DashboardController extends Controller
             $attendanceSummaryService = new AttendanceSummaryService();
 
             // Get today's attendance stats
-            $todayStats = $this->getTodayAttendanceStats($user->id, $allSectionIds);
+            $todayStats = $this->getTodayAttendanceStats($effectiveUserId, $allSectionIds);
 
             // Get weekly attendance summary
             try {
-                $weeklyAttendanceSummary = $attendanceSummaryService->getWeeklySummary($user->id, null);
+                $weeklyAttendanceSummary = $attendanceSummaryService->getWeeklySummary($effectiveUserId, null);
             } catch (\Exception $e) {
                 Log::error('Error getting weekly attendance summary: ' . $e->getMessage());
                 $weeklyAttendanceSummary = [
@@ -106,7 +109,7 @@ class DashboardController extends Controller
 
             // Get monthly attendance summary
             try {
-                $monthlyAttendanceSummary = $attendanceSummaryService->getMonthlySummary($user->id, null, null);
+                $monthlyAttendanceSummary = $attendanceSummaryService->getMonthlySummary($effectiveUserId, null, null);
             } catch (\Exception $e) {
                 Log::error('Error getting monthly attendance summary: ' . $e->getMessage());
                 $monthlyAttendanceSummary = [
@@ -125,7 +128,7 @@ class DashboardController extends Controller
             }
 
             // Get attendance dates for the calendar
-            $attendanceDates = Attendance::where('teacher_id', $user->id)
+            $attendanceDates = Attendance::where('teacher_id', $effectiveUserId)
                 ->whereIn('section_id', $allSectionIds)
                 ->select(DB::raw('DISTINCT date'))
                 ->orderBy('date')
@@ -419,7 +422,7 @@ class DashboardController extends Controller
 
         // Use DB facade to update user password
         DB::table('users')
-            ->where('id', $user->id)
+            ->where('id', $effectiveUserId)
             ->update([
                 'password' => Hash::make($request->password)
             ]);
@@ -450,9 +453,10 @@ class DashboardController extends Controller
 
         try {
             // Get only sections where the teacher is the adviser
-            $advisorySections = Section::where('adviser_id', $user->id)
-                ->where('is_active', true)
-                ->get();
+        $effectiveUserId = Auth::user()->id;
+        $advisorySections = Section::where('adviser_id', $effectiveUserId)
+            ->where('is_active', true)
+            ->get();
 
             if ($advisorySections->isEmpty()) {
                 return response()->json([
@@ -469,10 +473,10 @@ class DashboardController extends Controller
             $sectionIds = $advisorySections->pluck('id')->toArray();
 
             // Get weekly attendance summary for advisory sections
-            $weeklyAttendanceSummary = $attendanceSummaryService->getWeeklySummary($user->id);
+            $weeklyAttendanceSummary = $attendanceSummaryService->getWeeklySummary($effectiveUserId);
 
             // Get monthly attendance summary for advisory sections
-            $monthlyAttendanceSummary = $attendanceSummaryService->getMonthlySummary($user->id);
+            $monthlyAttendanceSummary = $attendanceSummaryService->getMonthlySummary($effectiveUserId);
 
             return response()->json([
                 'success' => true,
@@ -571,8 +575,9 @@ class DashboardController extends Controller
 
             if ($sectionId) {
                 // Find section by ID where user is the adviser only
+                $effectiveUserId = Auth::user()->id;
                 $section = Section::where('id', $sectionId)
-                    ->where('adviser_id', $user->id)
+                    ->where('adviser_id', $effectiveUserId)
                     ->first();
 
                 $debug['requested_section_id'] = $sectionId;
@@ -582,7 +587,7 @@ class DashboardController extends Controller
             // If no section specified/found, get first available section where user is adviser
             if (!$section) {
                 // Get a section where user is the adviser
-                $section = Section::where('adviser_id', $user->id)->first();
+                $section = Section::where('adviser_id', $effectiveUserId)->first();
 
                 // If no section is found where user is adviser, return empty response
                 if (!$section) {
@@ -607,7 +612,6 @@ class DashboardController extends Controller
 
             // Get students in this section with their final grades
             $students = Student::where('section_id', $section->id)
-                ->enrolled() // Only students created from enrollments
                 ->with(['grades' => function($query) use ($sectionSubjects) {
                     $query->whereIn('subject_id', $sectionSubjects->pluck('id')->toArray())
                           ->where(function($q) {
@@ -650,7 +654,7 @@ class DashboardController extends Controller
                 }
 
                 // Add attendance data
-                $this->addAttendanceData($student, $section->id, $user->id);
+                $this->addAttendanceData($student, $section->id, $effectiveUserId);
             }
 
             // Sort students by their average grade

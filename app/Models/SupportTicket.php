@@ -81,38 +81,37 @@ class SupportTicket extends Model
     }
 
     /**
-     * Get all teacher admins for this ticket's school
+     * Get all admins for this ticket's school
      */
-    public function getSchoolTeacherAdmins()
+    public function getSchoolAdmins()
     {
         return User::where('school_id', $this->school_id)
-            ->where('role', 'teacher')
-            ->where('is_teacher_admin', true)
+            ->where('role', 'admin')
             ->get();
     }
 
     /**
-     * Mark messages as read for all teacher admins of this school
+     * Mark messages as read for all admins of this school
      */
     public function markMessagesAsReadForSchool()
     {
-        $teacherAdminIds = $this->getSchoolTeacherAdmins()->pluck('id')->toArray();
+        $adminIds = $this->getSchoolAdmins()->pluck('id')->toArray();
 
         return $this->messages()
-            ->whereNotIn('user_id', $teacherAdminIds)
+            ->whereNotIn('user_id', $adminIds)
             ->where('is_read', false)
             ->update(['is_read' => true]);
     }
 
     /**
-     * Get the unread messages count for all teacher admins of this school
+     * Get the unread messages count for all admins of this school
      */
     public function unreadMessagesCountForSchool()
     {
-        $teacherAdminIds = $this->getSchoolTeacherAdmins()->pluck('id')->toArray();
+        $adminIds = $this->getSchoolAdmins()->pluck('id')->toArray();
 
         return $this->messages()
-            ->whereNotIn('user_id', $teacherAdminIds)
+            ->whereNotIn('user_id', $adminIds)
             ->where('is_read', false)
             ->count();
     }

@@ -13,7 +13,7 @@ class SectionPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->is_teacher_admin && $user->role === 'teacher';
+        return $user->role === 'admin';
     }
 
     /**
@@ -21,9 +21,8 @@ class SectionPolicy
      */
     public function view(User $user, Section $section): bool
     {
-        // Only allow teacher admins to view sections from their school
-        return $user->is_teacher_admin && 
-               $user->role === 'teacher' && 
+        // Only allow admins to view sections from their school
+        return $user->role === 'admin' && 
                $user->school_id === $section->school_id;
     }
 
@@ -32,7 +31,7 @@ class SectionPolicy
      */
     public function create(User $user): bool
     {
-        return $user->is_teacher_admin && $user->role === 'teacher';
+        return $user->role === 'admin';
     }
 
     /**
@@ -40,9 +39,8 @@ class SectionPolicy
      */
     public function update(User $user, Section $section): bool
     {
-        // Only allow teacher admins to update sections from their school
-        return $user->is_teacher_admin && 
-               $user->role === 'teacher' && 
+        // Only allow admins to update sections from their school
+        return $user->role === 'admin' && 
                $user->school_id === $section->school_id;
     }
 
@@ -51,9 +49,8 @@ class SectionPolicy
      */
     public function delete(User $user, Section $section): bool
     {
-        // Only allow teacher admins to delete sections from their school
-        return $user->is_teacher_admin && 
-               $user->role === 'teacher' && 
+        // Only allow admins to delete sections from their school
+        return $user->role === 'admin' && 
                $user->school_id === $section->school_id;
     }
-} 
+}

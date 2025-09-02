@@ -50,11 +50,9 @@ class Kernel extends HttpKernel
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'teacher.admin' => \App\Http\Middleware\TeacherAdminMiddleware::class,
         'check.role' => \App\Http\Middleware\CheckRole::class,
-        'no.teacher.admin' => \App\Http\Middleware\NoTeacherAdminMiddleware::class,
         'check.school.status' => \App\Http\Middleware\CheckSchoolStatus::class,
-        'registration.key' => \App\Http\Middleware\RegistrationKeyMiddleware::class,
+        // Registration key middleware removed - now admin-only account creation
         'throttle.payments' => \App\Http\Middleware\ThrottlePaymentSubmissions::class,
         'payment.throttle' => \App\Http\Middleware\ThrottlePaymentSubmissions::class,
         'maintenance.mode' => \App\Http\Middleware\MaintenanceModeMiddleware::class,

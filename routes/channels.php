@@ -26,5 +26,5 @@ Broadcast::channel('support.ticket.{ticketId}', function ($user, $ticketId) {
     
     // Teacher admin can only access tickets from their school
     $ticket = SupportTicket::findOrFail($ticketId);
-    return $user->is_teacher_admin && $user->school_id === $ticket->school_id;
+    return $user->role === 'admin' && $user->school_id === $ticket->school_id;
 });

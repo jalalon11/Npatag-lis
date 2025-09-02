@@ -15,24 +15,26 @@ class School extends Model
 
     /**
      * The attributes that are mass assignable.
+     * Most school details are now hardcoded, only principal is dynamic.
      *
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'code',
-        'address',
         'principal',
-        'logo_path',
-        'grade_levels',
-        'division_name',
-        'division_code',
-        'division_address',
-        'region',
-        'is_active',
-        'is_primary',
-        'last_details_update_at',
     ];
+
+    /**
+     * Hardcoded school details
+     */
+    const SCHOOL_NAME = 'Patag Elementary School';
+    const SCHOOL_CODE = 'PATAGES-2024';
+    const SCHOOL_ADDRESS = 'Patag, Naawan Misamis Orientail, Philippines';
+    const DIVISION_NAME = 'Division of Misamis Oriental';
+    const DIVISION_CODE = 'DDS-2024';
+    const DIVISION_ADDRESS = 'Pelaez Sports Complex, Don Apolinar Velez St, Cagayan de Oro, 9000 Lalawigan ng Misamis Oriental';
+    const REGION = 'Region X';
+    const GRADE_LEVELS = ['K', '1', '2', '3', '4', '5', '6'];
+    const LOGO_PATH = 'images/logo.jpg';
 
     /**
      * The attributes that should be cast.
@@ -40,11 +42,38 @@ class School extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'grade_levels' => 'array',
         'is_active' => 'boolean',
         'is_primary' => 'boolean',
         'last_details_update_at' => 'datetime',
     ];
+
+    /**
+     * Accessor methods for hardcoded school details
+     */
+    public function getNameAttribute()
+    {
+        return self::SCHOOL_NAME;
+    }
+
+    public function getCodeAttribute()
+    {
+        return self::SCHOOL_CODE;
+    }
+
+    public function getAddressAttribute()
+    {
+        return self::SCHOOL_ADDRESS;
+    }
+
+    public function getGradeLevelsAttribute()
+    {
+        return self::GRADE_LEVELS;
+    }
+
+    public function getLogoPathAttribute()
+    {
+        return self::LOGO_PATH;
+    }
 
     /**
      * Get the full URL for the school logo
@@ -69,7 +98,23 @@ class School extends Model
      */
     public function getDivisionNameAttribute()
     {
-        return $this->attributes['division_name'] ?? 'Division of Davao del Sur';
+        return self::DIVISION_NAME;
+    }
+
+    /**
+     * Get the division code for this school
+     */
+    public function getDivisionCodeAttribute()
+    {
+        return self::DIVISION_CODE;
+    }
+
+    /**
+     * Get the division address for this school
+     */
+    public function getDivisionAddressAttribute()
+    {
+        return self::DIVISION_ADDRESS;
     }
 
     /**
@@ -77,7 +122,7 @@ class School extends Model
      */
     public function getRegionAttribute()
     {
-        return $this->attributes['region'] ?? 'Region XI';
+        return self::REGION;
     }
 
     /**

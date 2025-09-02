@@ -94,7 +94,7 @@
                             </div>
                         </div>
                         <div class="card-footer bg-white border-0 mt-2">
-                            <a href="#" class="btn btn-md btn-primary w-100 d-flex align-items-center justify-content-center">
+                            <a href="{{ route('admin.students.index') }}" class="btn btn-md btn-primary w-100 d-flex align-items-center justify-content-center">
                                 <i class="fas fa-eye me-2"></i> View All Students
                             </a>
                         </div>
@@ -124,75 +124,30 @@
                 </div>
                 <div class="card-body bg-white p-0">
                     <div class="row g-0">
-                        <!-- Registration Keys -->
-                        <div class="col-md-12 border-bottom">
-                            <a href="{{ route('admin.registration-keys') }}" class="quick-action-item d-flex align-items-center p-5 text-decoration-none transition-all hover-bg position-relative">
-                                <div class="position-absolute start-0 top-0 bottom-0 w-1 bg-warning opacity-0 transition-all hover-opacity-100"></div>
-                                <div class="d-flex align-items-center justify-content-center me-4 bg-warning bg-opacity-10 rounded-3" style="width: 80px; height: 80px;">
-                                    <i class="fas fa-key text-warning fa-2x"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h5 class="mb-2 fw-bold text-dark">Registration Keys Management</h5>
-                                    <p class="text-muted mb-2">Create, manage, and monitor access keys for user registration</p>
-                                    <div class="d-flex align-items-center">
-                                        <span class="badge bg-warning bg-opacity-10 text-warning me-2 px-3 py-1">
-                                            <i class="fas fa-users me-1"></i> User Access Control
-                                        </span>
-                                        <span class="badge bg-info bg-opacity-10 text-info px-3 py-1">
-                                            <i class="fas fa-shield-check me-1"></i> Secure Authentication
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="ms-3">
-                                    <div class="bg-warning bg-opacity-10 rounded-circle p-3 transition-all hover-bg-warning">
-                                        <i class="fas fa-arrow-right text-warning fa-lg"></i>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
+                        <!-- Registration keys removed - account creation is now admin-only -->
 
-                        <!-- Quarterly Selection -->
+                        <!-- Quarter selection moved to Academic Management page -->
                         <div class="col-md-12 border-bottom">
                             <div class="quick-action-item d-flex align-items-center p-5 position-relative">
-                                <div class="position-absolute start-0 top-0 bottom-0 w-1 bg-success opacity-0 transition-all hover-opacity-100"></div>
-                                <div class="d-flex align-items-center justify-content-center me-4 bg-success bg-opacity-10 rounded-3" style="width: 80px; height: 80px;">
-                                    <i class="fas fa-calendar-alt text-success fa-2x"></i>
+                                <div class="position-absolute start-0 top-0 bottom-0 w-1 bg-info opacity-0 transition-all hover-opacity-100"></div>
+                                <div class="d-flex align-items-center justify-content-center me-4 bg-info bg-opacity-10 rounded-3" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-graduation-cap text-info fa-2x"></i>
                                 </div>
                                 <div class="flex-grow-1">
-                                    <h5 class="mb-2 fw-bold text-dark">Global Quarter Selection</h5>
-                                    <p class="text-muted mb-3">Set the active quarter for all teachers and teacher admins</p>
+                                    <h5 class="mb-2 fw-bold text-dark">Academic Management</h5>
+                                    <p class="text-muted mb-3">Manage quarters, school year, principal details, and school information</p>
                                     <div class="d-flex align-items-center mb-3">
-                                        <span class="badge bg-success bg-opacity-10 text-success me-2 px-3 py-1">
-                                            <i class="fas fa-sync me-1"></i> Auto-Sync
+                                        <span class="badge bg-info bg-opacity-10 text-info me-2 px-3 py-1">
+                                            <i class="fas fa-calendar-alt me-1"></i> Current: {{ ['Q1' => '1st Quarter', 'Q2' => '2nd Quarter', 'Q3' => '3rd Quarter', 'Q4' => '4th Quarter'][\App\Models\SystemSetting::getSetting('global_quarter', 'Q1')] }}
                                         </span>
                                         <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-1">
-                                            <i class="fas fa-users me-1"></i> System-Wide
+                                            <i class="fas fa-school me-1"></i> {{ \App\Models\SystemSetting::getSetting('school_year', date('Y') . '-' . (date('Y') + 1)) }}
                                         </span>
                                     </div>
-                                    <div class="row align-items-center">
-                                        <div class="col-md-6">
-                                            <label for="global_quarter" class="form-label fw-semibold mb-2">Select Active Quarter:</label>
-                                            <select class="form-select" id="global_quarter" name="global_quarter">
-                                                <option value="Q1" {{ \App\Models\SystemSetting::getSetting('global_quarter', 'Q1') == 'Q1' ? 'selected' : '' }}>1st Quarter</option>
-                                                <option value="Q2" {{ \App\Models\SystemSetting::getSetting('global_quarter', 'Q1') == 'Q2' ? 'selected' : '' }}>2nd Quarter</option>
-                                                <option value="Q3" {{ \App\Models\SystemSetting::getSetting('global_quarter', 'Q1') == 'Q3' ? 'selected' : '' }}>3rd Quarter</option>
-                                                <option value="Q4" {{ \App\Models\SystemSetting::getSetting('global_quarter', 'Q1') == 'Q4' ? 'selected' : '' }}>4th Quarter</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="d-flex align-items-center mt-4">
-                                                <button type="button" class="btn btn-success me-3" id="updateQuarterBtn" disabled>
-                                                    <i class="fas fa-save me-2"></i>Update Quarter
-                                                </button>
-                                                <div class="spinner-border spinner-border-sm text-success me-2 d-none" id="quarter-loading" role="status">
-                                                    <span class="visually-hidden">Loading...</span>
-                                                </div>
-                                                <span class="text-success fw-semibold" id="currentQuarter">
-                                                    <i class="fas fa-check-circle me-1"></i> 
-                                                    Current: {{ ['Q1' => '1st Quarter', 'Q2' => '2nd Quarter', 'Q3' => '3rd Quarter', 'Q4' => '4th Quarter'][\App\Models\SystemSetting::getSetting('global_quarter', 'Q1')] }}
-                                                </span>
-                                            </div>
-                                        </div>
+                                    <div class="d-flex align-items-center">
+                                        <a href="{{ route('admin.academics.index') }}" class="btn btn-info me-3">
+                                            <i class="fas fa-cog me-2"></i>Manage Academic Settings
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -431,102 +386,8 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
-    // Get current quarter from the system
-    let currentQuarter = '{{ \App\Models\SystemSetting::getSetting("global_quarter", "Q1") }}';
-    
-    // Handle quarter selection change
-    $('#global_quarter').on('change', function() {
-        const selectedQuarter = $(this).val();
-        const $button = $('#updateQuarterBtn');
-        
-        // Enable button only if selection is different from current quarter
-        if (selectedQuarter && selectedQuarter !== currentQuarter) {
-            $button.prop('disabled', false);
-        } else {
-            $button.prop('disabled', true);
-        }
-    });
-    
-    // Handle quarter update
-    $('#updateQuarterBtn').on('click', function() {
-        const selectedQuarter = $('#global_quarter').val();
-        const $button = $(this);
-        const $currentQuarter = $('#currentQuarter');
-        
-        if (!selectedQuarter) {
-            alert('Please select a quarter first.');
-            return;
-        }
-        
-        // Disable button and show loading
-        $button.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Updating...');
-        
-        // Make AJAX request
-        $.ajax({
-            url: '{{ route("admin.update-quarter") }}',
-            method: 'POST',
-            data: {
-                quarter: selectedQuarter,
-                _token: '{{ csrf_token() }}'
-            },
-            success: function(response) {
-                if (response.success) {
-                    // Update current quarter display
-                    const quarterNames = {'Q1': '1st Quarter', 'Q2': '2nd Quarter', 'Q3': '3rd Quarter', 'Q4': '4th Quarter'};
-                    $currentQuarter.html('<i class="fas fa-check-circle me-1"></i> Current: ' + quarterNames[response.quarter]);
-                    
-                    // Update the currentQuarter variable
-                    currentQuarter = response.quarter;
-                    
-                    // Show success message
-                    showAlert('success', 'Quarter updated successfully! All teacher and teacher admin dashboards will now use ' + quarterNames[response.quarter] + '.');
-                    
-                    // Reset button
-                    $button.prop('disabled', true).html('<i class="fas fa-save me-2"></i>Update Quarter');
-                    
-                    // Keep the select at the new value
-                    $('#global_quarter').val(response.quarter);
-                } else {
-                    showAlert('error', response.message || 'Failed to update quarter.');
-                    $button.prop('disabled', false).html('<i class="fas fa-save me-2"></i>Update Quarter');
-                }
-            },
-            error: function(xhr) {
-                let errorMessage = 'Failed to update quarter.';
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    errorMessage = xhr.responseJSON.message;
-                }
-                showAlert('error', errorMessage);
-                $button.prop('disabled', false).html('<i class="fas fa-save me-2"></i>Update Quarter');
-            }
-        });
-    });
-    
-    // Helper function to show alerts
-    function showAlert(type, message) {
-        const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
-        const iconClass = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle';
-        
-        const alertHtml = `
-            <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
-                <i class="fas ${iconClass} me-2"></i>${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        `;
-        
-        // Remove existing alerts
-        $('.alert').remove();
-        
-        // Add new alert at the top of the page
-        $('body').prepend('<div class="container mt-3">' + alertHtml + '</div>');
-        
-        // Auto-hide success alerts after 5 seconds
-        if (type === 'success') {
-            setTimeout(function() {
-                $('.alert-success').fadeOut();
-            }, 5000);
-        }
-    }
+    // Dashboard functionality - quarter management moved to Academic page
+    console.log('Admin Dashboard loaded successfully');}
 });
 </script>
 @endpush

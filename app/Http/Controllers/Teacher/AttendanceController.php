@@ -360,7 +360,6 @@ class AttendanceController extends Controller
         // Get all students in this section, including inactive ones
         // We need to include inactive students to show their past attendance records
         $students = Student::where('section_id', $id)
-                          ->enrolled() // Only students created from enrollments
                           ->orderBy('is_active', 'desc') // Active students first
                           ->orderBy('last_name')
                           ->orderBy('first_name')
@@ -434,7 +433,6 @@ class AttendanceController extends Controller
         // Get only active students in this section for editing
         $students = Student::where('section_id', $id)
                           ->where('is_active', true) // Only include active students
-                          ->enrolled() // Only students created from enrollments
                           ->orderBy('last_name')
                           ->orderBy('first_name')
                           ->get();

@@ -22,6 +22,7 @@ class Section extends Model
         'school_id',
         'school_year',
         'student_limit',
+        'building_id',
         'is_active',
     ];
 
@@ -38,6 +39,14 @@ class Section extends Model
     public function school(): BelongsTo
     {
         return $this->belongsTo(School::class);
+    }
+
+    /**
+     * Get the building this section belongs to
+     */
+    public function building(): BelongsTo
+    {
+        return $this->belongsTo(Building::class);
     }
 
     /**

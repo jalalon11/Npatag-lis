@@ -33,10 +33,7 @@ class TeacherController extends Controller
             });
         }
 
-        // Handle school filter
-        if (request('school')) {
-            $query->where('school_id', request('school'));
-        }
+        // No school filter needed in hardcoded school system
 
         // Handle sorting
         $sort = request('sort', 'name');
@@ -46,9 +43,6 @@ class TeacherController extends Controller
             case 'name':
                 $query->orderBy('name', $order);
                 break;
-            case 'school':
-                $query->orderBy('school_id', $order);
-                break;
             case 'created_at':
                 $query->orderBy('created_at', $order);
                 break;
@@ -57,8 +51,10 @@ class TeacherController extends Controller
         }
 
         $teachers = $query->get();
+        // Single hardcoded school system
+        $school = School::first();
 
-        return view('admin.teachers.index', compact('teachers'));
+        return view('admin.teachers.index', compact('teachers', 'school'));
     }
 
     /**
@@ -66,8 +62,9 @@ class TeacherController extends Controller
      */
     public function create()
     {
-        $schools = School::all();
-        return view('admin.teachers.create', compact('schools'));
+        // Single hardcoded school system
+        $school = School::first();
+        return view('admin.teachers.create', compact('school'));
     }
 
     /**
@@ -79,16 +76,18 @@ class TeacherController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
-            'school_id' => 'required|exists:schools,id',
             'subjects' => 'nullable|string',
         ]);
+
+        // Use hardcoded school
+        $school = School::first();
 
         $teacher = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'teacher',
-            'school_id' => $request->school_id,
+            'school_id' => $school->id,
         ]);
 
         return redirect()->route('admin.teachers.index')
@@ -124,8 +123,9 @@ class TeacherController extends Controller
     public function edit(string $id)
     {
         $teacher = User::where('role', 'teacher')->findOrFail($id);
-        $schools = School::all();
-        return view('admin.teachers.edit', compact('teacher', 'schools'));
+        // Single hardcoded school system
+        $school = School::first();
+        return view('admin.teachers.edit', compact('teacher', 'school'));
     }
 
     /**
@@ -142,7 +142,6 @@ class TeacherController extends Controller
                 'email',
                 Rule::unique('users')->ignore($teacher->id),
             ],
-            'school_id' => 'required|exists:schools,id',
             'subjects' => 'nullable|string',
         ];
         
@@ -156,7 +155,7 @@ class TeacherController extends Controller
         // Update teacher data
         $teacher->name = $request->name;
         $teacher->email = $request->email;
-        $teacher->school_id = $request->school_id;
+        // school_id remains unchanged in hardcoded school system
         
         // Only update password if it's provided
         if ($request->filled('password')) {

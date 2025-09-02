@@ -35,8 +35,7 @@
     31 => 'App\\Providers\\BroadcastServiceProvider',
     32 => 'App\\Providers\\EventServiceProvider',
     33 => 'App\\Providers\\RouteServiceProvider',
-    34 => 'App\\Providers\\TeacherAdminServiceProvider',
-    35 => 'App\\Providers\\ViewComposerServiceProvider',
+    34 => 'App\\Providers\\ViewComposerServiceProvider',
   ),
   'eager' => 
   array (
@@ -60,8 +59,7 @@
     17 => 'App\\Providers\\BroadcastServiceProvider',
     18 => 'App\\Providers\\EventServiceProvider',
     19 => 'App\\Providers\\RouteServiceProvider',
-    20 => 'App\\Providers\\TeacherAdminServiceProvider',
-    21 => 'App\\Providers\\ViewComposerServiceProvider',
+    20 => 'App\\Providers\\ViewComposerServiceProvider',
   ),
   'deferred' => 
   array (

@@ -38,6 +38,9 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
@@ -753,6 +756,41 @@
             border-radius: 5px;
         }
 
+        .sidebar-submenu li a {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            border-left: none;
+        }
+
+        .sidebar-submenu li a:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: none;
+        }
+
+        .sidebar-submenu li.active > a {
+            background: rgba(52, 152, 219, 0.15);
+            color: #3498db;
+            border-left: none;
+        }
+
+        /* Dropdown toggle arrow */
+        .dropdown-toggle::after {
+            content: '\f107';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            float: right;
+            margin-top: 2px;
+            transition: transform 0.2s ease;
+        }
+
+        .dropdown-toggle[aria-expanded="true"]::after {
+            transform: rotate(180deg);
+        }
+
+        #sidebar.active .dropdown-toggle::after {
+            display: none;
+        }
+
         #sidebar ul li a i {
             margin-right: 12px;
             min-width: 20px;
@@ -780,6 +818,27 @@
             color: rgba(255, 255, 255, 0.5);
             letter-spacing: 1px;
             font-weight: 600;
+        }
+
+        /* Navigation section headers */
+        .nav-section-header {
+            padding: 15px 15px 8px;
+            margin-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-section-header span {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 1px;
+            font-weight: 600;
+            display: block;
+        }
+
+        .nav-section-header:first-child {
+            border-top: none;
+            margin-top: 0;
         }
 
         /* Teacher Admin Panel styling */
@@ -962,6 +1021,59 @@
                 right: -5px;
             }
         }
+
+        /* Role Switch Toggle Styling */
+        .role-switch-container {
+            background: rgba(0, 123, 255, 0.1);
+            border-radius: 20px;
+            padding: 8px 12px;
+            border: 1px solid rgba(0, 123, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .role-switch-container:hover {
+            background: rgba(0, 123, 255, 0.15);
+            border-color: rgba(0, 123, 255, 0.3);
+        }
+
+        .role-switch-toggle {
+            cursor: pointer;
+            transform: scale(1.1);
+        }
+
+        .role-switch-toggle:checked {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        .role-switch-label {
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .role-switch-container .role-switch-label:first-child {
+            color: #007bff;
+        }
+
+        .role-switch-container .role-switch-label:last-child {
+            color: #6c757d;
+        }
+
+        .role-switch-toggle:checked ~ .role-switch-label:last-child,
+        .role-switch-container:has(.role-switch-toggle:checked) .role-switch-label:last-child {
+            color: #28a745;
+        }
+
+        .role-switch-toggle:checked ~ .role-switch-label:first-child,
+        .role-switch-container:has(.role-switch-toggle:checked) .role-switch-label:first-child {
+            color: #6c757d;
+        }
+
+        @media (max-width: 768px) {
+            .role-switch-container {
+                padding: 6px 8px;
+            }
+        }
     </style>
 </head>
 <body class="{{ !Request::is('login') && !Request::is('register') && Auth::check() ? 'sidebar-open' : 'sidebar-collapsed' }} {{ Request::is('login') ? 'login-page' : '' }} {{ Request::is('register') ? 'register-page' : '' }} no-transition">
@@ -1000,26 +1112,73 @@
             </div>
 
             <ul class="list-unstyled components">
-                @if(Auth::user()->role === 'admin')
+                @php
+                    $currentMode = \App\Services\RoleSwitchService::getCurrentMode();
+                @endphp
+                @if($currentMode === 'admin')
                 <li class="{{ Request::is('admin/dashboard') ? 'active' : '' }}">
                     <a href="{{ route('admin.dashboard') }}">
                         <i class="fas fa-home"></i> <span>Dashboard</span>
                     </a>
                 </li>
-                <!-- School Divisions navigation removed - moved to single school system -->
-                <li class="{{ Request::is('admin/schools*') ? 'active' : '' }}">
-                    <a href="{{ route('admin.schools.index') }}">
-                        <i class="fas fa-school"></i> <span>My School</span>
+                <li class="{{ Request::is('admin/accounts*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.accounts.index') }}">
+                        <i class="fas fa-users"></i> <span>Accounts</span>
                     </a>
                 </li>
-                <li class="{{ Request::is('admin/teachers*') ? 'active' : '' }}">
-                    <a href="{{ route('admin.teachers.index') }}">
-                        <i class="fas fa-chalkboard-teacher"></i> <span>Teachers</span>
+                
+                <!-- Admission / Learner Records Dropdown -->
+                <li class="{{ Request::is('admin/students*') || Request::is('admin/admissions*') ? 'active' : '' }}">
+                    <a href="#admissionSubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                        <i class="fas fa-graduation-cap"></i> <span>Admission / Learner Records</span>
+                    </a>
+                    <ul class="collapse list-unstyled sidebar-submenu {{ Request::is('admin/students*') || Request::is('admin/admissions*') ? 'show' : '' }}" id="admissionSubmenu">
+                        <li class="{{ Request::is('admin/students*') ? 'active' : '' }}">
+                            <a href="{{ route('admin.students.index') }}">
+                                <i class="fas fa-user-graduate"></i> <span>Students</span>
+                            </a>
+                        </li>
+                        <li class="{{ Request::is('admin/admissions*') ? 'active' : '' }}">
+                            <a href="{{ route('admin.admissions.index') }}">
+                                <i class="fas fa-user-plus"></i> <span>Admissions</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                
+                <li class="{{ Request::is('admin/subjects*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.subjects.index') }}">
+                        <i class="fas fa-book"></i> <span>Subjects</span>
+                    </a> 
+                </li>
+                <li class="{{ Request::is('admin/academics*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.academics.index') }}">
+                        <i class="fas fa-graduation-cap"></i> <span>Academics</span>
                     </a>
                 </li>
-                <li class="{{ Request::is('admin/teacher-admins*') ? 'active' : '' }}">
-                    <a href="{{ route('admin.teacher-admins.index') }}">
-                        <i class="fas fa-user-shield"></i> <span>Teacher Admin</span>
+                <li class="{{ Request::is('admin/buildings*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.buildings.index') }}">
+                        <i class="fas fa-building"></i> <span>Buildings</span>
+                    </a>
+                </li>
+                <li class="{{ Request::is('admin/rooms*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.rooms.index') }}">
+                        <i class="fas fa-door-open"></i> <span>Rooms</span>
+                    </a>
+                </li>
+                <li class="{{ Request::is('admin/homeroom*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.homeroom.index') }}">
+                        <i class="fas fa-chalkboard-teacher"></i> <span>Homeroom Advising</span>
+                    </a>
+                </li>
+                <li class="{{ Request::is('admin/resources*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.resources.index') }}">
+                        <i class="fas fa-folder-open"></i> <span>Resources</span>
+                    </a>
+                </li>
+                <li class="{{ Request::is('admin/reports*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.reports.index') }}">
+                        <i class="fas fa-chart-bar"></i> <span>Reports</span>
                     </a>
                 </li>
                 <li class="{{ Request::is('admin/announcements*') ? 'active' : '' }}">
@@ -1027,9 +1186,6 @@
                         <i class="fas fa-bullhorn"></i> <span>Announcements</span>
                     </a>
                 </li>
-                <!-- Payments functionality has been disabled -->
-                <!-- Payment methods functionality has been disabled -->
-                <!-- Sales reports functionality has been disabled -->
                 <li class="{{ Request::is('admin/support*') ? 'active' : '' }}">
                     <a href="{{ route('admin.support.index') }}" class="position-relative">
                         <i class="fas fa-headset"></i> <span>Support</span>
@@ -1038,8 +1194,12 @@
                         @endif
                     </a>
                 </li>
-                <!-- Database Backups option removed -->
-                @elseif(Auth::user()->role === 'teacher')
+                <li class="{{ Request::is('admin/help*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.help.index') }}">
+                        <i class="fas fa-question-circle"></i> <span>Help</span>
+                    </a>
+                </li>
+                @elseif($currentMode === 'teacher')
                 <li class="{{ Request::is('teacher/dashboard') ? 'active' : '' }}">
                     <a href="{{ route('teacher.dashboard') }}">
                         <i class="fas fa-home"></i> <span>Dashboard</span>
@@ -1069,55 +1229,7 @@
                     </a>
                 </li>
 
-                @if(Auth::user()->is_teacher_admin)
-                <!-- Teacher Admin Section -->
-                <div class="sidebar-divider"></div>
-                <div class="teacher-admin-panel">
-                    <div class="sidebar-heading">
-                        <i class="fas fa-user-shield me-2"></i>Teacher Admin Panel
-                    </div>
-                    <ul class="list-unstyled">
-                        <li class="{{ Request::is('teacher-admin/dashboard') ? 'active' : '' }}">
-                            <a href="{{ route('teacher-admin.dashboard') }}">
-                                <i class="fas fa-tachometer-alt"></i> <span>Admin Dashboard</span>
-                            </a>
-                        </li>
-                        <li class="{{ Request::is('teacher-admin/school*') ? 'active' : '' }}">
-                            <a href="{{ route('teacher-admin.school.index') }}">
-                                <i class="fas fa-school"></i> <span>School</span>
-                            </a>
-                        </li>
-                        <li class="{{ Request::is('teacher-admin/sections*') ? 'active' : '' }}">
-                            <a href="{{ route('teacher-admin.sections.index') }}">
-                                <i class="fas fa-door-open"></i> <span>Manage Sections</span>
-                            </a>
-                        </li>
-                        <li class="{{ Request::is('teacher-admin/subjects*') ? 'active' : '' }}">
-                            <a href="{{ route('teacher-admin.subjects.index') }}">
-                                <i class="fas fa-book"></i> <span>Manage Subjects</span>
-                            </a>
-                        </li>
-                        <li class="{{ Request::is('teacher-admin/enrollments*') ? 'active' : '' }}">
-                            <a href="{{ route('teacher-admin.enrollments.index') }}">
-                                <i class="fas fa-user-plus"></i> <span>Enrollments</span>
-                            </a>
-                        </li>
-                        <li class="{{ Request::is('teacher-admin/reports*') ? 'active' : '' }}">
-                            <a href="{{ route('teacher-admin.reports.index') }}">
-                                <i class="fas fa-chart-bar"></i> <span>Reports</span>
-                            </a>
-                        </li>
-                        <li class="{{ Request::is('teacher-admin/support*') ? 'active' : '' }}">
-                            <a href="{{ route('teacher-admin.support.index') }}" class="position-relative">
-                                <i class="fas fa-headset"></i> <span>Support</span>
-                                @if(isset($teacherAdminSupportCount) && $teacherAdminSupportCount > 0)
-                                    <span class="badge bg-danger text-white rounded-pill ms-2 animate__animated animate__pulse animate__infinite support-badge">{{ $teacherAdminSupportCount }}</span>
-                                @endif
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                @endif
+
                 @endif
 
                 <div class="sidebar-divider"></div>
@@ -1168,6 +1280,21 @@
                                     </li>
                                 @endif
                             @else
+                                <!-- Role Switch Toggle (Admin Only) -->
+                                @if(auth()->user()->role === 'admin')
+                                <li class="nav-item me-3">
+                                    <div class="role-switch-container d-flex align-items-center">
+                                        <span class="role-switch-label me-2 small text-muted d-none d-md-inline">Admin</span>
+                                        <div class="form-check form-switch mb-0">
+                                            <input class="form-check-input role-switch-toggle" type="checkbox" id="roleSwitchToggle" 
+                                                   data-bs-toggle="tooltip" data-bs-placement="bottom" 
+                                                   title="Switch to Teacher Mode">
+                                            <label class="form-check-label visually-hidden" for="roleSwitchToggle">Role Switch</label>
+                                        </div>
+                                        <span class="role-switch-label ms-2 small text-muted d-none d-md-inline">Teacher</span>
+                                    </div>
+                                </li>
+                                @endif
                                 <li class="nav-item dropdown">
                                     <a id="navbarDropdown" class="nav-link d-flex align-items-center user-dropdown-toggle" href="#" role="button">
                                         <div class="d-flex align-items-center">
@@ -1192,16 +1319,25 @@
                                                 </div>
                                                 <div>
                                                     <div class="fw-bold">{{ Auth::user()->name }}</div>
-                                                    <div class="small text-muted">{{ ucfirst(Auth::user()->role) }}</div>
+                                                    @php
+                                                        $displayRole = \App\Services\RoleSwitchService::getCurrentMode();
+                                                        if (Auth::user()->role === 'admin' && \App\Services\RoleSwitchService::isAdminActingAsTeacher()) {
+                                                            $displayRole .= ' (as Teacher)';
+                                                        }
+                                                    @endphp
+                                                    <div class="small text-muted">{{ ucfirst($displayRole) }}</div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <a class="dropdown-item d-flex align-items-center" href="{{ auth()->user()->role === 'admin' ? route('admin.profile') : (auth()->user()->is_teacher_admin ? route('teacher-admin.profile') : route('teacher.profile')) }}">
+                                        @php
+                                            $profileRoute = \App\Services\RoleSwitchService::getProfileRoute();
+                                        @endphp
+                                        <a class="dropdown-item d-flex align-items-center" href="{{ $profileRoute }}">
                                             <i class="fas fa-user-circle me-2 text-primary"></i>
                                             <span>{{ __('My Profile') }}</span>
                                         </a>
-                                        @if(auth()->user()->role === 'teacher')
-                                            <a class="dropdown-item d-flex align-items-center" href="{{ auth()->user()->is_teacher_admin ? route('teacher-admin.help.index') : route('teacher.help.index') }}">
+                                        @if(\App\Services\RoleSwitchService::getCurrentMode() === 'teacher')
+                                            <a class="dropdown-item d-flex align-items-center" href="{{ route('teacher.help.index') }}">
                                                 <i class="fas fa-question-circle me-2 text-info"></i>
                                                 <span>{{ __('Help') }}</span>
                                             </a>
@@ -1406,6 +1542,128 @@
             // Check on resize
             $(window).resize(function() {
                 checkWidth();
+            });
+
+            // Setup CSRF token for all AJAX requests
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            // Sidebar dropdown toggle functionality
+            $('.dropdown-toggle').on('click', function(e) {
+                e.preventDefault();
+                const target = $(this).attr('href');
+                const submenu = $(target);
+                const isExpanded = $(this).attr('aria-expanded') === 'true';
+                
+                // Toggle aria-expanded attribute
+                $(this).attr('aria-expanded', !isExpanded);
+                
+                // Toggle submenu
+                submenu.toggleClass('show');
+                
+                // Close other dropdowns
+                $('.dropdown-toggle').not(this).attr('aria-expanded', 'false');
+                $('.sidebar-submenu').not(submenu).removeClass('show');
+            });
+
+            // Role Switch Toggle Functionality
+            $('#roleSwitchToggle').on('change', function() {
+                const isChecked = $(this).is(':checked');
+                const toggle = $(this);
+                const container = toggle.closest('.role-switch-container');
+                
+                // Disable toggle during request
+                toggle.prop('disabled', true);
+                container.css('opacity', '0.6');
+                
+                // Update tooltip
+                const newTitle = isChecked ? 'Switch to Admin Mode' : 'Switch to Teacher Mode';
+                toggle.attr('title', newTitle).attr('data-original-title', newTitle);
+                
+                // Make AJAX request to toggle role
+                $.ajax({
+                    url: '{{ route("role.switch.toggle") }}',
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Show success message
+                            const message = response.message || 'Role switched successfully';
+                            
+                            // Create and show toast notification
+                            const toast = $(`
+                                <div class="toast align-items-center text-white bg-success border-0 position-fixed" 
+                                     style="top: 20px; right: 20px; z-index: 9999;" role="alert">
+                                    <div class="d-flex">
+                                        <div class="toast-body">
+                                            <i class="fas fa-check-circle me-2"></i>${message}
+                                        </div>
+                                        <button type="button" class="btn-close btn-close-white me-2 m-auto" 
+                                                data-bs-dismiss="toast"></button>
+                                    </div>
+                                </div>
+                            `);
+                            
+                            $('body').append(toast);
+                            const bsToast = new bootstrap.Toast(toast[0]);
+                            bsToast.show();
+                            
+                            // Remove toast after it's hidden
+                            toast.on('hidden.bs.toast', function() {
+                                $(this).remove();
+                            });
+                            
+                            // Redirect to appropriate dashboard after a short delay
+                            setTimeout(function() {
+                                if (response.dashboard_url) {
+                                    window.location.href = response.dashboard_url;
+                                } else {
+                                    window.location.reload();
+                                }
+                            }, 1000);
+                        } else {
+                            // Handle error
+                            alert(response.message || 'Failed to switch role');
+                            // Revert toggle state
+                            toggle.prop('checked', !isChecked);
+                        }
+                    },
+                    error: function(xhr) {
+                        // Handle error
+                        let errorMessage = 'Failed to switch role';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        alert(errorMessage);
+                        // Revert toggle state
+                        toggle.prop('checked', !isChecked);
+                    },
+                    complete: function() {
+                        // Re-enable toggle
+                        toggle.prop('disabled', false);
+                        container.css('opacity', '1');
+                    }
+                });
+            });
+
+            // Initialize role switch toggle state on page load
+            $.get('{{ route("role.switch.status") }}', function(response) {
+                if (response.can_switch) {
+                    const toggle = $('#roleSwitchToggle');
+                    toggle.prop('checked', response.is_admin_acting_as_teacher);
+                    
+                    // Update tooltip based on current state
+                    const title = response.is_admin_acting_as_teacher ? 'Switch to Admin Mode' : 'Switch to Teacher Mode';
+                    toggle.attr('title', title).attr('data-original-title', title);
+                }
+            }).fail(function() {
+                // Hide role switch if user can't switch roles
+                $('.role-switch-container').closest('li').hide();
             });
         });
     </script>

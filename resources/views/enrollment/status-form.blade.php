@@ -131,19 +131,19 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="enrollment_id" class="form-label">Application ID <span class="text-danger">*</span></label>
+                                        <label for="admission_id" class="form-label">Application ID <span class="text-danger">*</span></label>
                                         <div class="input-group">
                                             <span class="input-group-text">#</span>
-                                            <input type="text" class="form-control @error('enrollment_id') is-invalid @enderror"
-                                                id="enrollment_id" name="enrollment_id" value="{{ old('enrollment_id') }}" 
-                                                placeholder="000123" pattern="\d{6}" maxlength="6" required>
+                                            <input type="text" class="form-control @error('admission_id') is-invalid @enderror"
+                                id="admission_id" name="admission_id" value="{{ old('admission_id') }}" 
+                                placeholder="000123" pattern="\d{6}" maxlength="6" required>
                                         </div>
                                         <div class="form-text">
                                             <i class="fas fa-info-circle me-1"></i> Enter the 6-digit ID from your application confirmation.
                                         </div>
-                                        @error('enrollment_id')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                                        @error('admission_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                                     </div>
                                 </div>
 
@@ -239,16 +239,16 @@
         const birthDateInput = document.getElementById('birth_date');
         const statusForm = document.getElementById('statusForm');
         const submitBtn = document.querySelector('#statusForm button[type="submit"]');
-        const enrollmentIdInput = document.getElementById('enrollment_id');
+        const admissionIdInput = document.getElementById('admission_id');
 
         // Set max date to today for birth date
         if (birthDateInput) {
             birthDateInput.max = new Date().toISOString().split('T')[0];
         }
 
-        // Format enrollment ID input
-        if (enrollmentIdInput) {
-            enrollmentIdInput.addEventListener('input', function(e) {
+        // Format admission ID input
+        if (admissionIdInput) {
+            admissionIdInput.addEventListener('input', function(e) {
                 // Only allow numbers
                 this.value = this.value.replace(/[^0-9]/g, '');
                 

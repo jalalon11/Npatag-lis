@@ -223,57 +223,7 @@
         border-right: 0;
     }
 
-    /* Fix for registration key input group */
-    #registrationKeyForm .input-group {
-        flex-wrap: nowrap;
-        align-items: stretch;
-        border-radius: 0.75rem;
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        transition: all 0.3s ease;
-    }
-
-    #registrationKeyForm .input-group:focus-within {
-        box-shadow: 0 4px 12px rgba(28, 40, 51, 0.15);
-    }
-
-    #registrationKeyForm .form-control {
-        border-right: 0;
-        height: 100%;
-        font-size: 1rem;
-        letter-spacing: 0.5px;
-        transition: all 0.3s ease;
-        padding-left: 1rem;
-    }
-
-    #registrationKeyForm .form-control:focus {
-        border-color: #2E4053;
-    }
-
-    #registrationKeyForm .input-group-text {
-        background-color: #f8f9fc;
-        border-color: #e2e8f0;
-        color: #2E4053;
-        transition: all 0.3s ease;
-    }
-
-    #registrationKeyForm .input-group:focus-within .input-group-text {
-        border-color: #2E4053;
-        background-color: #f1f5f9;
-    }
-
-    /* Fix for input group on all browsers */
-    #registrationKeyForm .input-group > * {
-        height: 100%;
-        display: flex;
-        align-items: center;
-    }
-
-    /* Text styling */
-    #registrationKeyForm .text-muted.small {
-        color: #718096 !important;
-        line-height: 1.5;
-    }
+    /* Registration key styles removed - account creation is now admin-only */
 
     .btn-auth {
         padding: 0.875rem 1.5rem;
@@ -658,11 +608,11 @@
             font-size: 0.8rem;
         }
 
-        /* Ensure the registration key input is usable on very small screens */
-        #registration-key {
+        /* Registration key input styles removed - account creation is now admin-only */
+        /* #registration-key {
             min-width: 0;
-            font-size: 16px; /* Prevent iOS zoom */
-        }
+            font-size: 16px; Prevent iOS zoom
+        } */
     }
 
     /* Error message styling */
@@ -710,69 +660,7 @@
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     }
 
-    /* Registration key form */
-    .key-form-container {
-        margin-bottom: 1.5rem;
-        padding: 1.5rem;
-        background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(244, 246, 246, 0.9));
-        border-radius: 0.75rem;
-        box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-        position: relative;
-        overflow: hidden;
-        border: 1px solid rgba(28, 40, 51, 0.1);
-        animation: formAppear 0.5s ease-out forwards;
-    }
-
-    @keyframes formAppear {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Key form header */
-    .key-form-header {
-        text-align: center;
-        margin-bottom: 1.25rem;
-    }
-
-    .key-icon {
-        width: 64px;
-        height: 64px;
-        background: linear-gradient(135deg, #1C2833 0%, #2E4053 100%);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 1rem;
-        box-shadow: 0 4px 10px rgba(28, 40, 51, 0.2);
-    }
-
-    .key-icon i {
-        color: white;
-        font-size: 1.75rem;
-    }
-
-    .key-title {
-        color: #1C2833;
-        font-weight: 700;
-        font-size: 1.25rem;
-        margin-bottom: 0;
-    }
-
-    /* Key description */
-    .key-description {
-        color: #718096;
-        font-size: 0.9rem;
-        line-height: 1.6;
-        text-align: center;
-        margin-bottom: 1.5rem;
-        padding: 0 0.5rem;
-    }
+    /* Registration key form styles removed - account creation is now admin-only */
 
     /* Input styling */
     .key-input-container {
@@ -924,48 +812,7 @@
         color: #e67700;
     }
 
-    /* Key verified styling */
-    .key-verified {
-        padding: 1rem 0;
-        animation: fadeIn 0.5s ease-out forwards;
-        border-bottom: 1px solid rgba(28, 40, 51, 0.1);
-        margin-bottom: 1.5rem;
-    }
-
-    .key-verified-icon {
-        width: 48px;
-        height: 48px;
-        background: linear-gradient(135deg, #1C2833 0%, #2E4053 100%);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 8px rgba(28, 40, 51, 0.2);
-        position: relative;
-        animation: iconPulse 2s infinite;
-    }
-
-    @keyframes iconPulse {
-        0% { box-shadow: 0 0 0 0 rgba(28, 40, 51, 0.4); }
-        70% { box-shadow: 0 0 0 10px rgba(28, 40, 51, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(28, 40, 51, 0); }
-    }
-
-    .key-verified-icon i {
-        color: white;
-        font-size: 1.25rem;
-    }
-
-    .key-verified-title {
-        color: #1C2833;
-        font-weight: 700;
-        font-size: 1.2rem;
-    }
-
-    .key-verified-subtitle {
-        font-size: 0.85rem;
-        font-weight: 500;
-    }
+    /* Key verified styles removed - account creation is now admin-only */
 
     /* Form floating styles */
     .form-floating {
@@ -1074,47 +921,7 @@
         margin-bottom: 0;
     }
 
-    /* Key error message styling */
-    .key-error-message {
-        background-color: rgba(229, 62, 62, 0.05);
-        border-left: 4px solid #e53e3e;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        animation: fadeIn 0.3s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .key-error-icon {
-        width: 32px;
-        height: 32px;
-        background-color: #e53e3e;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-
-    .key-error-icon i {
-        color: white;
-        font-size: 0.875rem;
-    }
-
-    .key-error-title {
-        color: #e53e3e;
-        font-weight: 600;
-        font-size: 0.95rem;
-    }
-
-    .key-error-text {
-        color: #718096;
-        font-size: 0.85rem;
-        line-height: 1.5;
-    }
+    /* Key error styles removed - account creation is now admin-only */
 
 </style>
 @endpush
@@ -1253,42 +1060,21 @@
                                     <p class="auth-subtitle">Join our platform today</p>
                                 </div>
 
-                                <!-- Registration Key Form -->
-                                <div id="keyFormContainer">
-                                    <form id="registrationKeyForm" class="mb-0">
-                                        <div class="text-center mb-3">
-                                            <div class="d-inline-flex align-items-center">
-                                                <h5 class="mb-0">Enter Registration Key</h5>
-                                            </div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <div class="form-floating">
-                                                <input id="registration-key" type="text" class="form-control"
-                                                       placeholder="Enter your registration key" required>
-                                                <label for="registration-key"><i class="fas fa-key me-2"></i>Registration Key</label>
-                                            </div>
-                                            <div class="form-text small text-muted">
-                                                <i class="fas fa-info-circle me-1"></i>
-                                                This key should have been provided by your school administrator
-                                            </div>
-                                        </div>
-
-                                        <div class="d-grid mb-3">
-                                            <button class="btn btn-verify" type="submit" id="verifyKeyBtn">
-                                                <span class="d-flex align-items-center justify-content-center">
-                                                    <i class="fas fa-check-circle me-2"></i>
-                                                    <span>Verify Key</span>
-                                                </span>
-                                            </button>
-                                        </div>
-                                    </form>
+                                <!-- Registration is now admin-only -->
+                                <div class="text-center py-5">
+                                    <div class="mb-4">
+                                        <i class="fas fa-user-shield text-muted" style="font-size: 4rem;"></i>
+                                    </div>
+                                    <h4 class="text-muted mb-3">Account Registration Restricted</h4>
+                                    <p class="text-muted mb-4">
+                                        Teacher account creation is now handled exclusively by system administrators.
+                                        Please contact your system administrator to request a new teacher account.
+                                    </p>
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        If you already have an account, please use the <strong>Login</strong> tab above.
+                                    </div>
                                 </div>
-
-                                <!-- Registration Form (initially hidden) -->
-                                <form method="POST" action="{{ route('register') }}" class="register-form d-none" id="registerForm">
-                                    @csrf
-                                    <input type="hidden" name="registration_key" id="verified-key">
 
                                     <div class="row">
                                         <div class="col-12 mb-3">
@@ -1439,168 +1225,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Registration key verification
-    const registrationKeyForm = document.getElementById('registrationKeyForm');
-    const verifyKeyBtn = document.getElementById('verifyKeyBtn');
-    const keyInput = document.getElementById('registration-key');
-    const verifiedKeyInput = document.getElementById('verified-key');
-    const keyFormContainer = document.getElementById('keyFormContainer');
-
-    // Check if URL has key parameter
-    const urlParams = new URLSearchParams(window.location.search);
-    const keyParam = urlParams.get('key');
-
-    if (keyParam) {
-        keyInput.value = keyParam;
-        // Auto verify after short delay
-        setTimeout(() => {
-            verifyKey(keyParam);
-        }, 500);
-    }
-
-    registrationKeyForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        verifyKey(keyInput.value);
-    });
-
-    function verifyKey(key) {
-        verifyKeyBtn.disabled = true;
-
-        // Show loading state
-        verifyKeyBtn.innerHTML = `
-            <span class="d-flex align-items-center justify-content-center">
-                <i class="fas fa-spinner fa-spin me-2"></i>
-                <span>Verifying Key...</span>
-            </span>`;
-        verifyKeyBtn.classList.add('verifying');
-
-        // Verify key using AJAX
-        fetch('/register/verify-key-ajax', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({ key: key })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.valid) {
-                // Key is valid, show registration form
-                keyFormContainer.innerHTML = `
-                    <div class="key-verified">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="key-verified-icon me-3">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div>
-                                <h4 class="key-verified-title mb-0">Registration Key Verified!</h4>
-                                <p class="key-verified-subtitle mb-0 text-danger"><i class="fas fa-exclamation-triangle me-1"></i> Do not refresh this page</p>
-                            </div>
-                        </div>
-                    </div>`;
-                registerForm.classList.remove('d-none');
-                verifiedKeyInput.value = key;
-
-                // Add page unload warning
-                window.onbeforeunload = function() {
-                    return "WARNING: Leaving this page will invalidate your registration key. Please complete your registration first.";
-                };
-
-                // Add click handler for tab switching to prevent accidental navigation
-                document.querySelectorAll('#authTabs .nav-link').forEach(tab => {
-                    if (tab.id !== 'register-tab') {
-                        tab.addEventListener('click', function(e) {
-                            if (!confirm('WARNING: Switching tabs will invalidate your registration key. Are you sure you want to leave the registration form?')) {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                return false;
-                            } else {
-                                // User confirmed, remove the warning
-                                window.onbeforeunload = null;
-                            }
-                        });
-                    }
-                });
-            } else {
-                // Key is invalid, show error
-                keyInput.classList.add('is-invalid');
-
-                // Create error message if it doesn't exist
-                let errorMessage = document.getElementById('key-error-message');
-                if (!errorMessage) {
-                    errorMessage = document.createElement('div');
-                    errorMessage.id = 'key-error-message';
-                    errorMessage.className = 'key-error-message d-block mt-3';
-                    errorMessage.innerHTML = `
-                        <div class="d-flex align-items-center">
-                            <div class="key-error-icon">
-                                <i class="fas fa-exclamation"></i>
-                            </div>
-                            <div class="ms-3">
-                                <h6 class="key-error-title mb-1">Invalid Registration Key</h6>
-                                <p class="key-error-text mb-0">The key you entered is not valid. Please check and try again, or contact your administrator for assistance.</p>
-                            </div>
-                        </div>
-                    `;
-                    keyInput.parentNode.after(errorMessage);
-                }
-
-                verifyKeyBtn.disabled = false;
-                verifyKeyBtn.classList.remove('verifying');
-                verifyKeyBtn.innerHTML = `
-                    <span class="d-flex align-items-center justify-content-center">
-                        <i class="fas fa-check-circle me-2"></i>
-                        <span>Verify Key</span>
-                    </span>`;
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-
-            // Create network error message
-            let errorMessage = document.getElementById('key-error-message');
-            if (!errorMessage) {
-                errorMessage = document.createElement('div');
-                errorMessage.id = 'key-error-message';
-                errorMessage.className = 'key-error-message d-block mt-3';
-                errorMessage.innerHTML = `
-                    <div class="d-flex align-items-center">
-                        <div class="key-error-icon">
-                            <i class="fas fa-wifi"></i>
-                        </div>
-                        <div class="ms-3">
-                            <h6 class="key-error-title mb-1">Connection Error</h6>
-                            <p class="key-error-text mb-0">Unable to verify your registration key. Please check your internet connection and try again.</p>
-                        </div>
-                    </div>
-                `;
-                keyInput.parentNode.after(errorMessage);
-            }
-
-            verifyKeyBtn.disabled = false;
-            verifyKeyBtn.classList.remove('verifying');
-            verifyKeyBtn.innerHTML = `
-                <span class="d-flex align-items-center justify-content-center">
-                    <i class="fas fa-check-circle me-2"></i>
-                    <span>Verify Key</span>
-                </span>`;
-        });
-    }
-
-    // For testing purposes, allow immediate verification with admin123
-    // Remove this in production!
-    keyInput.addEventListener('input', function() {
-        if (keyInput.value === 'admin123') {
-            keyInput.classList.remove('is-invalid');
-
-            // Remove error message if it exists
-            const errorMessage = document.getElementById('key-error-message');
-            if (errorMessage) {
-                errorMessage.remove();
-            }
-        }
-    });
+    // Registration key verification removed - account creation is now admin-only
 
     // Fetch and display announcements
     fetchAnnouncements();

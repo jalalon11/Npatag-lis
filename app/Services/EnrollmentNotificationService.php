@@ -25,13 +25,13 @@ class EnrollmentNotificationService
             if ($admins->isNotEmpty()) {
                 Notification::send($admins, new NewEnrollmentApplication($enrollment));
                 Log::info('New enrollment application notification sent', [
-                    'enrollment_id' => $enrollment->id,
+                    'admission_id' => $enrollment->id,
                     'admin_count' => $admins->count()
                 ]);
             }
         } catch (\Exception $e) {
             Log::error('Failed to send new enrollment application notification', [
-                'enrollment_id' => $enrollment->id,
+                'admission_id' => $enrollment->id,
                 'error' => $e->getMessage()
             ]);
         }
@@ -65,14 +65,14 @@ class EnrollmentNotificationService
             $notifiable->notify(new EnrollmentStatusUpdated($enrollment, $previousStatus));
             
             Log::info('Enrollment status update notification sent', [
-                'enrollment_id' => $enrollment->id,
+                'admission_id' => $enrollment->id,
                 'status' => $enrollment->status,
                 'previous_status' => $previousStatus,
                 'email' => $enrollment->email
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to send enrollment status update notification', [
-                'enrollment_id' => $enrollment->id,
+                'admission_id' => $enrollment->id,
                 'error' => $e->getMessage()
             ]);
         }

@@ -549,10 +549,8 @@
                             <div class="mb-3">
                                 <i class="fas fa-folder-open text-muted fa-3x"></i>
                             </div>
-                            <h6 class="text-muted">No sections found</h6>
-                            <a href="{{ route('teacher-admin.sections.create') }}" class="btn btn-sm btn-primary mt-2">
-                                Create Section
-                            </a>
+                            <h6 class="text-muted">No sections assigned</h6>
+                            <p class="text-muted small">Contact your administrator to be assigned to sections.</p>
                         </div>
                     @endif
                 </div>
@@ -600,10 +598,8 @@
                             <div class="mb-3">
                                 <i class="fas fa-book text-muted fa-3x"></i>
                             </div>
-                            <h6 class="text-muted">No subjects found</h6>
-                            <a href="{{ route('teacher-admin.subjects.create') }}" class="btn btn-sm btn-primary mt-2">
-                                Create Subject
-                            </a>
+                            <h6 class="text-muted">No subjects assigned</h6>
+                            <p class="text-muted small">Contact your administrator to be assigned subjects to teach.</p>
                         </div>
                     @endif
                 </div>

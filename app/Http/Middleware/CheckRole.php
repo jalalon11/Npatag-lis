@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
+use App\Services\RoleSwitchService;
 
 class CheckRole
 {
@@ -21,8 +22,8 @@ class CheckRole
         // Check maintenance mode using the SystemSetting model for consistency
         $isMaintenanceMode = \App\Models\SystemSetting::isMaintenanceMode();
 
-        // If user is admin or the requested role is admin, always allow access
-        if ($request->user() && ($request->user()->role === 'admin' || $role === 'admin')) {
+        // If user is admin and requesting admin role, always allow access regardless of current mode
+        if ($request->user() && $request->user()->role === 'admin' && $role === 'admin') {
             return $next($request);
         }
 
@@ -49,8 +50,24 @@ class CheckRole
             }
         }
 
-        // Normal role check
-        if (!$request->user() || $request->user()->role !== $role) {
+        // Enhanced role check with role switching support
+        if (!$request->user()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Get the current effective role using RoleSwitchService
+        $currentRole = RoleSwitchService::getCurrentMode();
+        
+        // Check if the current effective role matches the required role
+        if ($currentRole !== $role) {
+            Log::info('Role check failed - access denied', [
+                'user' => $request->user()->email,
+                'user_role' => $request->user()->role,
+                'current_mode' => $currentRole,
+                'requested_role' => $role,
+                'path' => $request->path(),
+                'is_admin_acting_as_teacher' => RoleSwitchService::isAdminActingAsTeacher()
+            ]);
             abort(403, 'Unauthorized action.');
         }
 

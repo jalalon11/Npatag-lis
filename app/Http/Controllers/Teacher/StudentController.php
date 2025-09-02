@@ -19,18 +19,34 @@ class StudentController extends Controller
     public function index(Request $request)
     {
         try {
-            // Get active sections associated with the current teacher
-            $sections = Section::where('adviser_id', Auth::id())
+            $user = Auth::user();
+            
+            // Check if admin is acting as teacher - they should still use their admin ID
+            // to find sections and subjects they're assigned to
+            $effectiveUserId = $user->id;
+            
+            // Get active sections where teacher is adviser
+            $advisedSections = Section::where('adviser_id', $effectiveUserId)
                 ->where('is_active', true)
                 ->pluck('id');
+
+            // Get active sections where teacher teaches subjects
+            $taughtSectionIds = DB::table('section_subject')
+                ->where('teacher_id', $effectiveUserId)
+                ->join('sections', 'section_subject.section_id', '=', 'sections.id')
+                ->where('sections.is_active', true)
+                ->pluck('sections.id')
+                ->unique();
+
+            // Combine both advised and taught sections
+            $sections = $advisedSections->merge($taughtSectionIds)->unique();
 
             // Get the status filter (active, disabled, all)
             $statusFilter = $request->query('status', 'active');
 
-            // Build the query for students - only enrolled students
+            // Build the query for students
             $query = Student::whereIn('section_id', $sections)
-                ->with('section')
-                ->enrolled(); // Only students created from enrollments
+                ->with('section');
 
             // Apply status filter
             if ($statusFilter === 'active') {
@@ -47,7 +63,7 @@ class StudentController extends Controller
                 ->get();
 
             // Get assigned sections where the teacher teaches subjects but is not the adviser
-            $teacherId = Auth::id();
+            $teacherId = $effectiveUserId;
             $assignedSectionIds = DB::table('section_subject')
                 ->where('teacher_id', $teacherId)
                 ->join('sections', 'section_subject.section_id', '=', 'sections.id')
@@ -63,10 +79,9 @@ class StudentController extends Controller
                 ->where('is_active', true) // Double-check that sections are active
                 ->get();
 
-            // Get students from these assigned sections - only enrolled students
+            // Get students from these assigned sections
             $assignedStudents = Student::whereIn('section_id', $assignedSectionIds)
                 ->with('section')
-                ->enrolled() // Only students created from enrollments
                 ->orderBy('is_active', 'desc') // Active students first
                 ->orderBy('last_name')
                 ->orderBy('first_name')
@@ -143,7 +158,7 @@ class StudentController extends Controller
                 $teacherAssigned = DB::table('section_subject')
                     ->where('section_id', $student->section_id)
                     ->where('subject_id', $assignedSubjectId)
-                    ->where('teacher_id', Auth::id())
+                    ->where('teacher_id', $effectiveUserId)
                     ->exists();
 
                 if (!$teacherAssigned) {
@@ -202,17 +217,28 @@ class StudentController extends Controller
             }
         }
 
-        // Default behavior - get active sections associated with the current teacher
-        $sectionIds = Section::where('adviser_id', Auth::id())
+        // Default behavior - get active sections where teacher is adviser or teaches subjects
+        $user = Auth::user();
+        $effectiveUserId = $user->id;
+        
+        $advisedSectionIds = Section::where('adviser_id', $effectiveUserId)
             ->where('is_active', true)
             ->pluck('id');
 
+        $taughtSectionIds = DB::table('section_subject')
+            ->where('teacher_id', $effectiveUserId)
+            ->join('sections', 'section_subject.section_id', '=', 'sections.id')
+            ->where('sections.is_active', true)
+            ->pluck('sections.id')
+            ->unique();
+
+        $sectionIds = $advisedSectionIds->merge($taughtSectionIds)->unique();
+
         // Find the student and ensure they belong to one of the teacher's sections
         // Note: We don't filter by is_active here because we need to be able to view disabled students
-        // when specifically requested by ID, but only enrolled students
+        // when specifically requested by ID
         $student = Student::whereIn('section_id', $sectionIds)
             ->with(['section.subjects', 'section.adviser', 'grades.subject', 'attendances'])
-            ->enrolled() // Only students created from enrollments
             ->findOrFail($id);
 
         // Get the selected transmutation table from the request or use default (1)
@@ -352,13 +378,27 @@ class StudentController extends Controller
      */
     public function edit(string $id)
     {
-        // Get sections associated with the current teacher
-        $sections = Section::where('adviser_id', Auth::id())->get();
-        $sectionIds = $sections->pluck('id');
+        // Get sections where teacher is adviser
+        $user = Auth::user();
+        $effectiveUserId = $user->id;
+        
+        $advisedSections = Section::where('adviser_id', $effectiveUserId)->get();
+        $advisedSectionIds = $advisedSections->pluck('id');
 
-        // Find the student and ensure they belong to one of the teacher's sections - only enrolled students
+        // Get sections where teacher teaches subjects
+        $taughtSectionIds = DB::table('section_subject')
+            ->where('teacher_id', $effectiveUserId)
+            ->join('sections', 'section_subject.section_id', '=', 'sections.id')
+            ->where('sections.is_active', true)
+            ->pluck('sections.id')
+            ->unique();
+
+        // Combine both advised and taught sections
+        $sectionIds = $advisedSectionIds->merge($taughtSectionIds)->unique();
+        $sections = Section::whereIn('id', $sectionIds)->get();
+
+        // Find the student and ensure they belong to one of the teacher's sections
         $student = Student::whereIn('section_id', $sectionIds)
-            ->enrolled() // Only students created from enrollments
             ->findOrFail($id);
 
         return view('teacher.students.edit', compact('student', 'sections'));
@@ -369,12 +409,23 @@ class StudentController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // Get sections associated with the current teacher
-        $sectionIds = Section::where('adviser_id', Auth::id())->pluck('id');
+        // Get sections where teacher is adviser or teaches subjects
+        $user = Auth::user();
+        $effectiveUserId = $user->id;
+        
+        $advisedSectionIds = Section::where('adviser_id', $effectiveUserId)->pluck('id');
+        
+        $taughtSectionIds = DB::table('section_subject')
+            ->where('teacher_id', $effectiveUserId)
+            ->join('sections', 'section_subject.section_id', '=', 'sections.id')
+            ->where('sections.is_active', true)
+            ->pluck('sections.id')
+            ->unique();
+
+        $sectionIds = $advisedSectionIds->merge($taughtSectionIds)->unique();
 
         // Find the student and ensure they belong to one of the teacher's sections
         $student = Student::whereIn('section_id', $sectionIds)
-            ->enrolled() // Only students created from enrollments
             ->findOrFail($id);
 
         $validated = $request->validate([
@@ -391,10 +442,23 @@ class StudentController extends Controller
             'guardian_contact' => 'required|string|max:50',
         ]);
 
-        // Verify the section belongs to this teacher
-        $section = Section::where('id', $validated['section_id'])
-            ->where('adviser_id', Auth::id())
-            ->firstOrFail();
+        // Verify the section belongs to this teacher (either as adviser or subject teacher)
+        $advisedSectionIds = Section::where('adviser_id', $effectiveUserId)->pluck('id');
+        
+        $taughtSectionIds = DB::table('section_subject')
+            ->where('teacher_id', $effectiveUserId)
+            ->join('sections', 'section_subject.section_id', '=', 'sections.id')
+            ->where('sections.is_active', true)
+            ->pluck('sections.id')
+            ->unique();
+
+        $allowedSectionIds = $advisedSectionIds->merge($taughtSectionIds)->unique();
+        
+        if (!$allowedSectionIds->contains($validated['section_id'])) {
+            abort(403, 'You do not have permission to assign students to this section.');
+        }
+        
+        $section = Section::findOrFail($validated['section_id']);
 
         $student->update($validated);
 
@@ -407,12 +471,23 @@ class StudentController extends Controller
      */
     public function destroy(string $id)
     {
-        // Get sections associated with the current teacher
-        $sectionIds = Section::where('adviser_id', Auth::id())->pluck('id');
+        // Get sections where teacher is adviser or teaches subjects
+        $user = Auth::user();
+        $effectiveUserId = $user->id;
+        
+        $advisedSectionIds = Section::where('adviser_id', $effectiveUserId)->pluck('id');
+        
+        $taughtSectionIds = DB::table('section_subject')
+            ->where('teacher_id', $effectiveUserId)
+            ->join('sections', 'section_subject.section_id', '=', 'sections.id')
+            ->where('sections.is_active', true)
+            ->pluck('sections.id')
+            ->unique();
+
+        $sectionIds = $advisedSectionIds->merge($taughtSectionIds)->unique();
 
         // Find the student and ensure they belong to one of the teacher's sections
         $student = Student::whereIn('section_id', $sectionIds)
-            ->enrolled() // Only students created from enrollments
             ->findOrFail($id);
 
         // Instead of deleting, mark the student as inactive
@@ -428,8 +503,20 @@ class StudentController extends Controller
      */
     public function reactivate(string $id)
     {
-        // Get sections associated with the current teacher
-        $sectionIds = Section::where('adviser_id', Auth::id())->pluck('id');
+        // Get sections where teacher is adviser or teaches subjects
+        $user = Auth::user();
+        $effectiveUserId = $user->id;
+        
+        $advisedSectionIds = Section::where('adviser_id', $effectiveUserId)->pluck('id');
+        
+        $taughtSectionIds = DB::table('section_subject')
+            ->where('teacher_id', $effectiveUserId)
+            ->join('sections', 'section_subject.section_id', '=', 'sections.id')
+            ->where('sections.is_active', true)
+            ->pluck('sections.id')
+            ->unique();
+
+        $sectionIds = $advisedSectionIds->merge($taughtSectionIds)->unique();
 
         // Find the student and ensure they belong to one of the teacher's sections
         $student = Student::whereIn('section_id', $sectionIds)->findOrFail($id);
@@ -452,21 +539,37 @@ class StudentController extends Controller
     {
         $sectionId = $request->input('section_id', 'all');
 
+        // Get sections where teacher is adviser or teaches subjects
+        $user = Auth::user();
+        $effectiveUserId = $user->id;
+        
+        $advisedSectionIds = Section::where('adviser_id', $effectiveUserId)->pluck('id');
+        
+        $taughtSectionIds = DB::table('section_subject')
+            ->where('teacher_id', $effectiveUserId)
+            ->join('sections', 'section_subject.section_id', '=', 'sections.id')
+            ->where('sections.is_active', true)
+            ->pluck('sections.id')
+            ->unique();
+
+        $allowedSectionIds = $advisedSectionIds->merge($taughtSectionIds)->unique();
+
         if ($sectionId === 'all') {
             // Get only active students for the teacher
             $students = Student::with('section')
                 ->where('is_active', true)
-                ->whereHas('section', function($query) {
-                    $query->where('adviser_id', Auth::id());
-                })->get();
+                ->whereIn('section_id', $allowedSectionIds)
+                ->get();
         } else {
+            // Verify the section belongs to this teacher
+            if (!$allowedSectionIds->contains($sectionId)) {
+                return response()->json(['error' => 'Unauthorized access to this section'], 403);
+            }
+            
             // Get only active students for a specific section
             $students = Student::with('section')
                 ->where('section_id', $sectionId)
                 ->where('is_active', true)
-                ->whereHas('section', function($query) {
-                    $query->where('adviser_id', Auth::id());
-                })
                 ->get();
         }
 

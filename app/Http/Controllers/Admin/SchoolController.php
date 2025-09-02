@@ -3,337 +3,163 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\School;
-// Removed SchoolDivision dependency for single school system
 use App\Models\User;
+use App\Models\Section;
+use App\Models\Subject;
+use App\Models\School;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
-use Carbon\Carbon;
+use Illuminate\Validation\Rule;
 
 class SchoolController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     * For single school system, redirect to show the single school.
+     * Display the school overview with teachers, sections, and students.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $school = School::single();
-        
-        if (!$school) {
-            return redirect()->route('admin.schools.create')
-                ->with('info', 'No school found. Please create the primary school.');
-        }
-        
-        return redirect()->route('admin.schools.show', $school->id);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     * Only allow if no school exists (single school system).
-     */
-    public function create()
-    {
-        $existingSchool = School::first();
-        
-        if ($existingSchool) {
-            return redirect()->route('admin.schools.show', $existingSchool->id)
-                ->with('error', 'A school already exists. Only one school is allowed in this system.');
-        }
-        
-        return view('admin.schools.create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        // Log the received data
-        Log::info('School creation request data:', $request->all());
-
-        // Validate school data
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'code' => 'required|string|max:50|unique:schools',
-            'address' => 'nullable|string',
-            'principal' => 'nullable|string|max:255',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'division_name' => 'required|string|max:255',
-            'division_code' => 'required|string|max:50',
-            'division_address' => 'nullable|string',
-            'region' => 'required|string|max:255',
-            'grade_levels' => 'required|array|min:1',
-            'grade_levels.*' => 'required|in:K,1,2,3,4,5,6,7,8,9,10,11,12',
-            'teachers' => 'nullable|array',
-            'teachers.*.name' => 'nullable|string|max:255',
-            'teachers.*.email' => 'nullable|email|unique:users,email',
-            'teachers.*.password' => 'nullable|string|min:6',
-            'teachers.*.password_confirmation' => 'nullable|same:teachers.*.password',
-            'teachers.*.subjects' => 'nullable|string',
-        ]);
-
-        if ($validator->fails()) {
-            Log::error('School creation validation failed:', $validator->errors()->toArray());
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
-
         try {
-            DB::beginTransaction();
-
-            // Check if a school already exists (single school system)
-            $existingSchool = School::first();
-            if ($existingSchool) {
-                return redirect()->route('admin.schools.show', $existingSchool->id)
-                    ->with('error', 'A school already exists. Only one school is allowed in this system.');
-            }
+            $user = Auth::user();
             
-            // Create school data array
-            $schoolData = [
-                'name' => $request->name,
-                'code' => $request->code,
-                'address' => $request->address,
-                'principal' => $request->principal,
-                'grade_levels' => json_encode($request->grade_levels),
-                'division_name' => $request->division_name,
-                'division_code' => $request->division_code,
-                'division_address' => $request->division_address,
-                'region' => $request->region,
-                'is_primary' => true, // Set as primary school
-            ];
+            // Get all schools for admin selection
+            $schools = School::all();
+            
+            // Get selected school or default to first school
+            $selectedSchoolId = $request->get('school_id', $schools->first()->id ?? null);
+            $school = School::find($selectedSchoolId);
+            
+            if (!$school) {
+                return back()->with('error', 'School not found.');
+            }
 
-            // Handle logo upload
-            if ($request->hasFile('logo')) {
-                $logo = $request->file('logo');
+            // Get all teachers in the selected school
+            $teachers = User::where('school_id', $selectedSchoolId)
+                ->where('role', 'teacher')
+                ->get();
 
-                try {
-                    // Store the file in R2 storage
-                    $path = $logo->store('school_logos', 'r2');
-                    $schoolData['logo_path'] = $path;
+            // Get sections where each teacher is the adviser
+            foreach ($teachers as $teacher) {
+                $teacher->load(['sections' => function($query) use ($teacher) {
+                    $query->where('adviser_id', $teacher->id)->withCount('students');
+                }]);
+            }
 
-                    Log::info('School logo uploaded successfully', [
-                        'path' => $path,
-                        'disk' => 'r2'
-                    ]);
-                } catch (\Exception $e) {
-                    Log::error('Failed to upload school logo', [
-                        'error' => $e->getMessage()
-                    ]);
-                    throw $e;
+            // Registration keys removed - now admin-only account creation
+
+            // Get teaching assignments for each teacher
+            $teachingAssignments = [];
+            foreach ($teachers as $teacher) {
+                $assignments = DB::table('section_subject')
+                    ->where('teacher_id', $teacher->id)
+                    ->join('sections', 'section_subject.section_id', '=', 'sections.id')
+                    ->join('subjects', 'section_subject.subject_id', '=', 'subjects.id')
+                    ->where('sections.school_id', $selectedSchoolId)
+                    ->select(
+                        'sections.id as section_id',
+                        'sections.name as section_name',
+                        'sections.grade_level',
+                        'subjects.id as subject_id',
+                        'subjects.name as subject_name',
+                        'subjects.code as subject_code'
+                    )
+                    ->get();
+
+                $teachingAssignments[$teacher->id] = $assignments;
+            }
+
+            // Get all sections in the selected school with their students
+            $sections = Section::where('school_id', $selectedSchoolId)
+                ->with(['adviser', 'students'])
+                ->get();
+
+            // Organize students by section, sorted alphabetically by surname with disabled students at the end
+            // Also calculate gender counts for each section and grade level
+            $studentsBySection = [];
+            $sectionStats = [];
+            $gradeLevelStats = [];
+
+            foreach ($sections as $section) {
+                // Get active and inactive students separately
+                $activeStudents = $section->students->where('is_active', true);
+                $inactiveStudents = $section->students->where('is_active', false);
+
+                // Sort active students alphabetically by surname
+                $sortedActiveStudents = $activeStudents->sortBy(function($student) {
+                    // Extract surname from surname_first format
+                    $nameParts = explode(',', $student->surname_first);
+                    return trim($nameParts[0]); // Return surname for sorting
+                });
+
+                // Sort inactive students alphabetically by surname
+                $sortedInactiveStudents = $inactiveStudents->sortBy(function($student) {
+                    // Extract surname from surname_first format
+                    $nameParts = explode(',', $student->surname_first);
+                    return trim($nameParts[0]); // Return surname for sorting
+                });
+
+                // Combine sorted active students followed by sorted inactive students
+                $studentsBySection[$section->id] = $sortedActiveStudents->values()->concat($sortedInactiveStudents->values());
+
+                // Calculate gender statistics for this section
+                $totalStudents = $section->students->count();
+                $maleStudents = $section->students->where('gender', 'Male')->count();
+                $femaleStudents = $section->students->where('gender', 'Female')->count();
+                $activeStudentsCount = $activeStudents->count();
+                $inactiveStudentsCount = $inactiveStudents->count();
+
+                $sectionStats[$section->id] = [
+                    'total' => $totalStudents,
+                    'male' => $maleStudents,
+                    'female' => $femaleStudents,
+                    'active' => $activeStudentsCount,
+                    'inactive' => $inactiveStudentsCount
+                ];
+
+                // Aggregate statistics by grade level
+                $gradeLevel = $section->grade_level;
+                if (!isset($gradeLevelStats[$gradeLevel])) {
+                    $gradeLevelStats[$gradeLevel] = [
+                        'total' => 0,
+                        'male' => 0,
+                        'female' => 0,
+                        'active' => 0,
+                        'inactive' => 0,
+                        'sections' => 0
+                    ];
                 }
+
+                // Add this section's stats to the grade level totals
+                $gradeLevelStats[$gradeLevel]['total'] += $totalStudents;
+                $gradeLevelStats[$gradeLevel]['male'] += $maleStudents;
+                $gradeLevelStats[$gradeLevel]['female'] += $femaleStudents;
+                $gradeLevelStats[$gradeLevel]['active'] += $activeStudentsCount;
+                $gradeLevelStats[$gradeLevel]['inactive'] += $inactiveStudentsCount;
+                $gradeLevelStats[$gradeLevel]['sections']++;
             }
 
-            // Create the school
-            $school = School::create($schoolData);
-
-            Log::info('Created school:', ['id' => $school->id, 'name' => $school->name]);
-
-            // Create teachers for this school if present
-            if (isset($request->teachers) && is_array($request->teachers)) {
-                Log::info('Teachers data for school ' . $school->name . ':', $request->teachers);
-
-                foreach ($request->teachers as $teacherData) {
-                    // Skip empty teacher entries
-                    if (empty($teacherData['name']) || empty($teacherData['email']) || empty($teacherData['password'])) {
-                        Log::info('Skipping empty teacher data');
-                        continue;
-                    }
-
-                    $user = User::create([
-                        'name' => $teacherData['name'],
-                        'email' => $teacherData['email'],
-                        'password' => Hash::make($teacherData['password']),
-                        'role' => 'teacher',
-                        'school_id' => $school->id,
-                    ]);
-
-                    Log::info('Created teacher:', ['id' => $user->id, 'name' => $user->name, 'school_id' => $user->school_id]);
-                }
-            } else {
-                Log::info('No teachers data for school ' . $school->name);
-            }
-
-            DB::commit();
-            Log::info('Successfully completed school creation transaction');
-
-            return redirect()->route('admin.schools.index')
-                ->with('success', 'School created successfully' .
-                (isset($request->teachers) ? ' with teachers.' : '.'));
+            return view('admin.school.index', compact(
+                'schools',
+                'selectedSchoolId',
+                'school',
+                'teachers',
+                'teachingAssignments',
+                'sections',
+                'studentsBySection',
+                'sectionStats',
+                'gradeLevelStats'
+            ));
         } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('School creation failed:', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
-            return redirect()->back()
-                ->with('error', 'An error occurred: ' . $e->getMessage())
-                ->withInput();
+            Log::error('Error loading school overview: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+
+            return back()->with('error', 'Error loading school overview. Please try again or contact support.');
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        $school = School::findOrFail($id);
-        $teachers = User::where('role', 'teacher')
-            ->where('is_teacher_admin', false)
-            ->where('school_id', $school->id)
-            ->get();
-        $teacherAdmins = User::where('role', 'teacher')
-            ->where('is_teacher_admin', true)
-            ->where('school_id', $school->id)
-            ->get();
-
-        return view('admin.schools.show', compact('school', 'teachers', 'teacherAdmins'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        $school = School::with('teachers')->findOrFail($id);
-        return view('admin.schools.edit', compact('school'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        $school = School::findOrFail($id);
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'code' => [
-                'required',
-                'string',
-                'max:50',
-                Rule::unique('schools')->ignore($school->id)
-            ],
-            'address' => 'nullable|string',
-            'principal' => 'nullable|string|max:255',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'division_name' => 'required|string|max:255',
-            'division_code' => 'required|string|max:50',
-            'division_address' => 'nullable|string',
-            'region' => 'required|string|max:255',
-            'grade_levels' => 'required|array|min:1',
-            'grade_levels.*' => 'required|in:K,1,2,3,4,5,6,7,8,9,10,11,12',
-        ]);
-
-        $updateData = [
-            'name' => $request->name,
-            'code' => $request->code,
-            'address' => $request->address,
-            'principal' => $request->principal,
-            'division_name' => $request->division_name,
-            'division_code' => $request->division_code,
-            'division_address' => $request->division_address,
-            'region' => $request->region,
-            'grade_levels' => json_encode($request->grade_levels),
-            'is_active' => $request->has('is_active') ? 1 : 0,
-        ];
-
-        // Handle logo upload
-        if ($request->hasFile('logo')) {
-            // Delete the old logo if it exists
-            if ($school->logo_path) {
-                // Use the configured filesystem disk
-                $disk = config('filesystems.disk'); // Get the default disk ('r2' in cloud)
-
-                try {
-                    Storage::disk($disk)->delete($school->logo_path);
-                    Log::info('Deleted old school logo', [
-                        'path' => $school->logo_path,
-                        'disk' => $disk
-                    ]);
-                } catch (\Exception $e) {
-                    Log::warning('Failed to delete old logo', [
-                        'path' => $school->logo_path,
-                        'disk' => $disk,
-                        'error' => $e->getMessage()
-                    ]);
-                    // Optionally, log the error but don't stop the update process
-                }
-            }
-
-            $logo = $request->file('logo');
-
-            try {
-                // Store the file in R2 storage
-                $path = $logo->store('school_logos', 'r2');
-                $updateData['logo_path'] = $path;
-
-                Log::info('School logo uploaded successfully', [
-                    'path' => $path,
-                    'disk' => 'r2'
-                ]);
-            } catch (\Exception $e) {
-                Log::error('Failed to upload school logo', [
-                    'error' => $e->getMessage()
-                ]);
-                throw $e;
-            }
-        }
-
-        $school->update($updateData);
-
-        return redirect()->route('admin.schools.index')
-            ->with('success', 'School updated successfully.');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     * Disabled for single school system.
-     */
-    public function destroy(string $id)
-    {
-        $school = School::findOrFail($id);
-        
-        return redirect()->route('admin.schools.show', $school->id)
-            ->with('error', 'Cannot delete the school. This system supports only one school.');
-    }
-
-    /**
-     * Set school as inactive
-     */
-    public function disable(string $id)
-    {
-        try {
-            $school = School::findOrFail($id);
-            $school->update(['is_active' => false]);
-
-            return redirect()->route('admin.schools.show', $school->id)
-                ->with('success', 'School has been disabled successfully.');
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Unable to disable school: ' . $e->getMessage());
-        }
-    }
-
-    /**
-     * Set school as active
-     */
-    public function enable(string $id)
-    {
-        try {
-            $school = School::findOrFail($id);
-            $school->update(['is_active' => true]);
-
-            return redirect()->route('admin.schools.show', $school->id)
-                ->with('success', 'School has been enabled successfully.');
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Unable to enable school: ' . $e->getMessage());
-        }
-    }
-
-
+    // edit() and update() methods removed - school editing disabled in hardcoded school system
 }

@@ -675,7 +675,7 @@
                     </div>
                     <!-- Section Filter -->
                     <div class="col-md-3">
-                        <label for="section_id" class="form-label fw-semibold text-success">
+                        <label for="section_id" class="form-label fw-semibold text-primary">
                             <i class="fas fa-users me-1"></i> Section
                         </label>
                         <select class="form-select shadow-sm" id="section_id" name="section_id">
@@ -701,7 +701,7 @@
                     </div>
                     <!-- Academic Term Filter -->
                     <div class="col-md-2">
-                        <label for="term" class="form-label fw-semibold text-warning">
+                        <label for="term" class="form-label fw-semibold text-primary">
                             <i class="fas fa-calendar-alt me-1"></i> Term
                         </label>
                         <select class="form-select shadow-sm" id="term" name="term" onchange="this.form.submit()">
@@ -715,7 +715,7 @@
                     </div>
                     <!-- Transmutation Table Filter -->
                     <div class="col-md-4">
-                        <label for="transmutation_table" class="form-label fw-semibold text-info">
+                        <label for="transmutation_table" class="form-label fw-semibold text-primary">
                             <i class="fas fa-table me-1"></i> Transmutation Table
                         </label>
                         <div class="input-group">
@@ -768,7 +768,7 @@
                                 <span >{{ $selectedSubject->grade_level ?? 'Not specified' }}</span>
                             </div>
                             <small class="col-md-4 text-end">
-                                <span class="fw-medium badge bg-primary bg-opacity-10 text-primary py-2 px-4 rounded-pill">{{ $terms[$selectedTerm] }}</span>
+                                <span class="fw-bold badge bg-primary bg-opacity-10 text-primary py-2 px-4 rounded-pill">{{ $terms[$selectedTerm] }}</span>
                             </small>
                         </h5>
                     </div>
@@ -1600,11 +1600,11 @@
                                         </th>
                                         <th width="15%" class="text-center">
                                             <div>Performance Tasks</div>
-                                            <span class="badge bg-success rounded-pill">{{ $performanceTaskPercentage }}%</span>
+                                            <span class="badge bg-primary rounded-pill">{{ $performanceTaskPercentage }}%</span>
                                         </th>
                                             <th width="10%" class="text-center">
                                             <div>Quarterly</div>
-                                            <span class="badge bg-warning rounded-pill">{{ $quarterlyAssessmentPercentage }}%</span>
+                                            <span class="badge bg-primary rounded-pill">{{ $quarterlyAssessmentPercentage }}%</span>
                                         </th>
                                         <th width="10%" class="text-center">Initial Grade</th>
                                         <th width="10%" class="text-center">Quarterly Grade</th>
@@ -2004,11 +2004,11 @@
                                             </th>
                                             <th width="15%" class="text-center">
                                                 <div>Performance Tasks</div>
-                                                <span class="badge bg-success rounded-pill">{{ $performanceTaskPercentage }}%</span>
+                                                <span class="badge bg-primary rounded-pill">{{ $performanceTaskPercentage }}%</span>
                                             </th>
                                             <th width="15%" class="text-center">
                                                 <div>Quarterly</div>
-                                                <span class="badge bg-warning rounded-pill">{{ $quarterlyAssessmentPercentage }}%</span>
+                                                <span class="badge bg-primary rounded-pill">{{ $quarterlyAssessmentPercentage }}%</span>
                                             </th>
                                             <th width="10%" class="text-center">Initial Grade</th>
                                             <th width="10%" class="text-center">Quarterly Grade</th>

@@ -28,7 +28,6 @@ class User extends Authenticatable
         'phone_number',
         'address',
         'school_id',
-        'is_teacher_admin',
     ];
 
     /**
@@ -51,7 +50,6 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'is_teacher_admin' => 'boolean',
         ];
     }
 
@@ -69,6 +67,14 @@ class User extends Authenticatable
     public function isTeacher(): bool
     {
         return $this->role === 'teacher';
+    }
+
+    /**
+     * Check if user is guardian
+     */
+    public function isGuardian(): bool
+    {
+        return $this->role === 'guardian';
     }
 
     /**
@@ -120,34 +126,7 @@ class User extends Authenticatable
         return $this->hasMany(Attendance::class);
     }
 
-    /**
-     * Check if user is teacher admin
-     */
-    public function isTeacherAdmin(): bool
-    {
-        return $this->role === 'teacher' && $this->is_teacher_admin;
-    }
 
-    /**
-     * Get all teacher admins for a school
-     */
-    public static function getTeacherAdmins($schoolId)
-    {
-        return static::where('school_id', $schoolId)
-            ->where('role', 'teacher')
-            ->where('is_teacher_admin', true)
-            ->get();
-    }
-
-    /**
-     * Check if school can have more teacher admins
-     */
-    public static function canAddTeacherAdmin($schoolId): bool
-    {
-        return static::where('school_id', $schoolId)
-            ->where('is_teacher_admin', true)
-            ->count() < 2;
-    }
 
     /**
      * Get support tickets created by this user

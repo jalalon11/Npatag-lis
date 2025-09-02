@@ -282,8 +282,8 @@
                         </div>
 
                         <div class="register-header">
-                            <h1 class="register-title">Create Account</h1>
-                            <p class="register-subtitle">Join our platform today</p>
+                            <h1 class="register-title">Create Teacher Account</h1>
+                            <p class="register-subtitle">Admin Panel - Create New Teacher</p>
                         </div>
 
                         <form method="POST" action="{{ route('register') }}" class="register-form" id="registerForm">
@@ -362,6 +362,8 @@
                                            placeholder="Confirm your password">
                                 </div>
                             </div>
+
+
 
                             <div class="d-grid mt-4">
                                 <button type="submit" class="btn btn-register btn-lg">

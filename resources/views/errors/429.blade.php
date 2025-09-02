@@ -26,7 +26,7 @@
                     </div>
                     
                     <div class="d-flex justify-content-center gap-3">
-                        <a href="{{ route('teacher-admin.dashboard') }}" class="btn btn-primary">
+                        <a href="{{ route('teacher.dashboard') }}" class="btn btn-primary">
                             <i class="fas fa-home me-2"></i> Go to Dashboard
                         </a>
                     </div>
