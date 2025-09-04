@@ -56,8 +56,8 @@ class SectionController extends Controller
             // Get all schools for admin to select from
             $schools = \App\Models\School::all();
             
-            // Get all teachers (will be filtered by school in frontend)
-            $teachers = User::where('role', 'teacher')->get();
+            // Get all teachers and admins (will be filtered by school in frontend)
+            $teachers = User::whereIn('role', ['teacher', 'admin'])->get();
 
             // Default grade levels for elementary (K-Grade 6)
             $gradeLevels = array_merge(['K'], range(1, 6));
@@ -352,9 +352,9 @@ class SectionController extends Controller
             $section->load(['adviser', 'subjects', 'school']);
             $section->loadCount('students');
 
-            // Get teachers for the same school
+            // Get teachers and admins for the same school
             $teachers = User::where('school_id', $section->school_id)
-                ->where('role', 'teacher')
+                ->whereIn('role', ['teacher', 'admin'])
                 ->get();
 
             // Get active subjects for the same school that match the section's grade level

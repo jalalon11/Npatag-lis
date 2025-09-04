@@ -13,6 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'check.role' => \App\Http\Middleware\CheckRole::class,
+            'check.no.admin' => \App\Http\Middleware\CheckNoAdminExists::class,
+            'redirect.to.setup' => \App\Http\Middleware\RedirectToSetupIfNoAdmin::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

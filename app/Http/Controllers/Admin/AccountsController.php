@@ -80,8 +80,8 @@ class AccountsController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-            'role' => 'required|in:teacher,guardian',
+            'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|in:admin,teacher,guardian',
             'phone_number' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
         ]);
@@ -93,14 +93,14 @@ class AccountsController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
-            'school_id' => $school->id,
+            'school_id' => $request->role === 'admin' ? null : $school->id,
             'phone_number' => $request->phone_number,
             'address' => $request->address,
         ]);
 
-        $roleLabel = ucfirst(str_replace('_', ' ', $request->role));
+        $roleLabel = $request->role === 'admin' ? 'Administrator' : ucfirst(str_replace('_', ' ', $request->role));
         return redirect()->route('admin.accounts.index')
-            ->with('success', "{$roleLabel} account created successfully.");
+            ->with('success', "{$roleLabel} account created successfully for {$user->name}.");
     }
 
     /**
@@ -108,7 +108,7 @@ class AccountsController extends Controller
      */
     public function show(string $id)
     {
-        $account = User::whereIn('role', ['teacher', 'guardian'])
+        $account = User::whereIn('role', ['admin', 'teacher', 'guardian'])
                        ->with('school')
                        ->findOrFail($id);
                        
@@ -137,7 +137,7 @@ class AccountsController extends Controller
      */
     public function edit(string $id)
     {
-        $account = User::whereIn('role', ['teacher', 'guardian'])->findOrFail($id);
+        $account = User::whereIn('role', ['admin', 'teacher', 'guardian'])->findOrFail($id);
         $school = School::first();
         return view('admin.accounts.edit', compact('account', 'school'));
     }
@@ -147,7 +147,7 @@ class AccountsController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $account = User::whereIn('role', ['teacher', 'guardian'])->findOrFail($id);
+        $account = User::whereIn('role', ['admin', 'teacher', 'guardian'])->findOrFail($id);
         
         $rules = [
             'name' => 'required|string|max:255',
@@ -156,7 +156,7 @@ class AccountsController extends Controller
                 'email',
                 Rule::unique('users')->ignore($account->id),
             ],
-            'role' => 'required|in:teacher,guardian',
+            'role' => 'required|in:admin,teacher,guardian',
             'phone_number' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
         ];
@@ -195,7 +195,7 @@ class AccountsController extends Controller
         try {
             DB::beginTransaction();
             
-            $account = User::whereIn('role', ['teacher', 'guardian'])->findOrFail($id);
+            $account = User::whereIn('role', ['admin', 'teacher', 'guardian'])->findOrFail($id);
             $roleLabel = ucfirst(str_replace('_', ' ', $account->role));
             
             // Handle references for teachers and teacher admins

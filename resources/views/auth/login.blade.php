@@ -941,7 +941,7 @@
                             @endif
                         </div>
 
-                        <ul class="nav nav-tabs" id="authTabs" role="tablist">
+                        <!-- <ul class="nav nav-tabs" id="authTabs" role="tablist">
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login-tab-pane" type="button" role="tab" aria-controls="login-tab-pane" aria-selected="true">
                                     <span class="d-flex align-items-center justify-content-center">
@@ -958,7 +958,7 @@
                                     </span>
                                 </button>
                             </li>
-                        </ul>
+                        </ul> -->
 
                         @if(session('error'))
                             <div class="alert alert-danger mb-4">
@@ -1056,8 +1056,8 @@
                             <!-- Register Tab -->
                             <div class="tab-pane fade" id="register-tab-pane" role="tabpanel" aria-labelledby="register-tab" tabindex="0">
                                 <div class="auth-header">
-                                    <h1 class="auth-title">Create Account</h1>
-                                    <p class="auth-subtitle">Join our platform today</p>
+                                    <h1 class="auth-title">Account Registration</h1>
+                                    <p class="auth-subtitle">Administrator Access Required</p>
                                 </div>
 
                                 <!-- Registration is now admin-only -->
@@ -1067,87 +1067,14 @@
                                     </div>
                                     <h4 class="text-muted mb-3">Account Registration Restricted</h4>
                                     <p class="text-muted mb-4">
-                                        Teacher account creation is now handled exclusively by system administrators.
-                                        Please contact your system administrator to request a new teacher account.
+                                        Account creation is now handled exclusively by system administrators through the admin panel.
+                                        Please contact your system administrator to request a new account.
                                     </p>
                                     <div class="alert alert-info">
                                         <i class="fas fa-info-circle me-2"></i>
                                         If you already have an account, please use the <strong>Login</strong> tab above.
                                     </div>
                                 </div>
-
-                                    <div class="row">
-                                        <div class="col-12 mb-3">
-                                            <div class="form-floating">
-                                                <input id="register-name" type="text"
-                                                    class="form-control @error('name') is-invalid @enderror"
-                                                    name="name" value="{{ old('name') }}"
-                                                    required autocomplete="name"
-                                                    placeholder="Enter your full name">
-                                                <label for="register-name"><i class="fas fa-user me-2"></i>Full Name</label>
-                                                @error('name')
-                                                    <div class="invalid-feedback">
-                                                        <i class="fas fa-exclamation-circle"></i>
-                                                        {{ $message }}
-                                                    </div>
-                                                @enderror
-                                            </div>
-                                        </div>
-
-                                        <div class="col-12 mb-3">
-                                            <div class="form-floating">
-                                                <input id="register-email" type="email"
-                                                    class="form-control @error('email') is-invalid @enderror"
-                                                    name="email" value="{{ old('email') }}"
-                                                    required autocomplete="email"
-                                                    placeholder="Enter your email address">
-                                                <label for="register-email"><i class="fas fa-envelope me-2"></i>Email Address</label>
-                                                @error('email')
-                                                    <div class="invalid-feedback">
-                                                        <i class="fas fa-exclamation-circle"></i>
-                                                        {{ $message }}
-                                                    </div>
-                                                @enderror
-                                            </div>
-                                        </div>
-
-                                        <div class="col-12 mb-3">
-                                            <div class="form-floating password-container">
-                                                <input id="register-password" type="password"
-                                                    class="form-control @error('password') is-invalid @enderror"
-                                                    name="password" required autocomplete="new-password"
-                                                    placeholder="Create a strong password">
-                                                <label for="register-password"><i class="fas fa-lock me-2"></i>Password</label>
-                                                <button class="btn btn-sm password-toggle" type="button" id="toggleRegisterPassword">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
-                                                @error('password')
-                                                    <div class="invalid-feedback">
-                                                        <i class="fas fa-exclamation-circle"></i>
-                                                        {{ $message }}
-                                                    </div>
-                                                @enderror
-                                            </div>
-                                        </div>
-
-                                        <div class="col-12 mb-3">
-                                            <div class="form-floating password-container">
-                                                <input id="password-confirm" type="password" class="form-control"
-                                                    name="password_confirmation" required autocomplete="new-password"
-                                                    placeholder="Confirm your password">
-                                                <label for="password-confirm"><i class="fas fa-lock me-2"></i>Confirm Password</label>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="d-grid mt-3">
-                                        <button type="submit" class="btn btn-auth btn-lg">
-                                            <span class="d-flex align-items-center justify-content-center">
-                                                <i class="fas fa-user-plus me-2"></i>
-                                                <span>Register</span>
-                                            </span>
-                                        </button>
-                                    </div>
                                 </form>
                             </div>
                         </div>

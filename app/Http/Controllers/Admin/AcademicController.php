@@ -7,6 +7,7 @@ use App\Models\SystemSetting;
 use App\Models\School;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class AcademicController extends Controller
 {
@@ -194,8 +195,16 @@ class AcademicController extends Controller
         $school = School::first();
         
         if (!$school) {
-            // Create a default school if none exists
+            // Create a default school if none exists with all required fields
             $school = School::create([
+                'name' => 'School Name',
+                'code' => 'SCH001',
+                'address' => 'School Address',
+                'region' => 'Region',
+                'grade_levels' => json_encode(['K', '1', '2', '3', '4', '5', '6']),
+                'division_name' => 'Division Name',
+                'division_code' => 'DIV001',
+                'division_address' => 'Division Address',
                 'principal' => 'Principal Name'
             ]);
         }
@@ -236,7 +245,7 @@ class AcademicController extends Controller
                 'code' => $request->code,
                 'address' => $request->address,
                 'region' => $request->region,
-                'grade_levels' => $request->grade_levels,
+                'grade_levels' => is_array($request->grade_levels) ? json_encode($request->grade_levels) : $request->grade_levels,
                 'division_name' => $request->division_name,
                 'division_code' => $request->division_code,
                 'division_address' => $request->division_address,
@@ -253,18 +262,18 @@ class AcademicController extends Controller
             if ($request->hasFile('logo')) {
                 // Delete old logo if exists
                 if ($school->logo_path) {
-                    $oldLogoPath = storage_path('app/public/' . $school->logo_path);
-                    if (file_exists($oldLogoPath)) {
-                        unlink($oldLogoPath);
-                    }
+                    Storage::disk('r2')->delete($school->logo_path);
                 }
                 
                 $logoFile = $request->file('logo');
                 $logoName = 'school_logo_' . time() . '.' . $logoFile->getClientOriginalExtension();
-                $logoPath = $logoFile->storeAs('public/images', $logoName);
+                $logoPath = 'images/' . $logoName;
+                
+                // Upload to R2 storage
+                Storage::disk('r2')->putFileAs('images', $logoFile, $logoName, 'public');
                 
                 // Update the logo path in the school record
-                $school->update(['logo_path' => 'images/' . $logoName]);
+                $school->update(['logo_path' => $logoPath]);
             }
             
             return response()->json([
@@ -288,11 +297,8 @@ class AcademicController extends Controller
         try {
             $school = School::first();
             if ($school && $school->logo_path) {
-                // Delete the file from storage
-                $fullPath = storage_path('app/public/' . $school->logo_path);
-                if (file_exists($fullPath)) {
-                    unlink($fullPath);
-                }
+                // Delete the file from R2 storage
+                Storage::disk('r2')->delete($school->logo_path);
                 
                 // Update the school record
                 $school->update(['logo_path' => null]);

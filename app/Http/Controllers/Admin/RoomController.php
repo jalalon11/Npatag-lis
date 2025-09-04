@@ -93,6 +93,7 @@ class RoomController extends Controller
     {
         try {
             $schools = School::all();
+            $defaultSchool = $schools->first(); // Get the first (and likely only) school
             $teachers = User::whereIn('role', ['teacher', 'admin'])->with('school')->get();
             $buildings = Building::with('school')->where('is_active', true)->get();
             $gradeLevels = [
@@ -101,7 +102,7 @@ class RoomController extends Controller
             ];
 
             return view('admin.rooms.create', compact(
-                'schools', 'teachers', 'buildings', 'gradeLevels'
+                'schools', 'teachers', 'buildings', 'gradeLevels', 'defaultSchool'
             ));
             
         } catch (\Exception $e) {
@@ -117,6 +118,14 @@ class RoomController extends Controller
     public function store(Request $request)
     {
         try {
+            // Check if this is a batch entry
+            $isBatch = $request->has('is_batch') && ($request->is_batch == '1' || $request->is_batch == 1);
+            
+            if ($isBatch) {
+                return $this->storeBatch($request);
+            }
+            
+            // Single room creation
             $request->validate([
                 'name' => 'required|string|max:255',
                 'grade_level' => 'required|string',
@@ -160,6 +169,149 @@ class RoomController extends Controller
             return back()->withErrors(['error' => 'Failed to create room.'])->withInput();
         }
     }
+    
+    /**
+     * Store batch rooms from CSV-like input.
+     */
+    private function storeBatch(Request $request)
+    {
+        try {
+            // Validate batch input
+            $request->validate([
+                'batch_data' => 'required|string',
+            ]);
+            
+            $batchData = trim($request->batch_data);
+            $lines = explode("\n", $batchData);
+            $createdCount = 0;
+            $errors = [];
+            
+            // Grade level mapping from numbers to strings
+            $gradeLevelMap = [
+                '1' => 'Grade 1',
+                '2' => 'Grade 2', 
+                '3' => 'Grade 3',
+                '4' => 'Grade 4',
+                '5' => 'Grade 5',
+                '6' => 'Grade 6',
+                '7' => 'Grade 7',
+                '8' => 'Grade 8',
+                '9' => 'Grade 9',
+                '10' => 'Grade 10',
+                '11' => 'Grade 11',
+                '12' => 'Grade 12',
+                'K' => 'Kindergarten',
+                'k' => 'Kindergarten'
+            ];
+            
+            foreach ($lines as $lineNumber => $line) {
+                $line = trim($line);
+                if (empty($line)) continue;
+                
+                // Parse CSV format: Room Name, Grade Level, School Year, Adviser ID, Building ID, Student Limit
+                $parts = array_map('trim', explode(',', $line));
+                
+                if (count($parts) < 3) {
+                    $errors[] = "Line " . ($lineNumber + 1) . ": Invalid format. Expected at least: Room Name, Grade Level, School Year";
+                    continue;
+                }
+                
+                $name = $parts[0];
+                $gradeLevel = $parts[1];
+                $schoolYear = $parts[2];
+                $adviserId = !empty($parts[3]) ? $parts[3] : null;
+                $buildingId = !empty($parts[4]) ? $parts[4] : null;
+                $studentLimit = !empty($parts[5]) ? (int)$parts[5] : 30;
+                
+                // Convert numeric grade level to string format
+                if (isset($gradeLevelMap[$gradeLevel])) {
+                    $gradeLevel = $gradeLevelMap[$gradeLevel];
+                }
+                
+                // Validate required fields
+                if (empty($name)) {
+                    $errors[] = "Line " . ($lineNumber + 1) . ": Room name is required";
+                    continue;
+                }
+                
+                if (empty($gradeLevel)) {
+                    $errors[] = "Line " . ($lineNumber + 1) . ": Grade level is required";
+                    continue;
+                }
+                
+                if (empty($schoolYear)) {
+                    $errors[] = "Line " . ($lineNumber + 1) . ": School year is required";
+                    continue;
+                }
+                
+                // Get default school (assuming single school system)
+                $school = School::first();
+                if (!$school) {
+                    $errors[] = "Line " . ($lineNumber + 1) . ": No school found in system";
+                    continue;
+                }
+                
+                // Validate adviser if provided
+                if ($adviserId) {
+                    $adviser = User::where('id', $adviserId)
+                        ->where('school_id', $school->id)
+                        ->whereIn('role', ['teacher', 'admin'])
+                        ->first();
+                        
+                    if (!$adviser) {
+                        $errors[] = "Line " . ($lineNumber + 1) . ": Invalid adviser ID or adviser not in school";
+                        continue;
+                    }
+                }
+                
+                // Validate building if provided
+                if ($buildingId) {
+                    $building = Building::where('id', $buildingId)
+                        ->where('school_id', $school->id)
+                        ->where('is_active', true)
+                        ->first();
+                        
+                    if (!$building) {
+                        $errors[] = "Line " . ($lineNumber + 1) . ": Invalid building ID or building not active";
+                        continue;
+                    }
+                }
+                
+                try {
+                    Section::create([
+                        'name' => $name,
+                        'grade_level' => $gradeLevel,
+                        'adviser_id' => $adviserId,
+                        'school_id' => $school->id,
+                        'school_year' => $schoolYear,
+                        'student_limit' => $studentLimit,
+                        'building_id' => $buildingId,
+                        'is_active' => true,
+                    ]);
+                    
+                    $createdCount++;
+                } catch (\Exception $e) {
+                    $errors[] = "Line " . ($lineNumber + 1) . ": " . $e->getMessage();
+                }
+            }
+            
+            if ($createdCount > 0 && empty($errors)) {
+                return redirect()->route('admin.rooms.index')
+                    ->with('success', "Successfully created {$createdCount} rooms.");
+            } elseif ($createdCount > 0 && !empty($errors)) {
+                return redirect()->route('admin.rooms.index')
+                    ->with('warning', "Created {$createdCount} rooms with some errors: " . implode(', ', $errors));
+            } else {
+                return back()->withErrors([
+                    'batch_data' => 'Failed to create any rooms. Errors: ' . implode(', ', $errors)
+                ])->withInput();
+            }
+            
+        } catch (\Exception $e) {
+            Log::error('Error creating batch rooms: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Failed to create rooms.'])->withInput();
+        }
+    }
 
     /**
      * Display the specified room.
@@ -169,7 +321,7 @@ class RoomController extends Controller
         try {
             $room->load(['adviser', 'school', 'students', 'subjects', 'building']);
             $availableSubjects = Subject::all();
-            $teachers = User::where('role', 'teacher')->with('school')->get();
+            $teachers = User::whereIn('role', ['teacher', 'admin'])->with('school')->get();
             return view('admin.rooms.show', compact('room', 'availableSubjects', 'teachers'));
         } catch (\Exception $e) {
             Log::error('Error loading room details: ' . $e->getMessage());
@@ -185,6 +337,7 @@ class RoomController extends Controller
     {
         try {
             $schools = School::all();
+            $defaultSchool = $schools->first(); // Get the first (and likely only) school
             $teachers = User::whereIn('role', ['teacher', 'admin'])->with('school')->get();
             $buildings = Building::with('school')->where('is_active', true)->get();
             $gradeLevels = [
@@ -193,7 +346,7 @@ class RoomController extends Controller
             ];
 
             return view('admin.rooms.edit', compact(
-                'room', 'schools', 'teachers', 'buildings', 'gradeLevels'
+                'room', 'schools', 'teachers', 'buildings', 'gradeLevels', 'defaultSchool'
             ));
             
         } catch (\Exception $e) {
@@ -302,6 +455,81 @@ class RoomController extends Controller
                 'success' => false,
                 'message' => 'Failed to update room status.'
             ], 500);
+        }
+    }
+
+    /**
+     * Assign subjects to the room.
+     */
+    public function assignSubjects(Request $request, Section $room)
+    {
+        try {
+            // Validate the input
+            $validated = $request->validate([
+                'subjects' => 'required|array',
+                'subjects.*.subject_id' => 'required|exists:subjects,id',
+                'subjects.*.teacher_id' => 'required|exists:users,id',
+            ]);
+
+            Log::info('Assigning subjects to room', [
+                'room_id' => $room->id,
+                'subjects' => $request->subjects
+            ]);
+
+            // Begin transaction
+            DB::beginTransaction();
+
+            // Instead of clearing all existing subjects, we'll determine which ones to add or update
+            $existingSubjectIds = $room->subjects->pluck('id')->toArray();
+            $newSubjectIds = collect($request->subjects)->pluck('subject_id')->toArray();
+
+            // Loop through new subject assignments
+            foreach ($request->subjects as $subject) {
+                // Check if this subject is already assigned to this room
+                $existingPivot = DB::table('section_subject')
+                    ->where('section_id', $room->id)
+                    ->where('subject_id', $subject['subject_id'])
+                    ->first();
+
+                if ($existingPivot) {
+                    // Update the existing subject-teacher assignment
+                    DB::table('section_subject')
+                        ->where('section_id', $room->id)
+                        ->where('subject_id', $subject['subject_id'])
+                        ->update([
+                            'teacher_id' => $subject['teacher_id'],
+                            'updated_at' => now(),
+                        ]);
+                } else {
+                    // Insert a new subject-teacher assignment
+                    DB::table('section_subject')->insert([
+                        'section_id' => $room->id,
+                        'subject_id' => $subject['subject_id'],
+                        'teacher_id' => $subject['teacher_id'],
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
+
+            // Log success
+            Log::info('Subjects assigned successfully', ['room_id' => $room->id]);
+
+            // Commit transaction
+            DB::commit();
+
+            return redirect()->route('admin.rooms.show', $room)
+                ->with('success', 'Subjects assigned successfully.');
+        } catch (\Exception $e) {
+            // Rollback transaction
+            DB::rollBack();
+
+            Log::error('Failed to assign subjects: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+
+            return back()->with('error', 'Failed to assign subjects: ' . $e->getMessage());
         }
     }
 }

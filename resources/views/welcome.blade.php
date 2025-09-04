@@ -339,13 +339,10 @@
                         <a href="#about" style="color: #6b7280; text-decoration: none; font-weight: 500; transition: color 0.3s ease;" onmouseover="this.style.color='#667eea'" onmouseout="this.style.color='#6b7280'">About</a>
                         <a href="#features" style="color: #6b7280; text-decoration: none; font-weight: 500; transition: color 0.3s ease;" onmouseover="this.style.color='#667eea'" onmouseout="this.style.color='#6b7280'">Features</a>
                         <a href="#contact" style="color: #6b7280; text-decoration: none; font-weight: 500; transition: color 0.3s ease;" onmouseover="this.style.color='#667eea'" onmouseout="this.style.color='#6b7280'">Contact</a>
-                        <a href="{{ route('enrollment.create') }}" style="background: #10b981; color: white; padding: 8px 20px; border-radius: 25px; text-decoration: none; font-weight: 600; transition: all 0.3s ease;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
-                            <i class="fas fa-user-plus" style="margin-right: 5px;"></i>Enroll Now
-                        </a>
                         @auth
                             <a href="{{ url('/dashboard') }}" class="btn btn-primary">Dashboard</a>
                         @else
-                            <a href="{{ route('login') }}" class="btn btn-primary">Login</a>
+                            <!-- <a href="{{ route('login') }}" class="btn btn-primary">Login</a> -->
                         @endauth
                     </div>
                     <div class="md:hidden">
@@ -391,8 +388,8 @@
                     <a href="{{ route('login') }}" class="btn btn-primary">
                         <i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i>Access Portal
                     </a>
-                    <a href="{{ route('enrollment.create') }}" class="btn btn-secondary">
-                        <i class="fas fa-user-plus" style="margin-right: 8px;"></i>Enroll Student
+                    <a href="{{ route('admission.apply') }}" class="btn btn-secondary">
+                        <i class="fas fa-user-plus" style="margin-right: 8px;"></i>Apply for Admission
                     </a>
                 </div>
             </div>
@@ -523,41 +520,16 @@
             </div>
         </section>
 
-        <!-- Stats Section -->
-        <section class="stats-section">
-            <div class="container">
-                <h2 class="section-title" style="color: white; margin-bottom: 3rem;">Our Impact</h2>
-                <div class="stats-grid">
-                    <div>
-                        <div class="stat-number">500+</div>
-                        <div class="stat-label">Active Students</div>
-                    </div>
-                    <div>
-                        <div class="stat-number">25+</div>
-                        <div class="stat-label">Dedicated Teachers</div>
-                    </div>
-                    <div>
-                        <div class="stat-number">15+</div>
-                        <div class="stat-label">Years of Excellence</div>
-                    </div>
-                    <div>
-                        <div class="stat-number">98%</div>
-                        <div class="stat-label">Parent Satisfaction</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- CTA Section -->
         <section class="cta-section">
             <div class="container">
                 <h2 class="section-title" style="color: white; margin-bottom: 1rem;">Ready to Get Started?</h2>
                 <p style="font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.9; max-width: 600px; margin-left: auto; margin-right: auto;">
-                    Join the Patag Elementary School community and experience excellence in education with our modern grading system.
+                    Join the Patag Elementary School community and experience excellence in education. Apply for admission today!
                 </p>
                 <div class="flex justify-center gap-4" style="flex-wrap: wrap;">
-                    <a href="{{ route('enrollment.create') }}" class="btn" style="background: #10b981; color: white; border: 2px solid #10b981;" onmouseover="this.style.background='transparent'; this.style.color='#10b981';" onmouseout="this.style.background='#10b981'; this.style.color='white';">
-                        <i class="fas fa-user-plus" style="margin-right: 8px;"></i>Enroll Your Child
+                    <a href="{{ route('admission.apply') }}" class="btn" style="background: #10b981; color: white; border: 2px solid #10b981;" onmouseover="this.style.background='transparent'; this.style.color='#10b981';" onmouseout="this.style.background='#10b981'; this.style.color='white';">
+                        <i class="fas fa-user-plus" style="margin-right: 8px;"></i>Apply for Admission
                     </a>
                     <a href="{{ route('login') }}" class="btn" style="background: transparent; color: white; border: 2px solid white;" onmouseover="this.style.background='white'; this.style.color='#1f2937';" onmouseout="this.style.background='transparent'; this.style.color='white';">
                         <i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i>Access Portal

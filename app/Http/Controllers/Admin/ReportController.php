@@ -42,12 +42,15 @@ class ReportController extends Controller
      */
     public function consolidatedGrades(Request $request)
     {
-        // Get all sections, optionally filtered by school
+        // Get the single/primary school
+        $school = \App\Models\School::primary() ?? \App\Models\School::single();
+        
+        // Get all sections for the single school
         $query = Section::with('school')->where('is_active', true);
-
-        // Apply school filter if provided
-        if ($request->has('school_id') && !empty($request->school_id)) {
-            $query->where('school_id', $request->school_id);
+        
+        // Filter by the single school if it exists
+        if ($school) {
+            $query->where('school_id', $school->id);
         }
 
         // Apply search filter if provided
@@ -70,13 +73,13 @@ class ReportController extends Controller
 
         // Get all available grade levels for the filter
         $gradeLevels = Section::where('is_active', true)
+                            ->when($school, function($query) use ($school) {
+                                return $query->where('school_id', $school->id);
+                            })
                             ->distinct()
                             ->pluck('grade_level')
                             ->sort()
                             ->values();
-
-        // Get all schools for admin to select from
-        $schools = \App\Models\School::all();
 
         $quarters = [
             'Q1' => '1st Quarter',
@@ -85,7 +88,7 @@ class ReportController extends Controller
             'Q4' => '4th Quarter'
         ];
 
-        return view('admin.reports.consolidated_grades', compact('sections', 'sectionsByGradeLevel', 'gradeLevels', 'quarters', 'schools'));
+        return view('admin.reports.consolidated_grades', compact('sections', 'sectionsByGradeLevel', 'gradeLevels', 'quarters', 'school'));
     }
 
     /**
@@ -444,24 +447,24 @@ class ReportController extends Controller
      */
     public function attendanceSummary(Request $request)
     {
-        // Get all schools for admin to select from
-        $schools = \App\Models\School::all();
+        // Get the single/primary school
+        $school = \App\Models\School::primary() ?? \App\Models\School::single();
 
-        // Get all grade levels, optionally filtered by school
+        // Get all grade levels for the single school
         $gradeLevelsQuery = Section::where('is_active', true);
-        if ($request->has('school_id') && !empty($request->school_id)) {
-            $gradeLevelsQuery->where('school_id', $request->school_id);
+        if ($school) {
+            $gradeLevelsQuery->where('school_id', $school->id);
         }
         $gradeLevels = $gradeLevelsQuery->distinct()
                                       ->pluck('grade_level')
                                       ->sort()
                                       ->values();
 
-        // Get all sections, optionally filtered by school and grade level
+        // Get all sections for the single school
         $query = Section::where('is_active', true);
 
-        if ($request->has('school_id') && !empty($request->school_id)) {
-            $query->where('school_id', $request->school_id);
+        if ($school) {
+            $query->where('school_id', $school->id);
         }
 
         // Apply grade level filter if provided
@@ -476,19 +479,19 @@ class ReportController extends Controller
         // Group sections by grade level for easier navigation
         $sectionsByGradeLevel = $sections->groupBy('grade_level');
 
-        // Get available months with attendance records
+        // Get available months with attendance records for the single school
         $availableMonthsQuery = Attendance::join('students', 'attendances.student_id', '=', 'students.id')
             ->join('sections', 'students.section_id', '=', 'sections.id');
         
-        if ($request->has('school_id') && !empty($request->school_id)) {
-            $availableMonthsQuery->where('sections.school_id', $request->school_id);
+        if ($school) {
+            $availableMonthsQuery->where('sections.school_id', $school->id);
         }
         
         $availableMonths = $availableMonthsQuery->select(DB::raw('DISTINCT DATE_FORMAT(date, "%Y-%m") as month_value, DATE_FORMAT(date, "%M %Y") as month_name'))
             ->orderBy('month_value', 'desc')
             ->get();
 
-        return view('admin.reports.attendance_summary', compact('gradeLevels', 'sections', 'sectionsByGradeLevel', 'availableMonths', 'schools'));
+        return view('admin.reports.attendance_summary', compact('gradeLevels', 'sections', 'sectionsByGradeLevel', 'availableMonths', 'school'));
     }
 
     /**

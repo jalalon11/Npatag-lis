@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Services\EnrollmentNotificationService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Enrollment extends Model
 {
@@ -26,6 +27,7 @@ class Enrollment extends Model
         'guardian_name',
         'guardian_contact',
         'guardian_email',
+        'guardian_id',
         'email',
         'school_id',
         'preferred_grade_level',
@@ -47,6 +49,7 @@ class Enrollment extends Model
         'emergency_contact_name',
         'emergency_contact_number',
         'emergency_contact_relationship',
+        'birth_certificate',
         'application_date'
     ];
 
@@ -98,6 +101,16 @@ class Enrollment extends Model
     public function processedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'processed_by');
+    }
+
+    public function guardian(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'guardian_id');
+    }
+
+    public function students(): HasMany
+    {
+        return $this->hasMany(Student::class, 'admission_id');
     }
 
     // Helper methods

@@ -106,7 +106,7 @@
                                                 <select class="form-select @error('grade_level') is-invalid @enderror" id="grade_level" name="grade_level" required>
                                                     <option value="" selected disabled>Select Grade Level</option>
                                                     @for($i = 1; $i <= 6; $i++)
-                                                        <option value="{{ $i }}" {{ old('grade_level') == $i ? 'selected' : '' }}>Grade {{ $i }}</option>
+                                                        <option value="Grade {{ $i }}" {{ old('grade_level') == "Grade $i" ? 'selected' : '' }}>Grade {{ $i }}</option>
                                                     @endfor
                                                 </select>
                                                 @error('grade_level')
@@ -123,7 +123,7 @@
                                             </div>
 
                                             <!-- Hidden school field since there's only one school -->
-                                            <input type="hidden" name="school_id" value="{{ $defaultSchool->id }}">
+                            <input type="hidden" name="school_id" id="school_id" value="{{ $defaultSchool->id }}">
                                             
                                             <div class="mb-3">
                                                 <label class="form-label">School</label>

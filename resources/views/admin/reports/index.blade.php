@@ -25,22 +25,26 @@
                                     </div>
                                     <h5 class="card-title fw-bold">Schools Overview</h5>
                                     <p class="card-text text-muted flex-grow-1">Generate comprehensive reports showing all schools, their status, admission numbers, and key metrics.</p>
-                                    <a href="{{ route('admin.reports.schools-overview') }}" class="btn btn-primary mt-3">
+                                    <a href="{{ route('admin.school.index') }}" class="btn btn-primary mt-3">
                                         <i class="fas fa-arrow-right me-2"></i>Generate Report
                                     </a>
                                 </div>
                             </div>
                         </div>
+
+
+
+
 
                         <div class="col-md-6 col-lg-4 mb-4">
                             <div class="card h-100 shadow-sm border-0 hover-card">
                                 <div class="card-body d-flex flex-column text-center p-4">
                                     <div class="mb-4 report-icon-container" style="background-color: rgba(40, 167, 69, 0.1);">
-                                        <i class="fas fa-users fa-3x text-success"></i>
+                                        <i class="fas fa-chart-bar fa-3x text-success"></i>
                                     </div>
-                                    <h5 class="card-title fw-bold">Student Analytics</h5>
-                                    <p class="card-text text-muted flex-grow-1">Analyze student data across all schools including admission trends, demographics, and performance metrics.</p>
-                                    <a href="{{ route('admin.reports.student-analytics') }}" class="btn btn-success mt-3">
+                                    <h5 class="card-title fw-bold">Consolidated Grades</h5>
+                                    <p class="card-text text-muted flex-grow-1">Generate consolidated grading sheets by section and quarter across all schools.</p>
+                                    <a href="{{ route('admin.reports.consolidated-grades') }}" class="btn btn-success mt-3">
                                         <i class="fas fa-arrow-right me-2"></i>Generate Report
                                     </a>
                                 </div>
@@ -50,62 +54,19 @@
                         <div class="col-md-6 col-lg-4 mb-4">
                             <div class="card h-100 shadow-sm border-0 hover-card">
                                 <div class="card-body d-flex flex-column text-center p-4">
-                                    <div class="mb-4 report-icon-container" style="background-color: rgba(255, 193, 7, 0.1);">
-                                        <i class="fas fa-user-plus fa-3x text-warning"></i>
+                                    <div class="mb-4 report-icon-container" style="background-color: rgba(13, 110, 253, 0.1);">
+                                        <i class="fas fa-calendar-check fa-3x text-primary"></i>
                                     </div>
-                                    <h5 class="card-title fw-bold">Admission Reports</h5>
-                        <p class="card-text text-muted flex-grow-1">Track admission applications, approval rates, and admission trends across all schools in the system.</p>
-                        <a href="{{ route('admin.reports.enrollment-analytics') }}" class="btn btn-warning mt-3 text-white">
+                                    <h5 class="card-title fw-bold">Attendance Summary</h5>
+                                    <p class="card-text text-muted flex-grow-1">Comprehensive attendance analysis and reports across all schools.</p>
+                                    <a href="{{ route('admin.reports.attendance-summary') }}" class="btn btn-primary mt-3">
                                         <i class="fas fa-arrow-right me-2"></i>Generate Report
                                     </a>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card h-100 shadow-sm border-0 hover-card">
-                                <div class="card-body d-flex flex-column text-center p-4">
-                                    <div class="mb-4 report-icon-container" style="background-color: rgba(220, 53, 69, 0.1);">
-                                        <i class="fas fa-user-tie fa-3x text-danger"></i>
-                                    </div>
-                                    <h5 class="card-title fw-bold">User Accounts</h5>
-                                    <p class="card-text text-muted flex-grow-1">Generate reports on user accounts, roles, activity levels, and account status across the system.</p>
-                                    <a href="{{ route('admin.reports.user-accounts') }}" class="btn btn-danger mt-3">
-                                        <i class="fas fa-arrow-right me-2"></i>Generate Report
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card h-100 shadow-sm border-0 hover-card">
-                                <div class="card-body d-flex flex-column text-center p-4">
-                                    <div class="mb-4 report-icon-container" style="background-color: rgba(108, 117, 125, 0.1);">
-                                        <i class="fas fa-headset fa-3x text-secondary"></i>
-                                    </div>
-                                    <h5 class="card-title fw-bold">Support Analytics</h5>
-                                    <p class="card-text text-muted flex-grow-1">Analyze support ticket trends, response times, and common issues across all schools.</p>
-                                    <a href="{{ route('admin.reports.support-analytics') }}" class="btn btn-secondary mt-3">
-                                        <i class="fas fa-arrow-right me-2"></i>Generate Report
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card h-100 shadow-sm border-0 hover-card">
-                                <div class="card-body d-flex flex-column text-center p-4">
-                                    <div class="mb-4 report-icon-container" style="background-color: rgba(23, 162, 184, 0.1);">
-                                        <i class="fas fa-chart-line fa-3x text-info"></i>
-                                    </div>
-                                    <h5 class="card-title fw-bold">System Usage</h5>
-                                    <p class="card-text text-muted flex-grow-1">Monitor system usage patterns, login statistics, and feature adoption across all schools.</p>
-                                    <a href="{{ route('admin.reports.system-usage') }}" class="btn btn-info mt-3 text-white">
-                                        <i class="fas fa-arrow-right me-2"></i>Generate Report
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <div class="row mt-4">

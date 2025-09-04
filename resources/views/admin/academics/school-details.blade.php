@@ -346,15 +346,23 @@ $(document).ready(function() {
         
         const formData = new FormData();
         const logoFile = $('#logoInput')[0].files[0];
-        const principal = $('#principal').val();
         
         if (!logoFile) {
             showToast('Please select a logo file.', 'error');
             return;
         }
         
+        // Include all school details fields
+        formData.append('name', $('#name').val());
+        formData.append('code', $('#code').val());
+        formData.append('address', $('#address').val());
+        formData.append('region', $('#region').val());
+        formData.append('grade_levels', $('#grade_levels').val());
+        formData.append('division_name', $('#division_name').val());
+        formData.append('division_code', $('#division_code').val());
+        formData.append('division_address', $('#division_address').val());
+        formData.append('principal', $('#principal').val());
         formData.append('logo', logoFile);
-        formData.append('principal', principal);
         formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
         
         $.ajax({
@@ -392,6 +400,14 @@ $(document).ready(function() {
         e.preventDefault();
         
         const formData = new FormData();
+        formData.append('name', $('#name').val());
+        formData.append('code', $('#code').val());
+        formData.append('address', $('#address').val());
+        formData.append('region', $('#region').val());
+        formData.append('grade_levels', $('#grade_levels').val());
+        formData.append('division_name', $('#division_name').val());
+        formData.append('division_code', $('#division_code').val());
+        formData.append('division_address', $('#division_address').val());
         formData.append('principal', $('#principal').val());
         formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
         
@@ -404,6 +420,9 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     showToast(response.message, 'success');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
                 } else {
                     showToast(response.message, 'error');
                 }

@@ -139,8 +139,24 @@ class User extends Authenticatable
     /**
      * Get support messages sent by this user
      */
-    public function supportMessages(): HasMany
+    public function supportMessages()
     {
         return $this->hasMany(SupportMessage::class);
+    }
+
+    /**
+     * Get the admissions where this user is the guardian
+     */
+    public function guardianAdmissions()
+    {
+        return $this->hasMany(Enrollment::class, 'guardian_id');
+    }
+
+    /**
+     * Get the students where this user is the guardian (through admissions)
+     */
+    public function guardianStudents()
+    {
+        return $this->hasManyThrough(Student::class, Enrollment::class, 'guardian_id', 'admission_id');
     }
 }

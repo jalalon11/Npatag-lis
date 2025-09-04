@@ -472,43 +472,23 @@
         }
 
         /* Override login card hover animation */
-        body.login-page .auth-card,
-        body.register-page .register-card {
+        body.login-page .auth-card {
             transform: none !important;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -5px rgba(0, 0, 0, 0.04) !important;
             transition: none !important;
         }
 
-        body.login-page .auth-card:hover,
-        body.register-page .register-card:hover {
+        body.login-page .auth-card:hover {
             transform: none !important;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -5px rgba(0, 0, 0, 0.04) !important;
         }
 
         /* Keep hover effect for input fields */
-        body.login-page .form-control,
-        body.register-page .form-control {
+        body.login-page .form-control {
             transition: all 0.2s ease !important;
         }
 
         /* Allow animations on login page */
-
-        /* Add specific styles for register page */
-        body.register-page {
-            padding: 0 !important;
-            margin: 0 !important;
-            overflow-x: hidden;
-        }
-
-        body.register-page #content,
-        body.register-page main,
-        body.register-page .container,
-        body.register-page .row,
-        body.register-page .col-12 {
-            padding: 0 !important;
-            margin: 0 !important;
-            width: 100% !important;
-        }
 
         .wrapper {
             display: flex;
@@ -1076,7 +1056,7 @@
         }
     </style>
 </head>
-<body class="{{ !Request::is('login') && !Request::is('register') && Auth::check() ? 'sidebar-open' : 'sidebar-collapsed' }} {{ Request::is('login') ? 'login-page' : '' }} {{ Request::is('register') ? 'register-page' : '' }} no-transition">
+<body class="{{ !Request::is('login') && Auth::check() ? 'sidebar-open' : 'sidebar-collapsed' }} {{ Request::is('login') ? 'login-page' : '' }} no-transition">
     <!-- Page Loading Overlay - Only shown when navigating from sidebar -->
     <div id="page-loading-overlay" class="page-loading-overlay">
         <div class="loading-content">
@@ -1096,7 +1076,7 @@
         <!-- Sidebar  -->
         @auth
         @if(!Request::is('login'))
-        <nav id="sidebar" class="{{ Request::is('login') || Request::is('register') ? 'd-none' : '' }}">
+        <nav id="sidebar" class="{{ Request::is('login') ? 'd-none' : '' }}">
             <div class="sidebar-header">
                 <h4>
                     @if(Auth::user()->school && Auth::user()->school->logo_path)
@@ -1124,6 +1104,16 @@
                 <li class="{{ Request::is('admin/accounts*') ? 'active' : '' }}">
                     <a href="{{ route('admin.accounts.index') }}">
                         <i class="fas fa-users"></i> <span>Accounts</span>
+                    </a>
+                </li>
+                <li class="{{ Request::is('admin/admissions*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.admissions.index') }}">
+                        <i class="fas fa-user-plus"></i> <span>Admission</span>
+                    </a>
+                </li>
+                <li class="{{ Request::is('admin/learners*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.learners.index') }}">
+                        <i class="fas fa-user-graduate"></i> <span>Learners Record</span>
                     </a>
                 </li>
                 
@@ -1212,6 +1202,12 @@
                 </li>
 
 
+                @elseif($currentMode === 'guardian')
+                <li class="{{ Request::is('guardian/dashboard') ? 'active' : '' }}">
+                    <a href="{{ route('guardian.dashboard') }}">
+                        <i class="fas fa-home"></i> <span>Dashboard</span>
+                    </a>
+                </li>
                 @endif
 
                 <div class="sidebar-divider"></div>
@@ -1231,7 +1227,7 @@
 
         <!-- Page Content  -->
         <div id="content">
-            @if(!Request::is('login') && !Request::is('register'))
+            @if(!Request::is('login'))
             <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
                 <div class="container-fluid">
                     @auth
@@ -1343,7 +1339,7 @@
             </nav>
             @endif
 
-            <main class="py-4 {{ Request::is('login') || Request::is('register') ? 'p-0' : '' }}">
+            <main class="py-4 {{ Request::is('login') ? 'p-0' : '' }}">
                 @yield('content')
             </main>
         </div>

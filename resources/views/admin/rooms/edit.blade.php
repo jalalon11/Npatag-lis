@@ -46,7 +46,7 @@
                                     <select class="form-control @error('grade_level') is-invalid @enderror" id="grade_level" name="grade_level" required>
                                         <option value="" disabled>Select Grade Level</option>
                                         @for($i = 1; $i <= 12; $i++)
-                                            <option value="{{ $i }}" {{ old('grade_level', $room->grade_level) == $i ? 'selected' : '' }}>Grade {{ $i }}</option>
+                                            <option value="Grade {{ $i }}" {{ old('grade_level', $room->grade_level) == "Grade $i" ? 'selected' : '' }}>Grade {{ $i }}</option>
                                         @endfor
                                     </select>
                                     @error('grade_level')
@@ -82,7 +82,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <!-- Hidden school field since there's only one school -->
-                                <input type="hidden" name="school_id" value="{{ $defaultSchool->id }}">
+                                <input type="hidden" name="school_id" id="school_id" value="{{ $defaultSchool->id }}">
                                 
                                 <div class="form-group">
                                     <label class="form-label">School</label>
@@ -210,9 +210,8 @@ $(document).ready(function() {
         const gradeLevel = $('#grade_level').val();
         const schoolYear = $('#school_year').val().trim();
         const schoolId = $('#school_id').val();
-        const adviserId = $('#adviser_id').val();
         
-        if (!name || !gradeLevel || !schoolYear || !schoolId || !adviserId) {
+        if (!name || !gradeLevel || !schoolYear || !schoolId) {
             e.preventDefault();
             alert('Please fill in all required fields.');
             return false;

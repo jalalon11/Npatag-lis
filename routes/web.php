@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\SetupController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 // Removed SchoolDivisionController and SchoolController - moved to hardcoded school system
 use App\Http\Controllers\Admin\TeacherController;
@@ -43,6 +44,12 @@ Route::get('/', function () {
     return view('welcome', compact('school'));
 });
 
+// Initial system setup routes (only accessible when no admin exists)
+Route::middleware(['check.no.admin'])->group(function () {
+    Route::get('/setup', [SetupController::class, 'showSetup'])->name('setup.show');
+    Route::post('/setup', [SetupController::class, 'createAdmin'])->name('setup.create');
+});
+
 // Announcement routes for public access
 Route::get('/api/announcements', [\App\Http\Controllers\AnnouncementViewController::class, 'getActiveAnnouncements'])->name('api.announcements');
 
@@ -64,6 +71,16 @@ Route::prefix('enrollment')->name('enrollment.')->group(function () {
     
     // AJAX route for school sections
     Route::get('/schools/{school}/sections', [\App\Http\Controllers\EnrollmentApplicationController::class, 'getSectionsBySchool'])->name('schools.sections');
+});
+
+// Public admission application routes
+Route::prefix('admission')->name('admission.')->group(function () {
+    Route::get('/apply', [\App\Http\Controllers\PublicAdmissionController::class, 'apply'])->name('apply');
+    Route::post('/submit', [\App\Http\Controllers\PublicAdmissionController::class, 'submit'])->name('submit');
+    Route::get('/submitted/{admission}', [\App\Http\Controllers\PublicAdmissionController::class, 'submitted'])->name('submitted');
+    Route::get('/status', [\App\Http\Controllers\PublicAdmissionController::class, 'statusForm'])->name('status.form');
+    Route::post('/status', [\App\Http\Controllers\PublicAdmissionController::class, 'status'])->name('status');
+    Route::get('/api/sections', [\App\Http\Controllers\PublicAdmissionController::class, 'getSections'])->name('api.sections');
 });
 
 // Maintenance mode routes - these must be accessible during maintenance
@@ -95,17 +112,15 @@ Route::get('/image-proxy/{path}', [\App\Http\Controllers\ImageProxyController::c
     ->name('image.proxy');
 
 // Custom auth routes instead of Auth::routes()
-// Login routes
-Route::get('login', [\App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
-Route::post('login', [\App\Http\Controllers\Auth\LoginController::class, 'login']);
+// Login routes (redirect to setup if no admin exists)
+Route::get('login', [\App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])
+    ->middleware('redirect.to.setup')
+    ->name('login');
+Route::post('login', [\App\Http\Controllers\Auth\LoginController::class, 'login'])
+    ->middleware('redirect.to.setup');
 Route::post('logout', [\App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
-// Register routes - now admin-only account creation
-Route::get('register', [\App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])
-    ->middleware('auth', 'check.role:admin')
-    ->name('register');
-Route::post('register', [\App\Http\Controllers\Auth\RegisterController::class, 'register'])
-    ->middleware('auth', 'check.role:admin');
+// Account creation routes moved to admin panel - old register routes removed
 
 // Password reset routes
 Route::get('password/reset', [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
@@ -120,10 +135,18 @@ Route::middleware(['auth', CheckSchoolStatus::class])->group(function () {
             return redirect()->route('admin.dashboard');
         } elseif ($user->role === 'teacher') {
             return redirect()->route('teacher.dashboard');
+        } elseif ($user->role === 'guardian') {
+            return redirect()->route('guardian.dashboard');
         } else {
             return redirect()->route('login');
         }
     })->name('home');
+
+    // Guardian Routes
+    Route::prefix('guardian')->middleware(['auth', 'check.role:guardian'])->name('guardian.')->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\Guardian\GuardianDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/student/{student}', [\App\Http\Controllers\Guardian\GuardianDashboardController::class, 'studentDetails'])->name('student.details');
+    });
 
     // Role switching routes (admin only)
     Route::post('/role-switch/toggle', [RoleSwitchController::class, 'toggle'])
@@ -208,6 +231,24 @@ Route::middleware(['auth', CheckSchoolStatus::class])->group(function () {
         Route::post('accounts/{account}/reset-password', [AccountsController::class, 'resetPassword'])->name('accounts.reset-password');
         Route::post('accounts/{account}/promote-to-admin', [AccountsController::class, 'promoteToAdmin'])->name('accounts.promote-to-admin');
         Route::post('accounts/{account}/demote-to-teacher', [AccountsController::class, 'demoteToTeacher'])->name('accounts.demote-to-teacher');
+        
+        // Admission Management Routes
+        Route::get('admissions/approved/list', [\App\Http\Controllers\Admin\AdmissionController::class, 'approvedStudents'])->name('admissions.approved');
+        Route::get('admissions/rejected/list', [\App\Http\Controllers\Admin\AdmissionController::class, 'rejectedStudents'])->name('admissions.rejected');
+        Route::resource('admissions', \App\Http\Controllers\Admin\AdmissionController::class);
+        Route::post('admissions/{admission}/approve', [\App\Http\Controllers\Admin\AdmissionController::class, 'approve'])->name('admissions.approve');
+        Route::post('admissions/{admission}/reject', [\App\Http\Controllers\Admin\AdmissionController::class, 'reject'])->name('admissions.reject');
+        Route::get('admissions/{admission}/birth-certificate', [\App\Http\Controllers\Admin\AdmissionController::class, 'birthCertificate'])->name('admissions.birth-certificate');
+        Route::get('api/sections', [\App\Http\Controllers\Admin\AdmissionController::class, 'getSections'])->name('api.sections');
+        
+        // Learners Record Management Routes
+Route::get('learners', [\App\Http\Controllers\Admin\LearnersController::class, 'index'])->name('learners.index');
+Route::get('learners/enrolled', [\App\Http\Controllers\Admin\LearnersController::class, 'enrolled'])->name('learners.enrolled');
+Route::get('learners/enrolled/{student}', [\App\Http\Controllers\Admin\LearnersController::class, 'showEnrolled'])->name('learners.enrolled.show');
+Route::get('learners/enrolled/{student}/birth-certificate', [\App\Http\Controllers\Admin\LearnersController::class, 'birthCertificate'])->name('learners.enrolled.birth-certificate');
+Route::get('learners/{student}', [\App\Http\Controllers\Admin\LearnersController::class, 'show'])->name('learners.show');
+Route::post('learners/{student}/enroll', [\App\Http\Controllers\Admin\LearnersController::class, 'enroll'])->name('learners.enroll');
+Route::get('learners/{student}/sections', [\App\Http\Controllers\Admin\LearnersController::class, 'getSections'])->name('learners.sections');
         
         // Legacy routes for backward compatibility
         Route::resource('teachers', TeacherController::class);

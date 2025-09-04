@@ -38,6 +38,8 @@ class RedirectIfAuthenticated
                     return redirect()->route('admin.dashboard');
                 } elseif ($user->role === 'teacher') {
                     return redirect()->route('teacher.dashboard');
+                } elseif ($user->role === 'guardian') {
+                    return redirect()->route('guardian.dashboard');
                 } else {
                     return redirect('/home');
                 }

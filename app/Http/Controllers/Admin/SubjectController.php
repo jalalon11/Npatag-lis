@@ -308,9 +308,9 @@ class SubjectController extends Controller
             // Load relationships
             $subject->load(['sections', 'teachers']);
             
-            // Get teachers for the same school
+            // Get teachers and admins for the same school
             $teachers = User::where('school_id', $subject->school_id)
-                ->where('role', 'teacher')
+                ->whereIn('role', ['teacher', 'admin'])
                 ->get();
     
             return view('admin.subjects.show', compact('subject', 'teachers'));

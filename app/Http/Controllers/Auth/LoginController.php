@@ -61,6 +61,8 @@ class LoginController extends Controller
         
         if ($user && $user->role === 'admin') {
             return route('admin.dashboard');
+        } elseif ($user && $user->role === 'guardian') {
+            return route('guardian.dashboard');
         }
         
 

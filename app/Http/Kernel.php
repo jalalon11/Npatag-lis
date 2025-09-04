@@ -52,6 +52,8 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'check.role' => \App\Http\Middleware\CheckRole::class,
         'check.school.status' => \App\Http\Middleware\CheckSchoolStatus::class,
+        'check.no.admin' => \App\Http\Middleware\CheckNoAdminExists::class,
+        'redirect.to.setup' => \App\Http\Middleware\RedirectToSetupIfNoAdmin::class,
         // Registration key middleware removed - now admin-only account creation
         'throttle.payments' => \App\Http\Middleware\ThrottlePaymentSubmissions::class,
         'payment.throttle' => \App\Http\Middleware\ThrottlePaymentSubmissions::class,

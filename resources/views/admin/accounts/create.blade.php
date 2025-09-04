@@ -5,7 +5,7 @@
     <div class="row mb-4">
         <div class="col-md-12">
             <div class="d-flex justify-content-between align-items-center">
-                <h2>Add New Account</h2>
+                <h2>Create New Account</h2>
                 <div>
                     <a href="{{ route('admin.dashboard') }}" class="btn btn-primary me-2">
                         <i class="fas fa-home me-1"></i> Dashboard
@@ -15,7 +15,7 @@
                     </a>
                 </div>
             </div>
-            <p class="text-muted">Create a new user account in the system.</p>
+            <p class="text-muted">Create a new user account with administrator, teacher, or guardian access.</p>
         </div>
     </div>
 
@@ -70,10 +70,12 @@
                                     <label for="role" class="form-label fw-bold">Account Role <span class="text-danger">*</span></label>
                                     <select class="form-select @error('role') is-invalid @enderror" id="role" name="role" required>
                                         <option value="">Select a role...</option>
+                                        <!-- <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>
+                                            <i class="fas fa-user-shield"></i> Administrator
+                                        </option> -->
                                         <option value="teacher" {{ old('role') == 'teacher' ? 'selected' : '' }}>
                                             <i class="fas fa-chalkboard-teacher"></i> Teacher
                                         </option>
-
                                         <option value="guardian" {{ old('role') == 'guardian' ? 'selected' : '' }}>
                                             <i class="fas fa-user-friends"></i> Guardian
                                         </option>
@@ -85,6 +87,7 @@
                                     @enderror
                                     <div class="form-text">
                                         <small class="text-muted">
+                                            <!-- <strong>Administrator:</strong> Full system access with ability to manage all users, settings, and data.<br> -->
                                             <strong>Teacher:</strong> Can manage grades, attendance, and view student information.<br>
                                             <strong>Guardian:</strong> Can view their child's academic information and communicate with teachers.
                                         </small>

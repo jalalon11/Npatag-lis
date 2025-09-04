@@ -1,83 +1,75 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid py-4">
     <!-- Page Header -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Room Management</h1>
-        <a href="{{ route('admin.rooms.create') }}" class="btn btn-primary btn-sm shadow-sm">
-            <i class="fas fa-plus fa-sm text-white-50"></i> Add New Room
+    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap">
+        <h1 class="h3 mb-0 text-dark">Room Management</h1>
+        <a href="{{ route('admin.rooms.create') }}" class="btn btn-primary btn-sm mt-2 mt-md-0" aria-label="Add new room">
+            <i class="fas fa-plus me-1"></i> Add New Room
         </a>
     </div>
 
     <!-- Statistics Cards -->
-    <div class="row mb-4">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Total Rooms
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalRooms }}</div>
+    <div class="row mb-4 g-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <div class="text-xs fw-bold text-primary text-uppercase mb-1">Total Rooms</div>
+                            <div class="h4 mb-0 fw-bold text-dark">{{ $totalRooms }}</div>
                         </div>
-                        <div class="col-auto">
-                            <i class="fas fa-door-open fa-2x text-gray-300"></i>
+                        <div class="ms-auto">
+                            <i class="fas fa-door-open fa-2x text-muted"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Active Rooms
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $activeRooms }}</div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <div class="text-xs fw-bold text-success text-uppercase mb-1">Active Rooms</div>
+                            <div class="h4 mb-0 fw-bold text-dark">{{ $activeRooms }}</div>
                         </div>
-                        <div class="col-auto">
-                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        <div class="ms-auto">
+                            <i class="fas fa-check-circle fa-2x text-muted"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                Total Students
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalStudents }}</div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <div class="text-xs fw-bold text-info text-uppercase mb-1">Total Students</div>
+                            <div class="h4 mb-0 fw-bold text-dark">{{ $totalStudents }}</div>
                         </div>
-                        <div class="col-auto">
-                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        <div class="ms-auto">
+                            <i class="fas fa-users fa-2x text-muted"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Unassigned Advisers
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $unassignedAdvisers }}</div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <div class="text-xs fw-bold text-warning text-uppercase mb-1">Unassigned Advisers</div>
+                            <div class="h4 mb-0 fw-bold text-dark">{{ $unassignedAdvisers }}</div>
                         </div>
-                        <div class="col-auto">
-                            <i class="fas fa-user-times fa-2x text-gray-300"></i>
+                        <div class="ms-auto">
+                            <i class="fas fa-user-times fa-2x text-muted"></i>
                         </div>
                     </div>
                 </div>
@@ -86,21 +78,21 @@
     </div>
 
     <!-- Filters -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Filter Rooms</h6>
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-header bg-light py-3 rounded-top">
+            <h5 class="mb-0 fw-bold text-primary">Filter Rooms</h5>
         </div>
-        <div class="card-body">
+        <div class="card-body p-4">
             <form method="GET" action="{{ route('admin.rooms.index') }}" id="filterForm">
-                <div class="row">
-                    <div class="col-md-3 mb-3">
-                        <label for="search" class="form-label">Search</label>
-                        <input type="text" class="form-control" id="search" name="search" 
-                               value="{{ request('search') }}" placeholder="Search by room name...">
+                <div class="row g-3">
+                    <div class="col-md-3 col-sm-6">
+                        <label for="search" class="form-label fw-bold">Search</label>
+                        <input type="text" class="form-control rounded" id="search" name="search" 
+                               value="{{ request('search') }}" placeholder="Search by room name..." aria-label="Search rooms">
                     </div>
-                    <div class="col-md-3 mb-3">
-                        <label for="school_id" class="form-label">School</label>
-                        <select class="form-control" id="school_id" name="school_id">
+                    <div class="col-md-3 col-sm-6">
+                        <label for="school_id" class="form-label fw-bold">School</label>
+                        <select class="form-select rounded" id="school_id" name="school_id" aria-label="Select school">
                             <option value="">All Schools</option>
                             @foreach($schools as $school)
                                 <option value="{{ $school->id }}" {{ request('school_id') == $school->id ? 'selected' : '' }}>
@@ -109,9 +101,9 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-3 mb-3">
-                        <label for="grade_level" class="form-label">Grade Level</label>
-                        <select class="form-control" id="grade_level" name="grade_level">
+                    <div class="col-md-3 col-sm-6">
+                        <label for="grade_level" class="form-label fw-bold">Grade Level</label>
+                        <select class="form-select rounded" id="grade_level" name="grade_level" aria-label="Select grade level">
                             <option value="">All Grades</option>
                             @foreach($gradeLevels as $grade)
                                 <option value="{{ $grade }}" {{ request('grade_level') == $grade ? 'selected' : '' }}>
@@ -120,22 +112,23 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-3 mb-3">
-                        <label for="status" class="form-label">Status</label>
-                        <select class="form-control" id="status" name="status">
+                    <div class="col-md-3 col-sm-6">
+                        <label for="status" class="form-label fw-bold">Status</label>
+                        <select class="form-select rounded" id="status" name="status" aria-label="Select status">
                             <option value="">All Status</option>
                             <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
                             <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                         </select>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row mt-3">
                     <div class="col-12">
-                        <button type="submit" class="btn btn-primary btn-sm">
-                            <i class="fas fa-search"></i> Filter
+                        <button type="submit" class="btn btn-primary btn-sm me-2" id="filter-btn" aria-label="Apply filters">
+                            <span class="spinner-border spinner-border-sm me-1 d-none" role="status" aria-hidden="true"></span>
+                            <i class="fas fa-search me-1"></i> Filter
                         </button>
-                        <a href="{{ route('admin.rooms.index') }}" class="btn btn-secondary btn-sm">
-                            <i class="fas fa-times"></i> Clear
+                        <a href="{{ route('admin.rooms.index') }}" class="btn btn-outline-secondary btn-sm" aria-label="Clear filters">
+                            <i class="fas fa-times me-1"></i> Clear
                         </a>
                     </div>
                 </div>
@@ -144,38 +137,36 @@
     </div>
 
     <!-- Rooms Grid -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Rooms ({{ $rooms->total() }} total)</h6>
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-header bg-light py-3 rounded-top">
+            <h5 class="mb-0 fw-bold text-primary">Rooms ({{ $rooms->total() }} total)</h5>
         </div>
-        <div class="card-body">
+        <div class="card-body p-4">
             @if($rooms->count() > 0)
-                <div class="row">
+                <div class="row g-4">
                     @foreach($rooms as $room)
-                        <div class="col-lg-4 col-md-6 mb-4">
-                            <div class="card border-0 shadow-sm h-100 room-card">
-                                <div class="card-header bg-gradient-primary text-white">
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card border-0 shadow-sm rounded-3 h-100 room-card">
+                                <div class="card-header bg-primary text-white py-3 rounded-top">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <h6 class="mb-0 font-weight-bold">{{ $room->name }}</h6>
-                                        <span class="badge badge-{{ $room->is_active ? 'success' : 'secondary' }}">
+                                        <h6 class="mb-0 fw-bold">{{ $room->name }}</h6>
+                                        <span class="badge bg-{{ $room->is_active ? 'success' : 'secondary' }} text-{{ $room->is_active ? 'white' : 'dark' }} px-2 py-1">
                                             {{ $room->is_active ? 'Active' : 'Inactive' }}
                                         </span>
                                     </div>
                                 </div>
-                                <div class="card-body">
-                                    <div class="mb-2">
+                                <div class="card-body p-4">
+                                    <div class="mb-3">
                                         <small class="text-muted">Grade Level:</small>
-                                        <div class="font-weight-bold">{{ $room->grade_level }}</div>
+                                        <div class="fw-bold">{{ $room->grade_level }}</div>
                                     </div>
-                                    
-                                    <div class="mb-2">
+                                    <div class="mb-3">
                                         <small class="text-muted">School:</small>
-                                        <div class="font-weight-bold">{{ $room->school->name ?? 'N/A' }}</div>
+                                        <div class="fw-bold">{{ $room->school->name ?? 'N/A' }}</div>
                                     </div>
-                                    
-                                    <div class="mb-2">
+                                    <div class="mb-3">
                                         <small class="text-muted">Adviser:</small>
-                                        <div class="font-weight-bold">
+                                        <div class="fw-bold">
                                             @if($room->adviser)
                                                 {{ $room->adviser->name }}
                                             @else
@@ -183,36 +174,36 @@
                                             @endif
                                         </div>
                                     </div>
-                                    
-                                    <div class="mb-3">
+                                    <div class="mb-0">
                                         <small class="text-muted">Students:</small>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <span class="font-weight-bold">{{ $room->students_count }}/{{ $room->student_limit ?? 30 }}</span>
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="fw-bold">{{ $room->students_count }}/{{ $room->student_limit ?? 30 }}</span>
                                         </div>
                                         @php
                                             $percentage = $room->student_limit ? ($room->students_count / $room->student_limit) * 100 : 0;
                                             $progressClass = $percentage >= 90 ? 'bg-danger' : ($percentage >= 75 ? 'bg-warning' : 'bg-success');
                                         @endphp
-                                        <div class="progress" style="height: 6px;">
+                                        <div class="progress" style="height: 8px;">
                                             <div class="progress-bar {{ $progressClass }}" 
                                                  style="width: {{ min($percentage, 100) }}%"></div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card-footer bg-transparent">
+                                <div class="card-footer bg-transparent pt-0">
                                     <div class="btn-group w-100" role="group">
                                         <a href="{{ route('admin.rooms.show', $room) }}" 
-                                           class="btn btn-outline-info btn-sm">
-                                            <i class="fas fa-eye"></i> View
+                                           class="btn btn-outline-info btn-sm" title="View Room" aria-label="View Room">
+                                            <i class="fas fa-eye me-1"></i> View
                                         </a>
                                         <a href="{{ route('admin.rooms.edit', $room) }}" 
-                                           class="btn btn-outline-primary btn-sm">
-                                            <i class="fas fa-edit"></i> Edit
+                                           class="btn btn-outline-primary btn-sm" title="Edit Room" aria-label="Edit Room">
+                                            <i class="fas fa-edit me-1"></i> Edit
                                         </a>
                                         @if($room->students_count == 0)
                                             <button type="button" class="btn btn-outline-danger btn-sm" 
-                                                    onclick="deleteRoom({{ $room->id }}, '{{ $room->name }}')">
-                                                <i class="fas fa-trash"></i> Delete
+                                                    onclick="deleteRoom({{ $room->id }}, '{{ $room->name }}')"
+                                                    title="Delete Room" aria-label="Delete Room">
+                                                <i class="fas fa-trash me-1"></i> Delete
                                             </button>
                                         @endif
                                     </div>
@@ -221,18 +212,18 @@
                         </div>
                     @endforeach
                 </div>
-                
+
                 <!-- Pagination -->
-                <div class="d-flex justify-content-center">
+                <div class="d-flex justify-content-center mt-4">
                     {{ $rooms->links() }}
                 </div>
             @else
                 <div class="text-center py-5">
-                    <i class="fas fa-door-open fa-3x text-gray-300 mb-3"></i>
-                    <h5 class="text-gray-600">No Rooms Found</h5>
-                    <p class="text-gray-500">No rooms match your current filters.</p>
-                    <a href="{{ route('admin.rooms.create') }}" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Create First Room
+                    <i class="fas fa-door-open fa-3x text-muted mb-3"></i>
+                    <h5 class="text-dark">No Rooms Found</h5>
+                    <p class="text-muted">No rooms match your current filters.</p>
+                    <a href="{{ route('admin.rooms.create') }}" class="btn btn-primary" aria-label="Create first room">
+                        <i class="fas fa-plus me-1"></i> Create First Room
                     </a>
                 </div>
             @endif
@@ -241,68 +232,47 @@
 </div>
 
 <style>
-.room-card {
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+.card {
+    transition: transform 0.2s ease-in-out;
 }
-
-.room-card:hover {
+.card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
 }
-
-.border-left-primary {
-    border-left: 0.25rem solid #4e73df !important;
+.form-control, .form-select {
+    transition: border-color 0.2s ease-in-out;
 }
-
-.border-left-success {
-    border-left: 0.25rem solid #1cc88a !important;
+.form-control:focus, .form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
 }
-
-.border-left-info {
-    border-left: 0.25rem solid #36b9cc !important;
+.btn {
+    padding: 0.5rem 1.25rem;
 }
-
-.border-left-warning {
-    border-left: 0.25rem solid #f6c23e !important;
+.badge {
+    font-size: 0.9rem;
 }
-
-.bg-gradient-primary {
-    background: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
+.progress {
+    border-radius: 4px;
 }
-
-.text-xs {
-    font-size: 0.7rem;
-}
-
-.font-weight-bold {
-    font-weight: 700 !important;
-}
-
-.text-gray-800 {
-    color: #5a5c69 !important;
-}
-
-.text-gray-600 {
-    color: #858796 !important;
-}
-
-.text-gray-500 {
-    color: #b7b9cc !important;
-}
-
-.text-gray-300 {
-    color: #dddfeb !important;
-}
-
-.shadow-sm {
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
-}
-
-.shadow {
-    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important;
+@media (max-width: 576px) {
+    .container-fluid {
+        padding: 15px;
+    }
+    .card-body {
+        padding: 15px;
+    }
+    .btn-group .btn {
+        font-size: 0.85rem;
+        padding: 6px 10px;
+    }
+    .fa-2x {
+        font-size: 1.5rem;
+    }
 }
 </style>
+@endsection
 
+@push('scripts')
 <script>
 function deleteRoom(roomId, roomName) {
     Swal.fire({
@@ -311,7 +281,7 @@ function deleteRoom(roomId, roomName) {
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
+        cancelButtonColor: '#007bff',
         confirmButtonText: 'Yes, delete it!',
         cancelButtonText: 'Cancel'
     }).then((result) => {
@@ -339,24 +309,27 @@ function deleteRoom(roomId, roomName) {
     });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    const filterInputs = document.querySelectorAll('#filterForm select, #filterForm input[name="search"]');
+$(document).ready(function() {
+    const filterBtn = $('#filter-btn');
     
-    filterInputs.forEach(input => {
-        if (input.type === 'text') {
-            let timeout;
-            input.addEventListener('input', function() {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => {
-                    document.getElementById('filterForm').submit();
-                }, 500);
-            });
-        } else {
-            input.addEventListener('change', function() {
-                document.getElementById('filterForm').submit();
-            });
-        }
+    // Auto-submit form when filters change
+    $('#school_id, #grade_level, #status').change(function() {
+        filterBtn.find('.spinner-border').removeClass('d-none');
+        filterBtn.prop('disabled', true);
+        $(this).closest('form').submit();
+    });
+    
+    // Handle search input with debounce
+    let searchTimeout;
+    $('#search').on('input', function() {
+        clearTimeout(searchTimeout);
+        const form = $(this).closest('form');
+        searchTimeout = setTimeout(function() {
+            filterBtn.find('.spinner-border').removeClass('d-none');
+            filterBtn.prop('disabled', true);
+            form.submit();
+        }, 500);
     });
 });
 </script>
-@endsection
+@endpush

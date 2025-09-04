@@ -68,10 +68,12 @@
                                     <label for="role" class="form-label fw-bold">Account Role <span class="text-danger">*</span></label>
                                     <select class="form-select @error('role') is-invalid @enderror" id="role" name="role" required>
                                         <option value="">Select a role...</option>
+                                        <!-- <option value="admin" {{ old('role', $account->role) == 'admin' ? 'selected' : '' }}>
+                                            Admin
+                                        </option> -->
                                         <option value="teacher" {{ old('role', $account->role) == 'teacher' ? 'selected' : '' }}>
                                             Teacher
                                         </option>
-
                                         <option value="guardian" {{ old('role', $account->role) == 'guardian' ? 'selected' : '' }}>
                                             Guardian
                                         </option>
@@ -83,8 +85,8 @@
                                     @enderror
                                     <div class="form-text">
                                         <small class="text-muted">
+                                            <!-- <strong>Admin:</strong> Has full administrative privileges including user management and system settings.<br> -->
                                             <strong>Teacher:</strong> Can manage grades, attendance, and view student information.<br>
-                                            <strong>Teacher Admin:</strong> Has additional administrative privileges including user management.<br>
                                             <strong>Guardian:</strong> Can view their child's academic information and communicate with teachers.
                                         </small>
                                     </div>
