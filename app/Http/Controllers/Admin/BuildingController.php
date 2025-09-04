@@ -20,7 +20,7 @@ class BuildingController extends Controller
         try {
             $user = Auth::user();
             $query = Building::with(['school', 'rooms'])
-                ->when($user->role !== 'super_admin', function ($q) use ($user) {
+                ->when($user->role !== 'super_admin' && $user->role !== 'admin', function ($q) use ($user) {
                     return $q->where('school_id', $user->school_id);
                 });
 
@@ -118,7 +118,7 @@ class BuildingController extends Controller
             $user = Auth::user();
             
             // Check access permissions
-            if ($user->role !== 'super_admin' && $building->school_id !== $user->school_id) {
+            if ($user->role !== 'super_admin' && $user->role !== 'admin' && $building->school_id !== $user->school_id) {
                 return redirect()->route('admin.buildings.index')
                     ->with('error', 'Access denied.');
             }
@@ -206,7 +206,7 @@ class BuildingController extends Controller
             $user = Auth::user();
             
             // Check access permissions
-            if ($user->role !== 'super_admin' && $building->school_id !== $user->school_id) {
+            if ($user->role !== 'super_admin' && $user->role !== 'admin' && $building->school_id !== $user->school_id) {
                 return redirect()->route('admin.buildings.index')
                     ->with('error', 'Access denied.');
             }
@@ -241,7 +241,7 @@ class BuildingController extends Controller
             $user = Auth::user();
             
             // Check access permissions
-            if ($user->role !== 'super_admin' && $building->school_id !== $user->school_id) {
+            if ($user->role !== 'super_admin' && $user->role !== 'admin' && $building->school_id !== $user->school_id) {
                 return redirect()->back()->with('error', 'Access denied.');
             }
 
@@ -283,7 +283,7 @@ class BuildingController extends Controller
             $user = Auth::user();
             
             // Check access permissions
-            if ($user->role !== 'super_admin' && $building->school_id !== $user->school_id) {
+            if ($user->role !== 'super_admin' && $user->role !== 'admin' && $building->school_id !== $user->school_id) {
                 return redirect()->back()->with('error', 'Access denied.');
             }
 

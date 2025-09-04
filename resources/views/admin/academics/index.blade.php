@@ -74,6 +74,23 @@
         </nav>
     </div>
 
+    <!-- Quick Navigation -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-white border-0 shadow-sm">
+                <div class="card-body py-3">
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{{ route('admin.academics.school-details') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-school me-1"></i> School Details
+                        </a>
+                        <span class="text-muted align-self-center">|</span>
+                        <span class="text-muted align-self-center">Manage comprehensive school information and settings</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Alerts -->
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -179,42 +196,7 @@
             </div>
         </div>
 
-        <!-- School Information Card -->
-        <div class="col-lg-6 col-md-12 mb-4">
-            <div class="card bg-white border-0 shadow-sm">
-                <div class="card-header bg-white border-bottom-0 pt-3">
-                    <h5 class="mb-0">School Information</h5>
-                </div>
-                <div class="card-body">
-                    <form id="schoolDetailsForm">
-                        @csrf
-                        <div class="mb-3">
-                            <label for="school_name" class="form-label">School Name</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-white border-end-0">
-                                    <i class="fas fa-school text-muted"></i>
-                                </span>
-                                <input type="text" class="form-control border-start-0" id="school_name" name="school_name" 
-                                       value="{{ $schoolName }}" placeholder="Enter school name">
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="school_address" class="form-label">School Address</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-white border-end-0">
-                                    <i class="fas fa-map-marker-alt text-muted"></i>
-                                </span>
-                                <textarea class="form-control border-start-0" id="school_address" name="school_address" 
-                                          rows="3" placeholder="Enter school address">{{ $schoolAddress }}</textarea>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-1"></i> Update School Details
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
+
     </div>
 
     <!-- Success/Error Toast -->
@@ -346,35 +328,7 @@ $(document).ready(function() {
         });
     });
     
-    // School Details Form Submission
-    $('#schoolDetailsForm').on('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = $(this).serialize();
-        const submitBtn = $(this).find('button[type="submit"]');
-        
-        submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i> Updating...');
-        
-        $.ajax({
-            url: '{{ route("admin.academics.update-school-details") }}',
-            method: 'POST',
-            data: formData,
-            success: function(response) {
-                if (response.success) {
-                    showToast(response.message, 'success');
-                } else {
-                    showToast(response.message, 'error');
-                }
-            },
-            error: function(xhr) {
-                const response = xhr.responseJSON;
-                showToast(response?.message || 'An error occurred', 'error');
-            },
-            complete: function() {
-                submitBtn.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Update School Details');
-            }
-        });
-    });
+
 });
 </script>
 @endpush

@@ -19,14 +19,19 @@ class AcademicController extends Controller
         $currentQuarter = SystemSetting::getSetting('global_quarter', 'Q1');
         $currentSchoolYear = SystemSetting::getSetting('school_year', date('Y') . '-' . (date('Y') + 1));
         
-        // Get principal name with admin user as default
-        $adminUser = \App\Models\User::where('role', 'admin')->first();
-        $defaultPrincipalName = $adminUser ? $adminUser->name : 'Principal Name';
-        $principalName = SystemSetting::getSetting('principal_name', $defaultPrincipalName);
+        // Get school information from database
+        $school = School::first();
         
-        // Get school information
-        $schoolName = SystemSetting::getSetting('school_name', 'Patag Elementary School');
-        $schoolAddress = SystemSetting::getSetting('school_address', 'Patag, Donsol, Sorsogon');
+        if (!$school) {
+            // Fallback if no school exists
+            $schoolName = 'Patag Elementary School';
+            $schoolAddress = 'Patag, Donsol, Sorsogon';
+            $principalName = 'Principal Name';
+        } else {
+            $schoolName = $school->name;
+            $schoolAddress = $school->address;
+            $principalName = $school->principal ?: 'Principal Name';
+        }
         
         // Available quarters
         $quarters = [
@@ -42,7 +47,8 @@ class AcademicController extends Controller
             'principalName',
             'schoolName',
             'schoolAddress',
-            'quarters'
+            'quarters',
+            'school'
         ));
     }
     
@@ -125,7 +131,10 @@ class AcademicController extends Controller
         }
         
         try {
-            SystemSetting::setSetting('principal_name', $request->principal_name, 'School principal name');
+            $school = School::first();
+            if ($school) {
+                $school->update(['principal' => $request->principal_name]);
+            }
             
             return response()->json([
                 'success' => true,
@@ -157,8 +166,13 @@ class AcademicController extends Controller
         }
         
         try {
-            SystemSetting::setSetting('school_name', $request->school_name, 'School name');
-            SystemSetting::setSetting('school_address', $request->school_address, 'School address');
+            $school = School::first();
+            if ($school) {
+                $school->update([
+                    'name' => $request->school_name,
+                    'address' => $request->school_address
+                ]);
+            }
             
             return response()->json([
                 'success' => true,
@@ -168,6 +182,130 @@ class AcademicController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update school details.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Display the school details management page
+     */
+    public function schoolDetails()
+    {
+        $school = School::first();
+        
+        if (!$school) {
+            // Create a default school if none exists
+            $school = School::create([
+                'principal' => 'Principal Name'
+            ]);
+        }
+        
+        return view('admin.academics.school-details', compact('school'));
+    }
+
+    /**
+     * Update all school details including logo
+     */
+    public function updateAllSchoolDetails(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'code' => 'required|string|max:100',
+            'address' => 'required|string|max:500',
+            'region' => 'required|string|max:255',
+            'grade_levels' => 'required|string|max:255',
+            'division_name' => 'required|string|max:255',
+            'division_code' => 'required|string|max:100',
+            'division_address' => 'required|string|max:500',
+            'principal' => 'required|string|max:255',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+        
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please check your input. ' . $validator->errors()->first()
+            ], 400);
+        }
+        
+        try {
+            $school = School::first();
+            
+            $schoolData = [
+                'name' => $request->name,
+                'code' => $request->code,
+                'address' => $request->address,
+                'region' => $request->region,
+                'grade_levels' => $request->grade_levels,
+                'division_name' => $request->division_name,
+                'division_code' => $request->division_code,
+                'division_address' => $request->division_address,
+                'principal' => $request->principal
+            ];
+            
+            if (!$school) {
+                $school = School::create($schoolData);
+            } else {
+                $school->update($schoolData);
+            }
+            
+            // Handle logo upload
+            if ($request->hasFile('logo')) {
+                // Delete old logo if exists
+                if ($school->logo_path) {
+                    $oldLogoPath = storage_path('app/public/' . $school->logo_path);
+                    if (file_exists($oldLogoPath)) {
+                        unlink($oldLogoPath);
+                    }
+                }
+                
+                $logoFile = $request->file('logo');
+                $logoName = 'school_logo_' . time() . '.' . $logoFile->getClientOriginalExtension();
+                $logoPath = $logoFile->storeAs('public/images', $logoName);
+                
+                // Update the logo path in the school record
+                $school->update(['logo_path' => 'images/' . $logoName]);
+            }
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'School details updated successfully.',
+                'logo_url' => $school->logo_url
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update school details: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete school logo
+     */
+    public function deleteSchoolLogo()
+    {
+        try {
+            $school = School::first();
+            if ($school && $school->logo_path) {
+                // Delete the file from storage
+                $fullPath = storage_path('app/public/' . $school->logo_path);
+                if (file_exists($fullPath)) {
+                    unlink($fullPath);
+                }
+                
+                // Update the school record
+                $school->update(['logo_path' => null]);
+            }
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'School logo deleted successfully.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete school logo: ' . $e->getMessage()
             ], 500);
         }
     }

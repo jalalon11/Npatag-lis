@@ -33,7 +33,7 @@
                                 <i class="fas fa-chalkboard-teacher fa-lg"></i>
                             </div>
                         @endif
-                        <h3 class="fw-bold mb-2 text-white display-6">Teacher Dashboard</h3>
+                        <h3 class="fw-bold mb-2 text-white display-6">Admin Dashboard</h3>
                         <p class="text-white mb-0 lead opacity-90">Welcome back, {{ Auth::user()->name }}!</p>
                         <div class="d-flex align-items-center mt-3">
                             <span class="badge bg-primary bg-opacity-10 text-white border border-primary border-opacity-20 px-3 py-2">

@@ -640,7 +640,7 @@
                         </a>
                     </div>
                     <!-- Emergency Access -->
-                    @php
+                    <!-- @php
                         $directSubject = DB::table('subjects')->where('id', 1)->first();
                     @endphp
                     @if($directSubject)
@@ -657,7 +657,7 @@
                         </div>
                     @endif
                 </div>
-            @else
+            @else -->
                 <form method="GET" action="{{ route('teacher.grades.index') }}" id="filterForm" class="row g-3">
                     <!-- Subject Filter -->
                     <div class="col-md-3">

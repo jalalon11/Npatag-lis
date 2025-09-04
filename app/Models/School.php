@@ -15,26 +15,34 @@ class School extends Model
 
     /**
      * The attributes that are mass assignable.
-     * Most school details are now hardcoded, only principal is dynamic.
      *
      * @var array<int, string>
      */
     protected $fillable = [
+        'name',
+        'code', 
+        'address',
+        'region',
+        'grade_levels',
+        'division_name',
+        'division_code',
+        'division_address',
         'principal',
+        'logo_path',
     ];
 
     /**
-     * Hardcoded school details
+     * Default school details (used as fallbacks)
      */
-    const SCHOOL_NAME = 'Patag Elementary School';
-    const SCHOOL_CODE = 'PATAGES-2024';
-    const SCHOOL_ADDRESS = 'Patag, Naawan Misamis Orientail, Philippines';
-    const DIVISION_NAME = 'Division of Misamis Oriental';
-    const DIVISION_CODE = 'DDS-2024';
-    const DIVISION_ADDRESS = 'Pelaez Sports Complex, Don Apolinar Velez St, Cagayan de Oro, 9000 Lalawigan ng Misamis Oriental';
-    const REGION = 'Region X';
-    const GRADE_LEVELS = ['K', '1', '2', '3', '4', '5', '6'];
-    const LOGO_PATH = 'images/logo.jpg';
+    const DEFAULT_SCHOOL_NAME = 'Patag Elementary School';
+    const DEFAULT_SCHOOL_CODE = 'PATAGES-2024';
+    const DEFAULT_SCHOOL_ADDRESS = 'Patag, Naawan Misamis Oriental, Philippines';
+    const DEFAULT_DIVISION_NAME = 'Division of Misamis Oriental';
+    const DEFAULT_DIVISION_CODE = 'DDS-2024';
+    const DEFAULT_DIVISION_ADDRESS = 'Pelaez Sports Complex, Don Apolinar Velez St, Cagayan de Oro, 9000 Lalawigan ng Misamis Oriental';
+    const DEFAULT_REGION = 'Region X';
+    const DEFAULT_GRADE_LEVELS = 'K, 1, 2, 3, 4, 5, 6';
+    const DEFAULT_LOGO_PATH = 'images/logo.jpg';
 
     /**
      * The attributes that should be cast.
@@ -45,34 +53,55 @@ class School extends Model
         'is_active' => 'boolean',
         'is_primary' => 'boolean',
         'last_details_update_at' => 'datetime',
+        'grade_levels' => 'string',
     ];
 
     /**
-     * Accessor methods for hardcoded school details
+     * Accessor methods with fallback to defaults
      */
-    public function getNameAttribute()
+    public function getNameAttribute($value)
     {
-        return self::SCHOOL_NAME;
+        return $value ?: self::DEFAULT_SCHOOL_NAME;
     }
 
-    public function getCodeAttribute()
+    public function getCodeAttribute($value)
     {
-        return self::SCHOOL_CODE;
+        return $value ?: self::DEFAULT_SCHOOL_CODE;
     }
 
-    public function getAddressAttribute()
+    public function getAddressAttribute($value)
     {
-        return self::SCHOOL_ADDRESS;
+        return $value ?: self::DEFAULT_SCHOOL_ADDRESS;
     }
 
-    public function getGradeLevelsAttribute()
+    public function getRegionAttribute($value)
     {
-        return self::GRADE_LEVELS;
+        return $value ?: self::DEFAULT_REGION;
     }
 
-    public function getLogoPathAttribute()
+    public function getGradeLevelsAttribute($value)
     {
-        return self::LOGO_PATH;
+        return $value ?: self::DEFAULT_GRADE_LEVELS;
+    }
+
+    public function getDivisionNameAttribute($value)
+    {
+        return $value ?: self::DEFAULT_DIVISION_NAME;
+    }
+
+    public function getDivisionCodeAttribute($value)
+    {
+        return $value ?: self::DEFAULT_DIVISION_CODE;
+    }
+
+    public function getDivisionAddressAttribute($value)
+    {
+        return $value ?: self::DEFAULT_DIVISION_ADDRESS;
+    }
+
+    public function getLogoPathAttribute($value)
+    {
+        return $value ?: self::DEFAULT_LOGO_PATH;
     }
 
     /**
@@ -93,37 +122,9 @@ class School extends Model
         }
     }
 
-    /**
-     * Get the division name for this school
-     */
-    public function getDivisionNameAttribute()
-    {
-        return self::DIVISION_NAME;
-    }
 
-    /**
-     * Get the division code for this school
-     */
-    public function getDivisionCodeAttribute()
-    {
-        return self::DIVISION_CODE;
-    }
 
-    /**
-     * Get the division address for this school
-     */
-    public function getDivisionAddressAttribute()
-    {
-        return self::DIVISION_ADDRESS;
-    }
 
-    /**
-     * Get the region for this school
-     */
-    public function getRegionAttribute()
-    {
-        return self::REGION;
-    }
 
     /**
      * Get the sections in this school
@@ -149,7 +150,13 @@ class School extends Model
         return $this->hasMany(User::class);
     }
 
-
+    /**
+     * Get the buildings in this school
+     */
+    public function buildings(): HasMany
+    {
+        return $this->hasMany(Building::class);
+    }
 
     /**
      * Get the support tickets for this school

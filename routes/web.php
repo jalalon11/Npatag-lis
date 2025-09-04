@@ -188,6 +188,11 @@ Route::middleware(['auth', CheckSchoolStatus::class])->group(function () {
         Route::post('/academics/update-school-year', [\App\Http\Controllers\Admin\AcademicController::class, 'updateSchoolYear'])->name('academics.update-school-year');
         Route::post('/academics/update-principal', [\App\Http\Controllers\Admin\AcademicController::class, 'updatePrincipal'])->name('academics.update-principal');
         Route::post('/academics/update-school-details', [\App\Http\Controllers\Admin\AcademicController::class, 'updateSchoolDetails'])->name('academics.update-school-details');
+        
+        // School Details Management Routes
+        Route::get('/academics/school-details', [\App\Http\Controllers\Admin\AcademicController::class, 'schoolDetails'])->name('academics.school-details');
+        Route::post('/academics/school-details/update', [\App\Http\Controllers\Admin\AcademicController::class, 'updateAllSchoolDetails'])->name('academics.school-details.update');
+        Route::delete('/academics/school-details/logo', [\App\Http\Controllers\Admin\AcademicController::class, 'deleteSchoolLogo'])->name('academics.school-details.delete-logo');
         Route::get('/profile', function() {
             return view('admin.profile');
         })->name('profile');
