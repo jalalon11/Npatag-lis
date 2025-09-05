@@ -220,10 +220,11 @@
                                     </td>
                                     <td>
                                         @if($admission->birth_certificate)
-                                            <a href="{{ route('admin.admissions.birth-certificate', $admission) }}" 
-                                               target="_blank" class="btn btn-sm btn-outline-info" title="View Birth Certificate">
+                                            <button type="button" class="btn btn-sm btn-outline-info" 
+                                                    onclick="openBirthCertificateModal('{{ route('admin.admissions.birth-certificate', $admission) }}')"
+                                                    title="View Birth Certificate">
                                                 <i class="fas fa-file-alt"></i> View
-                                            </a>
+                                            </button>
                                         @else
                                             <span class="text-muted">Not uploaded</span>
                                         @endif
@@ -465,4 +466,6 @@ function deleteAdmission(admissionId) {
     }
 }
 </script>
+
+@include('components.birth-certificate-modal')
 @endpush
