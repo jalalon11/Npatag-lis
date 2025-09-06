@@ -1143,11 +1143,11 @@
                         <i class="fas fa-chalkboard-teacher"></i> <span>Homeroom Advising</span>
                     </a>
                 </li>
-                <li class="{{ Request::is('admin/resources*') ? 'active' : '' }}">
+                <!-- <li class="{{ Request::is('admin/resources*') ? 'active' : '' }}">
                     <a href="{{ route('admin.resources.index') }}">
                         <i class="fas fa-folder-open"></i> <span>Resources</span>
                     </a>
-                </li>
+                </li> -->
                 <li class="{{ Request::is('admin/reports*') ? 'active' : '' }}">
                     <a href="{{ route('admin.reports.index') }}">
                         <i class="fas fa-chart-bar"></i> <span>Reports</span>
@@ -1158,19 +1158,19 @@
                         <i class="fas fa-bullhorn"></i> <span>Announcements</span>
                     </a>
                 </li>
-                <li class="{{ Request::is('admin/support*') ? 'active' : '' }}">
+                <!-- <li class="{{ Request::is('admin/support*') ? 'active' : '' }}">
                     <a href="{{ route('admin.support.index') }}" class="position-relative">
                         <i class="fas fa-headset"></i> <span>Support</span>
                         @if(isset($pendingSupportCount) && $pendingSupportCount > 0)
                             <span class="badge bg-danger text-white rounded-pill ms-2 animate__animated animate__pulse animate__infinite support-badge">{{ $pendingSupportCount }}</span>
                         @endif
                     </a>
-                </li>
-                <li class="{{ Request::is('admin/help*') ? 'active' : '' }}">
+                </li> -->
+                <!-- <li class="{{ Request::is('admin/help*') ? 'active' : '' }}">
                     <a href="{{ route('admin.help.index') }}">
                         <i class="fas fa-question-circle"></i> <span>Help</span>
                     </a>
-                </li>
+                </li> -->
                 @elseif($currentMode === 'teacher')
                 <li class="{{ Request::is('teacher/dashboard') ? 'active' : '' }}">
                     <a href="{{ route('teacher.dashboard') }}">
