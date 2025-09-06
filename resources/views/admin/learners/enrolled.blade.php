@@ -474,9 +474,10 @@ function displayStudentDetails(student, gradeStats, attendanceStats) {
                     </div>
                     <div class="card-body">
                         ${student.admission && student.admission.birth_certificate ? 
-                            `<a href="/admin/learners/enrolled/${student.id}/birth-certificate" target="_blank" class="btn btn-outline-primary btn-sm">
+                            `<button type="button" class="btn btn-outline-primary btn-sm" 
+                                     onclick="openBirthCertificateModal('/admin/learners/enrolled/${student.id}/birth-certificate')">
                                 <i class="fas fa-eye"></i> View Birth Certificate
-                            </a>` : 
+                            </button>` : 
                             '<span class="text-muted">Birth certificate not available</span>'
                         }
                     </div>
@@ -592,4 +593,6 @@ function viewAttendance(studentId) {
     alert('View attendance functionality - Student ID: ' + studentId);
 }
 </script>
+
+@include('components.birth-certificate-modal')
 @endpush

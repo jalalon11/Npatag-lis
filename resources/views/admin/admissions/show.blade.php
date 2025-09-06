@@ -167,9 +167,10 @@
                                         <div class="row">
                                             <div class="col-sm-4"><strong>Birth Certificate:</strong></div>
                                             <div class="col-sm-8">
-                                                <a href="{{ route('admin.admissions.birth-certificate', $admission) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                        onclick="openBirthCertificateModal('{{ route('admin.admissions.birth-certificate', $admission) }}')">
                                                     <i class="fas fa-eye"></i> View Birth Certificate
-                                                </a>
+                                                </button>
                                             </div>
                                         </div>
                                         <hr>
@@ -270,4 +271,6 @@
         </div>
     </div>
 </div>
+
+@include('components.birth-certificate-modal')
 @endsection

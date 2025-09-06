@@ -251,9 +251,10 @@
                                     @if($admission->birth_certificate)
                                         <div class="mt-2">
                                             <strong>Current file:</strong> 
-                                            <a href="{{ route('admin.admissions.birth-certificate', $admission) }}" target="_blank" class="btn btn-sm btn-outline-info">
+                                            <button type="button" class="btn btn-sm btn-outline-info" 
+                                                    onclick="openBirthCertificateModal('{{ route('admin.admissions.birth-certificate', $admission) }}')">
                                                 <i class="fas fa-file-alt"></i> View Current Birth Certificate
-                                            </a>
+                                            </button>
                                         </div>
                                     @endif
                                 </div>
@@ -295,4 +296,6 @@
         </div>
     </div>
 </div>
+
+@include('components.birth-certificate-modal')
 @endsection
