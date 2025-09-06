@@ -28,8 +28,8 @@
 
     <div class="row">
         <div class="col-lg-8 mx-auto">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white py-3">
+            <div class="card bg-white border-0 shadow-sm">
+                <div class="card-header border-0 bg-white py-3">
                     <h5 class="mb-0"><i class="fas fa-user-edit me-2"></i> Account Information</h5>
                 </div>
                 <div class="card-body p-4">

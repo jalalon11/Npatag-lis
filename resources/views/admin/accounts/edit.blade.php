@@ -5,7 +5,7 @@
     <div class="row mb-4">
         <div class="col-md-12">
             <div class="d-flex justify-content-between align-items-center">
-                <h2><i class="fas fa-user-edit text-warning me-2"></i> Edit Account</h2>
+                <h2>Edit Account</h2>
                 <div>
                     <a href="{{ route('admin.dashboard') }}" class="btn btn-primary me-2">
                         <i class="fas fa-home me-1"></i> Dashboard
@@ -28,8 +28,8 @@
 
     <div class="row">
         <div class="col-lg-8 mx-auto">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white py-3">
+            <div class="card border-0 bg-white shadow-sm">
+                <div class="card-header border-0 bg-white py-3">
                     <h5 class="mb-0"><i class="fas fa-user-edit me-2"></i> Account Information</h5>
                 </div>
                 <div class="card-body p-4">
@@ -139,7 +139,7 @@
                         </div>
 
                         <div class="mt-4 text-end">
-                            <button type="submit" class="btn btn-warning px-4">
+                            <button type="submit" class="btn btn-primary px-4">
                                 <i class="fas fa-save me-1"></i> Update Account
                             </button>
                         </div>

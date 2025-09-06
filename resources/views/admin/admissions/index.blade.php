@@ -13,14 +13,33 @@
 @endpush
 
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid px-4">
     <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Student Admissions</h1>
-        <a href="{{ route('admin.admissions.create') }}" class="btn btn-primary btn-sm shadow-sm">
-            <i class="fas fa-plus fa-sm text-white-50"></i> Create Manual Admission
-        </a>
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>Student Admissions</h2>
+                <a href="{{ route('admin.admissions.create') }}" class="btn btn-primary fw-bold">
+                    <i class="fas fa-plus-circle me-1"></i> Create Manual Admission
+                </a>
+            </div>
+        </div>
     </div>
+    
+    <!-- Success/Error Messages -->
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-1"></i> {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-1"></i> {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
 
     <!-- Statistics Cards -->
     <div class="row mb-4">
