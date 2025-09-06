@@ -26,25 +26,61 @@ class BuildingController extends Controller
 
             // Get all buildings for statistics
             $allBuildings = $query->get();
-            
+
             // Calculate statistics
             $totalBuildings = $allBuildings->count();
             $activeBuildings = $allBuildings->where('is_active', 1)->count();
-            $totalRooms = $allBuildings->sum(function($building) {
+            $totalRooms = $allBuildings->sum(function ($building) {
                 return $building->rooms->count();
             });
-            $emptyBuildings = $allBuildings->filter(function($building) {
+            $emptyBuildings = $allBuildings->filter(function ($building) {
                 return $building->rooms->count() === 0;
             })->count();
 
+            // Apply filters
+            if (request()->filled('search')) {
+                $search = strtolower(request('search'));
+                $query->where(function ($q) use ($search) {
+                    $q->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"])
+                      ->orWhereRaw('LOWER(description) LIKE ?', ["%{$search}%"])
+                      ->orWhere('id', 'LIKE', "%{$search}%")
+                      ->orWhereHas('school', function ($q) use ($search) {
+                          $q->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
+                      });
+                });
+            }
+
+            if (request()->filled('school_id')) {
+                $query->where('school_id', request('school_id'));
+            }
+
+            if (request()->filled('status') && request('status') != 'all') {
+                $query->where('is_active', request('status') == 'active');
+            }
+
+            if (request()->filled('sort')) {
+                $sortField = request('sort') == 'name' ? 'name' : 'created_at';
+                $sortOrder = request('order', 'asc');
+                $query->orderBy($sortField, $sortOrder);
+            }
+
             $buildings = $query->paginate(15);
+
+            // Fetch schools for the filter dropdown
+            $schools = School::query()
+                ->when($user->role !== 'super_admin' && $user->role !== 'admin', function ($q) use ($user) {
+                    return $q->where('id', $user->school_id);
+                })
+                ->orderBy('name')
+                ->get();
 
             return view('admin.buildings.index', compact(
                 'buildings',
                 'totalBuildings',
-                'activeBuildings', 
+                'activeBuildings',
                 'totalRooms',
-                'emptyBuildings'
+                'emptyBuildings',
+                'schools'
             ));
         } catch (\Exception $e) {
             Log::error('Error loading buildings: ' . $e->getMessage());
